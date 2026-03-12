@@ -33,7 +33,6 @@ img { max-width: 100%; display: block; border-radius: 8px; }
 .nav { display: flex; gap: 1rem; font-weight: 600; }
 .nav a { padding: .4rem .2rem; border-bottom: 2px solid transparent; }
 .nav a:hover { border-bottom-color: var(--secondary); }
-.nav a.active { border-bottom-color: var(--secondary); color: var(--primary); }
 .phone-btn {
   background: var(--secondary); color: var(--white); padding: .6rem .9rem;
   border-radius: 999px; font-weight: 700;

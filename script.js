@@ -98,6 +98,29 @@
   }
 
 
+  const articleTitle = document.getElementById('articleTitle');
+  const articleContent = document.getElementById('articleContent');
+  if (articleTitle && articleContent) {
+    const slug = new URLSearchParams(window.location.search).get('slug') || 'mantenimiento';
+    const articles = {
+      mantenimiento: {
+        title: 'Mantenimiento preventivo en bandas industriales',
+        content: 'Implementar inspecciones periódicas, limpieza programada y control de tensión permite reducir fallas prematuras, evitar paros de línea y mejorar la seguridad operativa.'
+      },
+      optimizacion: {
+        title: 'Optimización de líneas transportadoras',
+        content: 'El análisis de cuellos de botella, el balanceo de estaciones y la selección adecuada de bandas incrementan el OEE y reducen costos operativos.'
+      },
+      tecnologia: {
+        title: 'Tecnología en bandas industriales',
+        content: 'Nuevos materiales técnicos, trazabilidad digital y monitoreo predictivo están transformando la eficiencia y confiabilidad en plantas de producción.'
+      }
+    };
+    const current = articles[slug] || articles.mantenimiento;
+    articleTitle.textContent = current.title;
+    articleContent.textContent = current.content;
+  }
+
   const contactForm = document.querySelector('.contact-form');
   if (contactForm) {
     contactForm.addEventListener('submit', (e) => {
