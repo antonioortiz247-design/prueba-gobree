@@ -96,7 +96,7 @@
     detail.innerHTML = `
       <h1>${p.nombre}</h1>
       <div class="product-detail">
-        <img src="https://images.unsplash.com/photo-1565514020179-026b92b84bb6?auto=format&fit=crop&w=1200&q=80" alt="${p.nombre}" loading="lazy">
+        <img src="Bandasanitaria.png" alt="${p.nombre}" loading="lazy">
         <div>
           <p>${p.descripcion}</p>
           <ul class="spec-list">
