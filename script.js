@@ -3,6 +3,9 @@
   const toggle = document.querySelector('.menu-toggle');
   if (toggle && nav) {
     toggle.addEventListener('click', () => nav.classList.toggle('open'));
+    nav.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', () => nav.classList.remove('open'));
+    });
   }
 
   document.querySelectorAll('a[href^="#"]').forEach((a) => {
@@ -38,6 +41,17 @@
   function renderCatalog(items) {
     const grid = document.getElementById('catalogGrid');
     if (!grid || typeof productos === 'undefined') return;
+
+    if (!items.length) {
+      grid.innerHTML = `
+        <div class="empty-state">
+          <h3>Sin resultados</h3>
+          <p>Prueba con otra categoría o ajusta tu búsqueda.</p>
+        </div>
+      `;
+      return;
+    }
+
     grid.innerHTML = items.map((p) => `
       <article class="card product-card">
         <img src="https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?auto=format&fit=crop&w=900&q=80" alt="${p.nombre}" loading="lazy">
