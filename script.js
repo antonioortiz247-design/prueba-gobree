@@ -54,7 +54,7 @@
 
     grid.innerHTML = items.map((p) => `
       <article class="card product-card">
-        <img src="https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?auto=format&fit=crop&w=900&q=80" alt="${p.nombre}" loading="lazy">
+        <img src="Bandasanitaria.png" alt="${p.nombre}" loading="lazy">
         <h3>${p.nombre}</h3>
         <p>${p.descripcion}</p>
         <a class="btn btn-secondary" href="producto.html?id=${p.id}">Ver ficha</a>
