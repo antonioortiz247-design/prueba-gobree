@@ -3,14 +3,45 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Conoce a Gobree Belt, especialistas en bandas industriales y asesoría técnica.">
+  <meta name="description" content="Conoce Gobree Belt: experiencia técnica, soluciones en bandas industriales y enfoque en productividad real.">
   <title>Nosotros | Gobree Belt</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              500: '#2563EB',
+              700: '#1E3A8A',
+              300: '#60A5FA'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif']
+          },
+          boxShadow: {
+            soft: '0 14px 36px rgba(30, 58, 138, 0.12)'
+          }
+        }
+      }
+    }
+  </script>
   <link rel="stylesheet" href="styles.css">
+  <style>
+    @media (max-width: 639px) {
+      .nosotros-page .header-wrap,
+      .nosotros-page .footer-grid {
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+    }
+  </style>
 </head>
-<body>
+<body class="nosotros-page overflow-x-hidden bg-slate-50 text-slate-900">
   <header class="site-header">
     <div class="container header-wrap">
       <a class="logo" href="index.html">
@@ -30,42 +61,114 @@
     </div>
   </header>
 
-  <main class="page-main container">
-    <section class="section">
-      <h1>Nosotros</h1>
-      <p class="lead">Gobree Belt impulsa la continuidad operativa de nuestros clientes mediante bandas transportadoras y de transmisión confiables.</p>
+  <main class="page-main">
+    <section class="relative overflow-hidden bg-gradient-to-br from-brand-700 via-brand-500 to-slate-900 text-white">
+      <div class="absolute inset-0 opacity-20" aria-hidden="true" style="background-image: radial-gradient(circle at 20% 20%, #93c5fd 0, transparent 42%), radial-gradient(circle at 80% 10%, #60a5fa 0, transparent 38%);"></div>
+      <div class="container px-4 sm:px-0 relative z-10 py-14 md:py-24">
+        <p class="mb-4 inline-flex rounded-full border border-white/30 bg-white/10 px-4 py-1 text-sm font-semibold tracking-wide">Gobree Belt · Ingeniería industrial aplicada</p>
+        <h1 class="max-w-4xl text-4xl font-extrabold leading-tight md:text-6xl">Soluciones en movimiento para la industria moderna</h1>
+        <p class="mt-6 max-w-3xl text-lg text-blue-100 md:text-xl">Expertos en bandas transportadoras y sistemas de transmisión confiables, eficientes y diseñados para alto rendimiento</p>
+        <div class="mt-10 flex flex-wrap gap-4">
+          <a href="contacto.html" class="rounded-xl bg-white px-6 py-3 font-semibold text-brand-700 shadow-soft transition hover:-translate-y-0.5 hover:bg-blue-50">Solicitar cotización</a>
+          <a href="contacto.html" class="rounded-xl border border-white/40 bg-white/10 px-6 py-3 font-semibold text-white transition hover:bg-white/20">Hablar con un experto</a>
+        </div>
+      </div>
     </section>
 
-    <section class="section">
-      <div class="cards two-col">
-        <article class="card">
-          <h2>Misión</h2>
-          <p>Brindar soluciones técnicas que incrementen productividad, inocuidad y seguridad en líneas industriales.</p>
+    <section class="container px-4 sm:px-0 py-12 md:py-20">
+      <div class="mx-auto grid max-w-6xl gap-8 rounded-3xl border border-slate-200 bg-white p-8 shadow-soft md:grid-cols-[1.2fr_.8fr] md:p-12">
+        <div>
+          <p class="text-sm font-semibold uppercase tracking-[0.18em] text-brand-500">Quiénes somos</p>
+          <h2 class="mt-3 text-3xl font-bold text-slate-900 md:text-4xl">Tu socio técnico para operaciones más eficientes</h2>
+          <p class="mt-5 text-lg leading-relaxed text-slate-600">En Gobree Belt combinamos experiencia técnica y enfoque práctico para ofrecer soluciones industriales que optimizan procesos, reducen tiempos muertos y aumentan la productividad.</p>
+        </div>
+        <div class="rounded-2xl bg-slate-900 p-6 text-slate-100">
+          <p class="text-sm font-semibold uppercase tracking-[0.18em] text-blue-300">Compromiso</p>
+          <p class="mt-4 text-2xl font-bold">Rendimiento, continuidad y soporte cercano</p>
+          <p class="mt-4 text-slate-300">Trabajamos contigo desde el diagnóstico hasta la implementación para asegurar resultados reales en planta.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="container px-4 sm:px-0 pb-12 md:pb-20">
+      <div class="mb-8 text-center">
+        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-brand-500">Propuesta de valor</p>
+        <h2 class="mt-3 text-3xl font-bold md:text-4xl">¿Por qué elegirnos?</h2>
+      </div>
+      <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+        <article class="group rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-soft">
+          <div class="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl bg-blue-100 text-xl text-brand-700">⚙️</div>
+          <h3 class="text-xl font-semibold">Ingeniería especializada</h3>
+          <p class="mt-2 text-slate-600">Diagnóstico técnico y selección precisa según proceso, carga y entorno operativo.</p>
         </article>
-        <article class="card">
-          <h2>Visión</h2>
-          <p>Ser referente nacional en soluciones de transporte industrial y servicio postventa especializado.</p>
+        <article class="group rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-soft">
+          <div class="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl bg-blue-100 text-xl text-brand-700">🧩</div>
+          <h3 class="text-xl font-semibold">Materiales de alta calidad</h3>
+          <p class="mt-2 text-slate-600">Bandas confiables para operación continua, resistencia superior y menor desgaste prematuro.</p>
+        </article>
+        <article class="group rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-soft">
+          <div class="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl bg-blue-100 text-xl text-brand-700">🔧</div>
+          <h3 class="text-xl font-semibold">Instalación y mantenimiento profesional</h3>
+          <p class="mt-2 text-slate-600">Ejecución segura y precisa para reducir riesgo operativo y mejorar desempeño del sistema.</p>
+        </article>
+        <article class="group rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-soft">
+          <div class="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl bg-blue-100 text-xl text-brand-700">⏱️</div>
+          <h3 class="text-xl font-semibold">Respuesta rápida</h3>
+          <p class="mt-2 text-slate-600">Atención ágil para minimizar paros, priorizar continuidad y recuperar productividad.</p>
         </article>
       </div>
     </section>
 
-    <section class="section alt-bg">
-      <div class="container">
-        <h2>¿Por qué elegirnos?</h2>
-        <div class="cards three-col">
-          <article class="card">
-            <h3>Experiencia</h3>
-            <p>Más de 10 años apoyando operaciones críticas.</p>
+    <section class="bg-white py-12 md:py-20">
+      <div class="container px-4 sm:px-0">
+        <div class="mb-10 text-center">
+          <p class="text-sm font-semibold uppercase tracking-[0.18em] text-brand-500">Experiencia y autoridad</p>
+          <h2 class="mt-3 text-3xl font-bold md:text-4xl">Resultados que respaldan nuestro trabajo</h2>
+        </div>
+        <div class="grid gap-5 md:grid-cols-3">
+          <article class="rounded-2xl border border-slate-200 bg-slate-50 p-7 text-center transition hover:-translate-y-1 hover:border-brand-300 hover:bg-blue-50">
+            <p class="text-4xl font-extrabold text-brand-700">+10</p>
+            <p class="mt-3 text-lg font-semibold text-slate-800">Años de experiencia en la industria</p>
           </article>
-          <article class="card">
-            <h3>Soporte cercano</h3>
-            <p>Diagnóstico y respuesta rápida ante necesidades urgentes.</p>
+          <article class="rounded-2xl border border-slate-200 bg-slate-50 p-7 text-center transition hover:-translate-y-1 hover:border-brand-300 hover:bg-blue-50">
+            <p class="text-4xl font-extrabold text-brand-700">Multisector</p>
+            <p class="mt-3 text-lg font-semibold text-slate-800">Soluciones implementadas en múltiples sectores</p>
           </article>
-          <article class="card">
-            <h3>Soluciones a medida</h3>
-            <p>Selección técnica por tipo de proceso, carga y temperatura.</p>
+          <article class="rounded-2xl border border-slate-200 bg-slate-50 p-7 text-center transition hover:-translate-y-1 hover:border-brand-300 hover:bg-blue-50">
+            <p class="text-4xl font-extrabold text-brand-700">Medible</p>
+            <p class="mt-3 text-lg font-semibold text-slate-800">Enfoque en resultados medibles</p>
           </article>
         </div>
+      </div>
+    </section>
+
+    <section class="container px-4 sm:px-0 py-12 md:py-20">
+      <div class="mb-8 text-center">
+        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-brand-500">Services snapshot</p>
+        <h2 class="mt-3 text-3xl font-bold md:text-4xl">Servicios clave para mantener tu operación en movimiento</h2>
+      </div>
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <article class="rounded-xl border border-slate-200 bg-white p-5 text-center font-semibold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-brand-300 hover:text-brand-700">Instalación</article>
+        <article class="rounded-xl border border-slate-200 bg-white p-5 text-center font-semibold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-brand-300 hover:text-brand-700">Mantenimiento</article>
+        <article class="rounded-xl border border-slate-200 bg-white p-5 text-center font-semibold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-brand-300 hover:text-brand-700">Asesoría técnica</article>
+        <article class="rounded-xl border border-slate-200 bg-white p-5 text-center font-semibold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-brand-300 hover:text-brand-700">Suministro de bandas</article>
+      </div>
+    </section>
+
+    <section class="container px-4 sm:px-0 pb-12 md:pb-20">
+      <div class="rounded-3xl border border-blue-200 bg-gradient-to-r from-blue-50 via-white to-blue-50 p-8 md:p-12">
+        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-brand-500">Nuestro diferenciador</p>
+        <h2 class="mt-3 max-w-4xl text-3xl font-bold md:text-4xl">No solo vendemos bandas, resolvemos problemas de producción</h2>
+        <p class="mt-4 max-w-3xl text-lg text-slate-600">Entendemos tu operación y diseñamos soluciones reales para mejorar la continuidad, eficiencia y seguridad en cada línea.</p>
+      </div>
+    </section>
+
+    <section class="bg-slate-900 py-12 text-white md:py-20">
+      <div class="container px-4 sm:px-0 text-center">
+        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-blue-300">Siguiente paso</p>
+        <h2 class="mt-3 text-3xl font-extrabold md:text-5xl">Optimiza tu línea de producción hoy</h2>
+        <p class="mx-auto mt-4 max-w-2xl text-lg text-slate-300">Te ayudamos a identificar oportunidades de mejora y elegir la solución ideal para tu proceso.</p>
+        <a href="contacto.html" class="mt-8 inline-flex rounded-xl bg-brand-500 px-7 py-3 text-base font-semibold text-white shadow-soft transition hover:-translate-y-0.5 hover:bg-brand-700">Solicitar diagnóstico sin costo</a>
       </div>
     </section>
   </main>
