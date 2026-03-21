@@ -3,6 +3,9 @@
   const toggle = document.querySelector('.menu-toggle');
   if (toggle && nav) {
     toggle.addEventListener('click', () => nav.classList.toggle('open'));
+    nav.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', () => nav.classList.remove('open'));
+    });
   }
 
   document.querySelectorAll('a[href^="#"]').forEach((a) => {
@@ -38,6 +41,17 @@
   function renderCatalog(items) {
     const grid = document.getElementById('catalogGrid');
     if (!grid || typeof productos === 'undefined') return;
+
+    if (!items.length) {
+      grid.innerHTML = `
+        <div class="empty-state">
+          <h3>Sin resultados</h3>
+          <p>Prueba con otra categoría o ajusta tu búsqueda.</p>
+        </div>
+      `;
+      return;
+    }
+
     grid.innerHTML = items.map((p) => `
       <article class="card product-card">
         <img src="https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?auto=format&fit=crop&w=900&q=80" alt="${p.nombre}" loading="lazy">
@@ -102,7 +116,22 @@
   if (contactForm) {
     contactForm.addEventListener('submit', (e) => {
       e.preventDefault();
-      alert('Gracias por contactarnos. Te responderemos a la brevedad.');
+
+      const nombre = contactForm.querySelector('input[type="text"]')?.value?.trim() || '';
+      const correo = contactForm.querySelector('input[type="email"]')?.value?.trim() || '';
+      const mensaje = contactForm.querySelector('textarea')?.value?.trim() || '';
+
+      const texto = [
+        'Hola, quiero una cotización de Gobree Belt.',
+        nombre ? `Nombre: ${nombre}` : '',
+        correo ? `Correo: ${correo}` : '',
+        mensaje ? `Mensaje: ${mensaje}` : ''
+      ].filter(Boolean).join('\n');
+
+      const whatsappUrl = `https://wa.me/525657038871?text=${encodeURIComponent(texto)}`;
+      window.open(whatsappUrl, '_blank', 'noopener');
+
+      alert('Gracias por contactarnos. Te estamos redirigiendo a WhatsApp para enviar tu solicitud.');
       contactForm.reset();
     });
   }
