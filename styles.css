@@ -57,7 +57,13 @@ p { margin: 0 0 1rem; color: var(--muted); }
   font-weight: 700;
   color: var(--primary-dark);
 }
-.logo img { width: 44px; height: 44px; object-fit: cover; border-radius: 50%; }
+.logo img {
+  width: auto;
+  height: 44px;
+  max-width: min(220px, 32vw);
+  object-fit: contain;
+  border-radius: 0;
+}
 .nav {
   display: flex;
   align-items: center;
