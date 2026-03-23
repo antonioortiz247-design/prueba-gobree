@@ -128,7 +128,7 @@
         mensaje ? `Mensaje: ${mensaje}` : ''
       ].filter(Boolean).join('\n');
 
-      const whatsappUrl = `https://wa.me/525657038871?text=${encodeURIComponent(texto)}`;
+      const whatsappUrl = `https://wa.me/525510185910?text=${encodeURIComponent(texto)}`;
       window.open(whatsappUrl, '_blank', 'noopener');
 
       alert('Gracias por contactarnos. Te estamos redirigiendo a WhatsApp para enviar tu solicitud.');
