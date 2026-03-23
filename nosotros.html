@@ -8,6 +8,38 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" href="index.html">
   <link rel="stylesheet" href="styles.css">
+   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              500: '#2563EB',
+              700: '#1E3A8A',
+              300: '#60A5FA'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif']
+          },
+          boxShadow: {
+            soft: '0 14px 36px rgba(30, 58, 138, 0.12)'
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    @media (max-width: 639px) {
+      .nosotros-page .header-wrap,
+      .nosotros-page .footer-grid {
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+    }
+  </style>
 </head>
 <body>
   <header class="site-header">
