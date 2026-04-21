@@ -121,17 +121,16 @@
       const correo = contactForm.querySelector('input[type="email"]')?.value?.trim() || '';
       const mensaje = contactForm.querySelector('textarea')?.value?.trim() || '';
 
-      const texto = [
+      const asunto = encodeURIComponent('Solicitud de cotización - Gobree Belt');
+      const cuerpo = encodeURIComponent([
         'Hola, quiero una cotización de Gobree Belt.',
         nombre ? `Nombre: ${nombre}` : '',
         correo ? `Correo: ${correo}` : '',
         mensaje ? `Mensaje: ${mensaje}` : ''
-      ].filter(Boolean).join('\n');
+      ].filter(Boolean).join('\n'));
 
-      const whatsappUrl = `https://wa.me/525510185910?text=${encodeURIComponent(texto)}`;
-      window.open(whatsappUrl, '_blank', 'noopener');
-
-      alert('Gracias por contactarnos. Te estamos redirigiendo a WhatsApp para enviar tu solicitud.');
+      window.location.href = `mailto:contacto@gobreebelt.com?subject=${asunto}&body=${cuerpo}`;
+      alert('Gracias por contactarnos. Se abrirá tu cliente de correo para enviar la solicitud.');
       contactForm.reset();
     });
   }
