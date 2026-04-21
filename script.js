@@ -144,4 +144,18 @@
       contactForm.reset();
     });
   }
+
+  document.querySelectorAll('.footer-glass-form').forEach((form) => {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = form.querySelector('input[name="email"]')?.value?.trim() || '';
+      const asunto = encodeURIComponent('Solicitud de asesoría - Formulario footer Gobree Belt');
+      const cuerpo = encodeURIComponent([
+        'Hola, me interesa una cotización de bandas transportadoras.',
+        email ? `Correo de contacto: ${email}` : ''
+      ].filter(Boolean).join('\n'));
+      window.location.href = `mailto:contacto@gobreebelt.com?subject=${asunto}&body=${cuerpo}`;
+      form.reset();
+    });
+  });
 })();

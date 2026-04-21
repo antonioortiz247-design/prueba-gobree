@@ -279,6 +279,51 @@ iframe { width: 100%; min-height: 320px; border: 0; border-radius: 12px; }
 .footer-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 1rem; padding: 2.2rem 0; }
 .footer-grid ul { list-style: none; padding: 0; margin: 0; }
 .footer-grid li { margin-bottom: .5rem; }
+.footer-seo-block {
+  border-top: 1px solid rgba(219, 234, 254, 0.24);
+  padding: 0 0 2rem;
+}
+.footer-seo-text {
+  max-width: 920px;
+  margin-bottom: .9rem;
+  color: #bfdbfe !important;
+}
+.footer-glass-form {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: .75rem;
+  align-items: end;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.25);
+  backdrop-filter: blur(10px);
+  border-radius: 14px;
+  padding: .95rem;
+}
+.footer-glass-form label {
+  display: grid;
+  gap: .4rem;
+  color: #f1f5f9;
+  font-weight: 600;
+}
+.footer-glass-form input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  border-radius: 10px;
+  padding: .68rem .75rem;
+  font: inherit;
+  color: #0f172a;
+}
+.footer-glass-form button {
+  border: 0;
+  background: linear-gradient(135deg, #60a5fa, #1d4ed8);
+  color: #fff;
+  border-radius: 10px;
+  font-weight: 700;
+  padding: .72rem 1rem;
+  cursor: pointer;
+}
 .whatsapp-btn {
   position: fixed;
   bottom: 20px;
@@ -323,6 +368,7 @@ iframe { width: 100%; min-height: 320px; border: 0; border-radius: 12px; }
   .product-detail,
   .contact-grid { grid-template-columns: 1fr; }
   .footer-grid { grid-template-columns: 1fr; }
+  .footer-glass-form { grid-template-columns: 1fr; }
   .section { padding: 2.15rem 0; }
 }
 
