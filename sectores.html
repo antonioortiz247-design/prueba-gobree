@@ -31,33 +31,11 @@
   <main class="page-main container">
     <section class="section">
       <h1>Sectores</h1>
-      <p class="lead">Atención especializada por industria con materiales y configuraciones adaptadas al proceso.</p>
-
-      <div class="cards two-col">
-        <article class="card">
-          <h2>Industria Alimenticia</h2>
-          <p>Bandas sanitarias con enfoque en inocuidad, limpieza y cumplimiento normativo.</p>
-           <img src="IndustriaAlimenticia.png" alt="Línea de procesamiento para industria alimenticia" loading="lazy">
-        </article>
-
-        <article class="card">
-          <h2>Industria Farmacéutica</h2>
-          <p>Soluciones para líneas de producción de alta exigencia y trazabilidad.</p>
-          <img src="IndustriaFarmaceutica.png" alt="Producción en industria farmacéutica" loading="lazy">
-        </article>
-
-        <article class="card">
-          <h2>Logística</h2>
-          <p>Bandas modulares y de acumulación para alto flujo y clasificación eficiente.</p>
-          <img src="Logistica.png" alt="Centro de distribución y logística con bandas" loading="lazy">
-        </article>
-
-        <article class="card">
-          <h2>Manufactura</h2>
-          <p>Transmisión eficiente y confiable para procesos continuos de producción.</p>
-          <img src="Manufactura.png" alt="Planta de manufactura industrial" loading="lazy">
-        </article>
-      </div>
+      <p class="lead">Selecciona tu sector para iniciar el flujo: Sector → Problema → Banda → Producto.</p>
+      <div id="sectorGrid" class="cards" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr));"></div>
+      <p style="margin-top:1rem;">
+        <a class="btn btn-secondary" href="productos.html">Ir al flujo completo de productos</a>
+      </p>
     </section>
   </main>
 
@@ -114,5 +92,28 @@
     </div>
   </footer>
   <script src="script.js"></script>
+  <script>
+    const sectorList = [
+      "Alimentaria", "Industria Litográfica", "Artes Gráficas", "Industria Textil", "Industria del Mármol",
+      "Cartón y Papel", "Farmacéutica", "Refresquera", "Chocolatera", "Lavanderías Industriales",
+      "Tabacalera", "Industria de Madera", "Industria de Bolsas de Plástico", "Rastros", "Offset",
+      "Reciclaje y Gestión de Residuos", "Logística y Puertos", "Agricultura", "Carga y Descarga",
+      "Confitería", "Boliche", "Materias Primas", "Aeropuertos", "Hidrólisis"
+    ];
+    const sectorGrid = document.getElementById('sectorGrid');
+    const sectorImageMap = {
+      "Alimentaria": "IndustriaAlimenticia.png",
+      "Farmacéutica": "IndustriaFarmaceutica.png",
+      "Logística y Puertos": "Logistica.png"
+    };
+    sectorGrid.innerHTML = sectorList.map((sector) => `
+      <article class="card">
+        <img src="${sectorImageMap[sector] || 'Manufactura.png'}" alt="Aplicaciones de bandas para ${sector}" loading="lazy" style="aspect-ratio:16/10;object-fit:cover;">
+        <h2>${sector}</h2>
+        <p>Explora problemas comunes y encuentra la banda adecuada para este sector.</p>
+        <a class="btn" href="productos.html?sector=${encodeURIComponent(sector)}">Ver soluciones</a>
+      </article>
+    `).join('');
+  </script>
 </body>
 </html>
