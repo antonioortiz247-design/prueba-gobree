@@ -290,15 +290,19 @@ iframe { width: 100%; min-height: 320px; border: 0; border-radius: 12px; }
 }
 .footer-glass-form {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 1fr;
   gap: .75rem;
-  align-items: end;
   background: rgba(255, 255, 255, 0.14);
   border: 1px solid rgba(255, 255, 255, 0.3);
   box-shadow: 0 8px 24px rgba(15, 23, 42, 0.25);
   backdrop-filter: blur(10px);
   border-radius: 14px;
   padding: .95rem;
+}
+.footer-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .7rem;
 }
 .footer-glass-form label {
   display: grid;
@@ -315,6 +319,17 @@ iframe { width: 100%; min-height: 320px; border: 0; border-radius: 12px; }
   font: inherit;
   color: #0f172a;
 }
+.footer-glass-form select,
+.footer-glass-form textarea {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  border-radius: 10px;
+  padding: .68rem .75rem;
+  font: inherit;
+  color: #0f172a;
+}
+.footer-glass-form textarea { resize: vertical; min-height: 90px; }
 .footer-glass-form button {
   border: 0;
   background: linear-gradient(135deg, #60a5fa, #1d4ed8);
@@ -368,6 +383,7 @@ iframe { width: 100%; min-height: 320px; border: 0; border-radius: 12px; }
   .product-detail,
   .contact-grid { grid-template-columns: 1fr; }
   .footer-grid { grid-template-columns: 1fr; }
+  .footer-form-grid { grid-template-columns: 1fr; }
   .footer-glass-form { grid-template-columns: 1fr; }
   .section { padding: 2.15rem 0; }
 }

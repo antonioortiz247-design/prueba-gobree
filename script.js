@@ -148,11 +148,19 @@
   document.querySelectorAll('.footer-glass-form').forEach((form) => {
     form.addEventListener('submit', (e) => {
       e.preventDefault();
+      const nombre = form.querySelector('input[name="nombre"]')?.value?.trim() || '';
       const email = form.querySelector('input[name="email"]')?.value?.trim() || '';
+      const telefono = form.querySelector('input[name="telefono"]')?.value?.trim() || '';
+      const industria = form.querySelector('select[name="industria"]')?.value?.trim() || '';
+      const mensaje = form.querySelector('textarea[name="mensaje"]')?.value?.trim() || '';
       const asunto = encodeURIComponent('Solicitud de asesoría - Formulario footer Gobree Belt');
       const cuerpo = encodeURIComponent([
         'Hola, me interesa una cotización de bandas transportadoras.',
-        email ? `Correo de contacto: ${email}` : ''
+        nombre ? `Nombre: ${nombre}` : '',
+        email ? `Correo de contacto: ${email}` : '',
+        telefono ? `Teléfono: ${telefono}` : '',
+        industria ? `Industria: ${industria}` : '',
+        mensaje ? `Detalle: ${mensaje}` : ''
       ].filter(Boolean).join('\n'));
       window.location.href = `mailto:contacto@gobreebelt.com?subject=${asunto}&body=${cuerpo}`;
       form.reset();
