@@ -21,7 +21,6 @@
       <nav class="nav" id="mainNav">
         <a href="index.html">Inicio</a>
         <a href="nosotros.html">Nosotros</a>
-        <a href="productos.html" class="active">Productos</a>
         <a href="sectores.html">Sectores</a>
         <a href="servicios.html">Servicios</a>
         <a href="contacto.html">Contacto</a>
@@ -33,30 +32,12 @@
   <main class="page-main container">
     <section class="section">
       <h1>Catálogo industrial</h1>
-      <p class="lead">Encuentra la banda adecuada para tu proceso productivo.</p>
-    </section>
-
-    <section class="section catalog-controls">
-      <div class="card">
-        <h2 id="selectedSectorTitle">Sector seleccionado: General</h2>
-        <p class="lead">Flujo guiado: elige problema, después tipo de banda y revisa productos recomendados.</p>
-      </div>
-      <input id="flowSearch" type="search" placeholder="Buscar por sector, problema, tipo de banda o producto..." aria-label="Buscar en flujo">
-    </section>
-
-    <section class="section">
-      <h2>1) Problema a resolver</h2>
-      <div id="problemGrid" class="cards" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));"></div>
-    </section>
-
-    <section class="section">
-      <h2>2) Tipo de banda recomendada</h2>
-      <div id="bandGrid" class="cards" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr));"></div>
-    </section>
-
-    <section class="section">
-      <h2>3) Productos sugeridos</h2>
-      <div id="flowResults" class="cards four-col"></div>
+      <p class="lead">El flujo completo de selección ahora vive en la página de Sectores.</p>
+      <article class="card">
+        <h2>Nuevo flujo guiado</h2>
+        <p>Para encontrar tu banda ideal sigue el recorrido Sector → Problema → Banda → Producto desde Sectores.</p>
+        <a class="btn" href="sectores.html">Ir a Sectores</a>
+      </article>
     </section>
   </main>
 
@@ -117,7 +98,6 @@
     </div>
   </footer>
 
-  <script src="catalogo.js"></script>
   <script src="script.js"></script>
   <script>
     const flowConfig = {

@@ -19,7 +19,6 @@
       <nav class="nav" id="mainNav">
         <a href="index.html">Inicio</a>
         <a href="nosotros.html">Nosotros</a>
-        <a href="productos.html">Productos</a>
         <a href="sectores.html" class="active">Sectores</a>
         <a href="servicios.html">Servicios</a>
         <a href="contacto.html">Contacto</a>
@@ -33,9 +32,29 @@
       <h1>Sectores</h1>
       <p class="lead">Selecciona tu sector para iniciar el flujo: Sector → Problema → Banda → Producto.</p>
       <div id="sectorGrid" class="cards" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr));"></div>
-      <p style="margin-top:1rem;">
-        <a class="btn btn-secondary" href="productos.html">Ir al flujo completo de productos</a>
-      </p>
+    </section>
+
+    <section class="section catalog-controls">
+      <div class="card">
+        <h2 id="selectedSectorTitle">Sector seleccionado: General</h2>
+        <p class="lead">Flujo guiado: elige problema, después tipo de banda y revisa productos recomendados.</p>
+      </div>
+      <input id="flowSearch" type="search" placeholder="Buscar por sector, problema, tipo de banda o producto..." aria-label="Buscar en flujo">
+    </section>
+
+    <section class="section">
+      <h2>1) Problema a resolver</h2>
+      <div id="problemGrid" class="cards" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));"></div>
+    </section>
+
+    <section class="section">
+      <h2>2) Tipo de banda recomendada</h2>
+      <div id="bandGrid" class="cards" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr));"></div>
+    </section>
+
+    <section class="section">
+      <h2>3) Productos sugeridos</h2>
+      <div id="flowResults" class="cards four-col"></div>
     </section>
   </main>
 
@@ -45,7 +64,6 @@
       <div>
         <h4>Enlaces rápidos</h4>
         <ul>
-          <li><a href="productos.html">Productos</a></li>
           <li><a href="servicios.html">Servicios</a></li>
         </ul>
       </div>
@@ -91,8 +109,57 @@
       </form>
     </div>
   </footer>
+  <script src="catalogo.js"></script>
   <script src="script.js"></script>
   <script>
+    const flowConfig = {
+      "Alimentaria": {
+        "Higiene": ["PVC", "Poliuretano"],
+        "Alta temperatura": ["Teflón"],
+        "Resistencia química": ["Poliuretano", "Silicón"]
+      },
+      "Logística y Puertos": {
+        "Transporte continuo": ["Modulares", "PVC"],
+        "Carga pesada": ["Modulares", "Hule / Boticlano"],
+        "Antideslizamiento": ["Grip Top", "Diamante"]
+      },
+      "Artes Gráficas": {
+        "Precisión": ["Dentadas"],
+        "Flexibilidad": ["Textil", "Nylon (poliamida)"]
+      },
+      "Farmacéutica": {
+        "Higiene": ["Poliuretano", "Silicón"],
+        "Precisión": ["Dentadas", "Poliuretano"]
+      },
+      "default": {
+        "Alta temperatura": ["Teflón"],
+        "Higiene": ["PVC", "Poliuretano", "Silicón"],
+        "Abrasión": ["Hule / Boticlano", "Nylon (poliamida)"],
+        "Precisión": ["Dentadas"],
+        "Transporte continuo": ["Modulares", "PVC"],
+        "Resistencia química": ["Poliuretano", "Teflón"],
+        "Carga pesada": ["Modulares", "Hule / Boticlano"],
+        "Antideslizamiento": ["Grip Top", "Diamante", "Corcho hule"],
+        "Flexibilidad": ["Textil", "Polycord", "Banda abierta"]
+      }
+    };
+    const bandToCategory = {
+      "PVC": "sanitaria",
+      "Poliuretano": "sanitaria",
+      "Silicón": "sanitaria",
+      "Teflón": "alta-temperatura",
+      "Modulares": "modular",
+      "Dentadas": "dentada",
+      "Grip Top": "dentada",
+      "Diamante": "dentada",
+      "Corcho hule": "dentada",
+      "Hule / Boticlano": "modular",
+      "Textil": "modular",
+      "Nylon (poliamida)": "modular",
+      "Polycord": "modular",
+      "Banda abierta": "modular"
+    };
+
     const sectorList = [
       "Alimentaria", "Industria Litográfica", "Artes Gráficas", "Industria Textil", "Industria del Mármol",
       "Cartón y Papel", "Farmacéutica", "Refresquera", "Chocolatera", "Lavanderías Industriales",
@@ -106,14 +173,101 @@
       "Farmacéutica": "IndustriaFarmaceutica.png",
       "Logística y Puertos": "Logistica.png"
     };
+    const selectedSectorTitle = document.getElementById('selectedSectorTitle');
+    const problemGrid = document.getElementById('problemGrid');
+    const bandGrid = document.getElementById('bandGrid');
+    const flowResults = document.getElementById('flowResults');
+    const flowSearch = document.getElementById('flowSearch');
+    let selectedSector = 'General';
+    let selectedProblem = '';
+    let selectedBand = '';
+    let sectorConfig = flowConfig.default;
+
     sectorGrid.innerHTML = sectorList.map((sector) => `
       <article class="card">
         <img src="${sectorImageMap[sector] || 'Manufactura.png'}" alt="Aplicaciones de bandas para ${sector}" loading="lazy" style="aspect-ratio:16/10;object-fit:cover;">
         <h2>${sector}</h2>
         <p>Explora problemas comunes y encuentra la banda adecuada para este sector.</p>
-        <a class="btn" href="productos.html?sector=${encodeURIComponent(sector)}">Ver soluciones</a>
+        <button class="btn" data-sector="${sector}">Ver soluciones</button>
       </article>
     `).join('');
+    sectorGrid.querySelectorAll('[data-sector]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        selectedSector = btn.dataset.sector;
+        sectorConfig = flowConfig[selectedSector] || flowConfig.default;
+        selectedSectorTitle.textContent = `Sector seleccionado: ${selectedSector}`;
+        selectedProblem = '';
+        selectedBand = '';
+        renderProblems();
+        renderBands();
+        renderResults();
+        problemGrid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    function renderProblems() {
+      problemGrid.innerHTML = Object.keys(sectorConfig).map((problem) => `
+        <article class="card">
+          <h3>${problem}</h3>
+          <p>Visualiza bandas recomendadas para este reto.</p>
+          <button class="btn btn-secondary" data-problem="${problem}">Elegir problema</button>
+        </article>
+      `).join('');
+      problemGrid.querySelectorAll('[data-problem]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          selectedProblem = btn.dataset.problem;
+          selectedBand = '';
+          renderBands();
+          renderResults();
+          bandGrid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      });
+    }
+
+    function renderBands() {
+      const bands = selectedProblem ? sectorConfig[selectedProblem] : [];
+      bandGrid.innerHTML = bands.length ? bands.map((band) => `
+        <article class="card">
+          <h3>${band}</h3>
+          <p>Tipo de banda sugerida para ${selectedProblem.toLowerCase()}.</p>
+          <button class="btn btn-secondary" data-band="${band}">Ver productos</button>
+        </article>
+      `).join('') : '<div class="empty-state"><h3>Elige primero un problema</h3><p>Selecciona un problema para mostrar bandas sugeridas.</p></div>';
+      bandGrid.querySelectorAll('[data-band]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          selectedBand = btn.dataset.band;
+          renderResults();
+          flowResults.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      });
+    }
+
+    function renderResults() {
+      const search = (flowSearch.value || '').toLowerCase().trim();
+      const expectedCategory = selectedBand ? bandToCategory[selectedBand] : '';
+      const items = (typeof productos !== 'undefined' ? productos : []).filter((p) => {
+        const byBand = !expectedCategory || p.categoria === expectedCategory;
+        const bySearch = !search || [
+          p.nombre, p.descripcion, p.industria, selectedSector, selectedProblem, selectedBand
+        ].join(' ').toLowerCase().includes(search);
+        return byBand && bySearch;
+      });
+
+      flowResults.innerHTML = items.length ? items.map((p) => `
+        <article class="card product-card">
+          <img src="Bandasanitaria.png" alt="${p.nombre}" loading="lazy">
+          <h3>${p.nombre}</h3>
+          <p>${p.descripcion}</p>
+          <p><strong>Aplicación:</strong> ${selectedSector}${selectedProblem ? ` · ${selectedProblem}` : ''}${selectedBand ? ` · ${selectedBand}` : ''}</p>
+          <a class="btn btn-secondary" href="producto.html?id=${p.id}">Ver detalle</a>
+        </article>
+      `).join('') : '<div class="empty-state"><h3>Sin resultados</h3><p>Ajusta problema, tipo de banda o búsqueda.</p></div>';
+    }
+
+    flowSearch.addEventListener('input', renderResults);
+    renderProblems();
+    renderBands();
+    renderResults();
   </script>
 </body>
 </html>
