@@ -3,12 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Gobree Belt: soluciones industriales en bandas transportadoras y de transmisión para alimentos, logística, manufactura y más.">
-  <title>Gobree Belt | Bandas Transportadoras Industriales</title>
+  <meta name="description" content="Venta de bandas transportadoras y de transmisión industriales. Soluciones para industria alimenticia, logística y manufactura. Cotiza hoy.">
+  <meta name="keywords" content="bandas transportadoras, bandas industriales, bandas de transmisión, bandas transportadoras México, bandas para alimentos FDA">
+  <meta name="robots" content="index, follow">
+  <title>Bandas transportadoras industriales en México | Gobree Belt</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" href="index.html">
+  <link rel="icon" type="image/png" href="favicongobree.png">
   <link rel="stylesheet" href="styles.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Gobree Belt",
+    "url": "https://gobreebelt.com",
+    "logo": "https://gobreebelt.com/logo.png",
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "telephone": "+52-55-5499-1280",
+      "contactType": "sales"
+    }
+  }
+  </script>
 </head>
 <body>
   <header class="site-header">
@@ -20,27 +37,38 @@
       <nav class="nav" id="mainNav">
         <a href="index.html">Inicio</a>
         <a href="nosotros.html">Nosotros</a>
-        <a href="productos.html">Productos</a>
         <a href="sectores.html">Sectores</a>
         <a href="servicios.html">Servicios</a>
         <a href="contacto.html">Contacto</a>
       </nav>
-      <a class="phone-btn" href="tel:+525510185910">Cotiza Ahora</a>
+      <a class="phone-btn" href="contacto.html#formulario-contacto">Cotiza Ahora</a>
     </div>
   </header>
 
   <main>
     <section class="hero" id="inicio">
-      <img class="hero-bg" src="portadagobree.png" loading="eager">
+      <div class="hero-carousel" aria-label="Galería principal de Gobree Belt">
+        <img class="hero-slide active" src="portadagobree.png" alt="Línea industrial con bandas transportadoras" loading="eager">
+        <img class="hero-slide" src="IndustriaAlimenticia.png" alt="Aplicación de bandas en industria alimenticia" loading="lazy">
+        <img class="hero-slide" src="Logistica.png" alt="Sistema de bandas para logística y distribución" loading="lazy">
+      </div>
       <div class="hero-overlay"></div>
       <div class="container hero-content">
-        <h1>Soluciones en Bandas Transportadoras y de Transmisión</h1>
+        <h1>Bandas transportadoras industriales en México</h1>
         <p>Optimice sus procesos industriales con tecnología confiable y asesoría especializada.</p>
         <div class="hero-actions">
           <a class="btn btn-secondary" href="productos.html">Ver productos</a>
           <a class="btn" href="contacto.html">Solicitar cotización</a>
         </div>
       </div>
+    </section>
+    <section style="padding:40px 20px; max-width:1200px; margin:auto;">
+      <h2>Soluciones en bandas transportadoras industriales</h2>
+      <p>
+        En Gobree Belt ofrecemos bandas transportadoras y de transmisión para la industria en México.
+        Nuestras soluciones están diseñadas para mejorar la eficiencia operativa, reducir tiempos de paro
+        y adaptarse a diferentes sectores como alimentos, logística y manufactura.
+      </p>
     </section>
 
     <section class="section container">
@@ -84,7 +112,31 @@
     </div>
   </main>
 
-  <a class="whatsapp-btn" href="https://wa.me/525657038871" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+  <a href="contacto.html#formulario-contacto"
+    style="
+    position:fixed;
+    bottom:20px;
+    right:20px;
+    background:#25D366;
+    color:white;
+    padding:12px 16px;
+    border-radius:50px;
+    font-weight:bold;
+    text-decoration:none;
+    z-index:9999;
+    box-shadow:0 4px 10px rgba(0,0,0,0.2);
+    ">
+    Encuentra tu banda adecuada
+  </a>
+
+  <section style="text-align:center; padding:50px 20px;">
+    <h2>¿Necesitas una cotización rápida?</h2>
+    <p>Completa el formulario y recibe atención inmediata.</p>
+    <a href="contacto.html#formulario-contacto"
+      style="background:#007BFF; color:white; padding:12px 20px; border-radius:6px; text-decoration:none;">
+      Contactar ahora
+    </a>
+  </section>
 
   <footer class="site-footer">
     <div class="container footer-grid">
@@ -96,7 +148,6 @@
         <h4>Enlaces rápidos</h4>
         <ul>
           <li><a href="nosotros.html">Nosotros</a></li>
-          <li><a href="productos.html">Productos</a></li>
           <li><a href="sectores.html">Sectores</a></li>
           <li><a href="contacto.html">Contacto</a></li>
         </ul>
@@ -104,8 +155,43 @@
       <div>
         <h4>Contacto</h4>
         <p>Ismael Núñez</p>
-        <p><a href="tel:+525657038871">+525510185910</a></p>
+        <p><a href="tel:+525510185910">+525510185910</a></p>
       </div>
+    </div>
+    <div class="container footer-seo-block">
+      <p class="footer-seo-text">Gobree Belt es especialista en bandas transportadoras y bandas de transmisión industriales en México para alimentos, logística y manufactura.</p>
+      <form class="footer-glass-form" aria-label="Formulario completo de cotización en footer">
+        <div class="footer-form-grid">
+          <label>
+            Nombre
+            <input type="text" name="nombre" placeholder="Tu nombre" required>
+          </label>
+          <label>
+            Correo
+            <input type="email" name="email" placeholder="tuempresa@correo.com" required>
+          </label>
+          <label>
+            Teléfono
+            <input type="tel" name="telefono" placeholder="55 0000 0000" required>
+          </label>
+          <label>
+            Industria
+            <select name="industria" required>
+              <option value="">Selecciona una opción</option>
+              <option>Alimenticia</option>
+              <option>Logística</option>
+              <option>Manufactura</option>
+              <option>Farmacéutica</option>
+              <option>Otra</option>
+            </select>
+          </label>
+        </div>
+        <label>
+          ¿Qué necesitas transportar?
+          <textarea name="mensaje" rows="3" placeholder="Cuéntanos tu proceso y tipo de banda que necesitas." required></textarea>
+        </label>
+        <button type="submit">Encuentra tu banda adecuada</button>
+      </form>
     </div>
   </footer>
 
