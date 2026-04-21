@@ -127,15 +127,19 @@
     contactForm.addEventListener('submit', (e) => {
       e.preventDefault();
 
-      const nombre = contactForm.querySelector('input[type="text"]')?.value?.trim() || '';
-      const correo = contactForm.querySelector('input[type="email"]')?.value?.trim() || '';
-      const mensaje = contactForm.querySelector('textarea')?.value?.trim() || '';
+      const nombre = contactForm.querySelector('input[name="nombre"], input[type="text"]')?.value?.trim() || '';
+      const correo = contactForm.querySelector('input[name="email"], input[type="email"]')?.value?.trim() || '';
+      const telefono = contactForm.querySelector('input[name="telefono"]')?.value?.trim() || '';
+      const industria = contactForm.querySelector('select[name="industria"]')?.value?.trim() || '';
+      const mensaje = contactForm.querySelector('textarea[name="mensaje"], textarea')?.value?.trim() || '';
 
       const asunto = encodeURIComponent('Solicitud de cotización - Gobree Belt');
       const cuerpo = encodeURIComponent([
         'Hola, quiero una cotización de Gobree Belt.',
         nombre ? `Nombre: ${nombre}` : '',
         correo ? `Correo: ${correo}` : '',
+        telefono ? `Teléfono: ${telefono}` : '',
+        industria ? `Industria: ${industria}` : '',
         mensaje ? `Mensaje: ${mensaje}` : ''
       ].filter(Boolean).join('\n'));
 
