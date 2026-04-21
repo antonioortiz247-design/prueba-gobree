@@ -38,6 +38,16 @@
     });
   });
 
+  const heroSlides = document.querySelectorAll('.hero-carousel .hero-slide');
+  if (heroSlides.length > 1) {
+    let currentSlide = 0;
+    setInterval(() => {
+      heroSlides[currentSlide].classList.remove('active');
+      currentSlide = (currentSlide + 1) % heroSlides.length;
+      heroSlides[currentSlide].classList.add('active');
+    }, 4500);
+  }
+
   function renderCatalog(items) {
     const grid = document.getElementById('catalogGrid');
     if (!grid || typeof productos === 'undefined') return;
