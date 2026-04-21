@@ -38,6 +38,16 @@
     });
   });
 
+  const heroSlides = document.querySelectorAll('.hero-carousel .hero-slide');
+  if (heroSlides.length > 1) {
+    let currentSlide = 0;
+    setInterval(() => {
+      heroSlides[currentSlide].classList.remove('active');
+      currentSlide = (currentSlide + 1) % heroSlides.length;
+      heroSlides[currentSlide].classList.add('active');
+    }, 4500);
+  }
+
   function renderCatalog(items) {
     const grid = document.getElementById('catalogGrid');
     if (!grid || typeof productos === 'undefined') return;
@@ -121,18 +131,39 @@
       const correo = contactForm.querySelector('input[type="email"]')?.value?.trim() || '';
       const mensaje = contactForm.querySelector('textarea')?.value?.trim() || '';
 
-      const texto = [
+      const asunto = encodeURIComponent('Solicitud de cotización - Gobree Belt');
+      const cuerpo = encodeURIComponent([
         'Hola, quiero una cotización de Gobree Belt.',
         nombre ? `Nombre: ${nombre}` : '',
         correo ? `Correo: ${correo}` : '',
         mensaje ? `Mensaje: ${mensaje}` : ''
-      ].filter(Boolean).join('\n');
+      ].filter(Boolean).join('\n'));
 
-      const whatsappUrl = `https://wa.me/525510185910?text=${encodeURIComponent(texto)}`;
-      window.open(whatsappUrl, '_blank', 'noopener');
-
-      alert('Gracias por contactarnos. Te estamos redirigiendo a WhatsApp para enviar tu solicitud.');
+      window.location.href = `mailto:contacto@gobreebelt.com?subject=${asunto}&body=${cuerpo}`;
+      alert('Gracias por contactarnos. Se abrirá tu cliente de correo para enviar la solicitud.');
       contactForm.reset();
     });
   }
+
+  document.querySelectorAll('.footer-glass-form').forEach((form) => {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const nombre = form.querySelector('input[name="nombre"]')?.value?.trim() || '';
+      const email = form.querySelector('input[name="email"]')?.value?.trim() || '';
+      const telefono = form.querySelector('input[name="telefono"]')?.value?.trim() || '';
+      const industria = form.querySelector('select[name="industria"]')?.value?.trim() || '';
+      const mensaje = form.querySelector('textarea[name="mensaje"]')?.value?.trim() || '';
+      const asunto = encodeURIComponent('Solicitud de asesoría - Formulario footer Gobree Belt');
+      const cuerpo = encodeURIComponent([
+        'Hola, me interesa una cotización de bandas transportadoras.',
+        nombre ? `Nombre: ${nombre}` : '',
+        email ? `Correo de contacto: ${email}` : '',
+        telefono ? `Teléfono: ${telefono}` : '',
+        industria ? `Industria: ${industria}` : '',
+        mensaje ? `Detalle: ${mensaje}` : ''
+      ].filter(Boolean).join('\n'));
+      window.location.href = `mailto:contacto@gobreebelt.com?subject=${asunto}&body=${cuerpo}`;
+      form.reset();
+    });
+  });
 })();
