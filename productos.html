@@ -31,13 +31,59 @@
 
   <main class="page-main container">
     <section class="section">
-      <h1>Catálogo industrial</h1>
-      <p class="lead">El flujo completo de selección ahora vive en la página de Sectores.</p>
-      <article class="card">
-        <h2>Nuevo flujo guiado</h2>
-        <p>Para encontrar tu banda ideal sigue el recorrido Sector → Problema → Banda → Producto desde Sectores.</p>
-        <a class="btn" href="sectores.html">Ir a Sectores</a>
-      </article>
+      <h1>Catálogo de Bandas Industriales</h1>
+      <p class="lead">Explora nuestra gama completa de soluciones en bandas transportadoras y de transmisión.</p>
+      
+      <div class="catalog-layout">
+        <aside class="filters-sidebar">
+          <div class="filter-group">
+            <h3>Buscar</h3>
+            <input id="productSearch" type="search" placeholder="Buscar por nombre, tag..." aria-label="Buscar productos">
+          </div>
+
+          <div class="filter-group">
+            <h3>Categoría</h3>
+            <div class="filter-buttons">
+              <button class="filter-btn active" data-filter="category" data-value="all">Todas</button>
+              <button class="filter-btn" data-filter="category" data-value="Transportadoras Planas">Transportadoras Planas</button>
+              <button class="filter-btn" data-filter="category" data-value="Bandas Modulares">Bandas Modulares</button>
+              <button class="filter-btn" data-filter="category" data-value="Bandas Planas">Bandas Planas</button>
+              <button class="filter-btn" data-filter="category" data-value="Bandas Dentadas">Bandas Dentadas</button>
+              <button class="filter-btn" data-filter="category" data-value="Bandas de Teflón">Bandas de Teflón</button>
+              <button class="filter-btn" data-filter="category" data-value="Otros Productos">Otros Productos</button>
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <h3>Propiedad</h3>
+            <div class="filter-buttons">
+              <button class="filter-btn" data-filter="propiedad" data-value="Higiene">Higiene</button>
+              <button class="filter-btn" data-filter="propiedad" data-value="Alta temperatura">Alta temperatura</button>
+              <button class="filter-btn" data-filter="propiedad" data-value="Transmisión">Transmisión</button>
+              <button class="filter-btn" data-filter="propiedad" data-value="Carga pesada">Carga pesada</button>
+              <button class="filter-btn" data-filter="propiedad" data-value="Precisión">Precisión</button>
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <h3>Material</h3>
+            <div class="filter-buttons">
+              <button class="filter-btn" data-filter="material" data-value="PVC">PVC</button>
+              <button class="filter-btn" data-filter="material" data-value="Poliuretano">Poliuretano</button>
+              <button class="filter-btn" data-filter="material" data-value="Silicón">Silicón</button>
+              <button class="filter-btn" data-filter="material" data-value="Acetal">Acetal</button>
+              <button class="filter-btn" data-filter="material" data-value="Polipropileno">Polipropileno</button>
+              <button class="filter-btn" data-filter="material" data-value="Polietileno">Polietileno</button>
+              <button class="filter-btn" data-filter="material" data-value="Nylon">Nylon</button>
+              <button class="filter-btn" data-filter="material" data-value="Teflón">Teflón</button>
+            </div>
+          </div>
+        </aside>
+
+        <div id="catalogGrid" class="catalog-results">
+          <!-- Los productos se cargarán dinámicamente aquí -->
+        </div>
+      </div>
     </section>
   </main>
 
@@ -98,135 +144,7 @@
     </div>
   </footer>
 
+  <script src="catalogo.js"></script>
   <script src="script.js"></script>
-  <script>
-    const flowConfig = {
-      "Alimentaria": {
-        "Higiene": ["PVC", "Poliuretano"],
-        "Alta temperatura": ["Teflón"],
-        "Resistencia química": ["Poliuretano", "Silicón"]
-      },
-      "Logística y Puertos": {
-        "Transporte continuo": ["Modulares", "PVC"],
-        "Carga pesada": ["Modulares", "Hule / Boticlano"],
-        "Antideslizamiento": ["Grip Top", "Diamante"]
-      },
-      "Artes Gráficas": {
-        "Precisión": ["Dentadas"],
-        "Flexibilidad": ["Textil", "Nylon (poliamida)"]
-      },
-      "Farmacéutica": {
-        "Higiene": ["Poliuretano", "Silicón"],
-        "Precisión": ["Dentadas", "Poliuretano"]
-      },
-      "default": {
-        "Alta temperatura": ["Teflón"],
-        "Higiene": ["PVC", "Poliuretano", "Silicón"],
-        "Abrasión": ["Hule / Boticlano", "Nylon (poliamida)"],
-        "Precisión": ["Dentadas"],
-        "Transporte continuo": ["Modulares", "PVC"],
-        "Resistencia química": ["Poliuretano", "Teflón"],
-        "Carga pesada": ["Modulares", "Hule / Boticlano"],
-        "Antideslizamiento": ["Grip Top", "Diamante", "Corcho hule"],
-        "Flexibilidad": ["Textil", "Polycord", "Banda abierta"]
-      }
-    };
-
-    const bandToCategory = {
-      "PVC": "sanitaria",
-      "Poliuretano": "sanitaria",
-      "Silicón": "sanitaria",
-      "Teflón": "alta-temperatura",
-      "Modulares": "modular",
-      "Dentadas": "dentada",
-      "Grip Top": "dentada",
-      "Diamante": "dentada",
-      "Corcho hule": "dentada",
-      "Hule / Boticlano": "modular",
-      "Textil": "modular",
-      "Nylon (poliamida)": "modular",
-      "Polycord": "modular",
-      "Banda abierta": "modular"
-    };
-
-    const params = new URLSearchParams(window.location.search);
-    const selectedSector = params.get('sector') || 'General';
-    const sectorConfig = flowConfig[selectedSector] || flowConfig.default;
-    const selectedSectorTitle = document.getElementById('selectedSectorTitle');
-    const problemGrid = document.getElementById('problemGrid');
-    const bandGrid = document.getElementById('bandGrid');
-    const flowResults = document.getElementById('flowResults');
-    const flowSearch = document.getElementById('flowSearch');
-
-    let selectedProblem = '';
-    let selectedBand = '';
-
-    selectedSectorTitle.textContent = `Sector seleccionado: ${selectedSector}`;
-
-    function renderProblems() {
-      problemGrid.innerHTML = Object.keys(sectorConfig).map((problem) => `
-        <article class="card">
-          <h3>${problem}</h3>
-          <p>Visualiza bandas recomendadas para este reto.</p>
-          <button class="btn btn-secondary" data-problem="${problem}">Elegir problema</button>
-        </article>
-      `).join('');
-      problemGrid.querySelectorAll('[data-problem]').forEach((btn) => {
-        btn.addEventListener('click', () => {
-          selectedProblem = btn.dataset.problem;
-          selectedBand = '';
-          renderBands();
-          renderResults();
-          bandGrid.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        });
-      });
-    }
-
-    function renderBands() {
-      const bands = selectedProblem ? sectorConfig[selectedProblem] : [];
-      bandGrid.innerHTML = bands.length ? bands.map((band) => `
-        <article class="card">
-          <h3>${band}</h3>
-          <p>Tipo de banda sugerida para ${selectedProblem.toLowerCase()}.</p>
-          <button class="btn btn-secondary" data-band="${band}">Ver productos</button>
-        </article>
-      `).join('') : '<div class="empty-state"><h3>Elige primero un problema</h3><p>Selecciona un problema para mostrar bandas sugeridas.</p></div>';
-
-      bandGrid.querySelectorAll('[data-band]').forEach((btn) => {
-        btn.addEventListener('click', () => {
-          selectedBand = btn.dataset.band;
-          renderResults();
-          flowResults.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        });
-      });
-    }
-
-    function renderResults() {
-      const search = (flowSearch.value || '').toLowerCase().trim();
-      const expectedCategory = selectedBand ? bandToCategory[selectedBand] : '';
-      const items = (typeof productos !== 'undefined' ? productos : []).filter((p) => {
-        const byBand = !expectedCategory || p.categoria === expectedCategory;
-        const bySearch = !search || [
-          p.nombre, p.descripcion, p.industria, selectedSector, selectedProblem, selectedBand
-        ].join(' ').toLowerCase().includes(search);
-        return byBand && bySearch;
-      });
-
-      flowResults.innerHTML = items.length ? items.map((p) => `
-        <article class="card product-card">
-          <img src="Bandasanitaria.png" alt="${p.nombre}" loading="lazy">
-          <h3>${p.nombre}</h3>
-          <p>${p.descripcion}</p>
-          <p><strong>Aplicación:</strong> ${selectedSector}${selectedProblem ? ` · ${selectedProblem}` : ''}${selectedBand ? ` · ${selectedBand}` : ''}</p>
-          <a class="btn btn-secondary" href="producto.html?id=${p.id}">Ver detalle</a>
-        </article>
-      `).join('') : '<div class="empty-state"><h3>Sin resultados</h3><p>Ajusta problema, tipo de banda o búsqueda.</p></div>';
-    }
-
-    flowSearch.addEventListener('input', renderResults);
-    renderProblems();
-    renderBands();
-    renderResults();
-  </script>
 </body>
 </html>

@@ -56,44 +56,91 @@
       grid.innerHTML = `
         <div class="empty-state">
           <h3>Sin resultados</h3>
-          <p>Prueba con otra categoría o ajusta tu búsqueda.</p>
+          <p>Prueba con otros filtros o ajusta tu búsqueda.</p>
         </div>
       `;
       return;
     }
 
-    grid.innerHTML = items.map((p) => `
-      <article class="card product-card">
-        <img src="Bandasanitaria.png" alt="${p.nombre}" loading="lazy">
-        <h3>${p.nombre}</h3>
-        <p>${p.descripcion}</p>
-        <a class="btn btn-secondary" href="producto.html?id=${p.id}">Ver ficha</a>
-      </article>
+    // Agrupar por categoría
+    const groups = items.reduce((acc, p) => {
+      if (!acc[p.categoria]) acc[p.categoria] = [];
+      acc[p.categoria].push(p);
+      return acc;
+    }, {});
+
+    grid.innerHTML = Object.entries(groups).map(([cat, products]) => `
+      <div class="category-section">
+        <h2 class="category-title">${cat}</h2>
+        <div class="cards">
+          ${products.map((p) => `
+            <article class="card product-card">
+              <img src="Bandasanitaria.png" alt="${p.nombre}" loading="lazy">
+              <div class="product-info">
+                <h3>${p.nombre}</h3>
+                <p class="product-desc">${p.descripcion}</p>
+                <div class="product-meta">
+                  <span><strong>Material:</strong> ${p.material}</span>
+                  <span><strong>Propiedad:</strong> ${p.propiedad}</span>
+                </div>
+                <div class="product-tags">
+                  ${p.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                </div>
+                <a class="btn btn-secondary" href="producto.html?id=${p.id}">Ver ficha</a>
+              </div>
+            </article>
+          `).join('')}
+        </div>
+      </div>
     `).join('');
   }
 
   if (document.getElementById('catalogGrid') && typeof productos !== 'undefined') {
-    let categoriaActiva = 'all';
     const searchInput = document.getElementById('productSearch');
+    const activeFilters = {
+      category: 'all',
+      propiedad: 'all',
+      material: 'all'
+    };
 
     const filtrar = () => {
       const text = (searchInput?.value || '').toLowerCase().trim();
       const filtered = productos.filter((p) => {
-        const okCat = categoriaActiva === 'all' || p.categoria === categoriaActiva;
-        const okTxt = p.nombre.toLowerCase().includes(text) || p.descripcion.toLowerCase().includes(text) || p.industria.toLowerCase().includes(text);
-        return okCat && okTxt;
+        const okCat = activeFilters.category === 'all' || p.categoria === activeFilters.category;
+        const okProp = activeFilters.propiedad === 'all' || p.propiedad === activeFilters.propiedad;
+        const okMat = activeFilters.material === 'all' || p.material === activeFilters.material;
+        
+        const okTxt = !text || 
+          p.nombre.toLowerCase().includes(text) || 
+          p.categoria.toLowerCase().includes(text) || 
+          p.tags.some(tag => tag.toLowerCase().includes(text));
+
+        return okCat && okProp && okMat && okTxt;
       });
       renderCatalog(filtered);
     };
 
     document.querySelectorAll('.filter-btn').forEach((btn) => {
       btn.addEventListener('click', () => {
-        document.querySelectorAll('.filter-btn').forEach((b) => b.classList.remove('active'));
-        btn.classList.add('active');
-        categoriaActiva = btn.dataset.category || 'all';
+        const filterType = btn.dataset.filter;
+        const filterValue = btn.dataset.value;
+
+        // Toggle active class within the same group
+        const group = btn.closest('.filter-buttons');
+        group.querySelectorAll('.filter-btn').forEach((b) => b.classList.remove('active'));
+        
+        if (activeFilters[filterType] === filterValue && filterValue !== 'all') {
+          activeFilters[filterType] = 'all';
+          group.querySelector('[data-value="all"]')?.classList.add('active');
+        } else {
+          btn.classList.add('active');
+          activeFilters[filterType] = filterValue;
+        }
+
         filtrar();
       });
     });
+
     searchInput?.addEventListener('input', filtrar);
     filtrar();
   }
@@ -110,10 +157,10 @@
         <div>
           <p>${p.descripcion}</p>
           <ul class="spec-list">
+            <li><strong>Categoría:</strong> ${p.categoria}</li>
             <li><strong>Material:</strong> ${p.material}</li>
-            <li><strong>Temperatura máxima:</strong> ${p.temperatura}</li>
-            <li><strong>Industria recomendada:</strong> ${p.industria}</li>
-            <li><strong>Aplicaciones:</strong> ${p.aplicaciones}</li>
+            <li><strong>Propiedad principal:</strong> ${p.propiedad}</li>
+            <li><strong>Tags:</strong> ${p.tags.join(', ')}</li>
           </ul>
           <a class="btn" href="contacto.html">Solicitar cotización</a>
         </div>
