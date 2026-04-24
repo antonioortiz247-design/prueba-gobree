@@ -115,6 +115,37 @@
       authStatus.textContent = text || '';
     }
 
+    async function readPayload(r) {
+      const ct = String(r.headers.get('content-type') || '').toLowerCase();
+      if (ct.includes('application/json')) {
+        try {
+          return await r.json();
+        } catch (e) {
+          return null;
+        }
+      }
+      try {
+        return { text: await r.text() };
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function formatErrorMessage(title, r, payload) {
+      const parts = [];
+      parts.push(title);
+      if (r && typeof r.status === 'number') parts.push(`HTTP ${r.status}`);
+      if (payload && payload.error) parts.push(String(payload.error));
+      if (payload && payload.storage) parts.push(`storage=${String(payload.storage)}`);
+      if (payload && payload.code) parts.push(`code=${String(payload.code)}`);
+      if (payload && payload.detail) parts.push(String(payload.detail));
+      if (payload && payload.required && Array.isArray(payload.required) && payload.required.length) {
+        parts.push(`required=${payload.required.join(', ')}`);
+      }
+      if (payload && payload.text) parts.push(String(payload.text).slice(0, 200));
+      return parts.join(' | ');
+    }
+
     function renderList() {
       imageList.innerHTML = currentImages.map((img, index) => `
         <div class="image-item">
@@ -166,10 +197,18 @@
           credentials: 'same-origin',
           body: JSON.stringify({ password: adminPassword.value || '' })
         });
-        if (!r.ok) throw new Error('login_failed');
+        const payload = await readPayload(r);
+        if (!r.ok) {
+          const msg = formatErrorMessage('No se pudo iniciar sesión', r, payload);
+          setStatus(msg);
+          alert(msg);
+          return;
+        }
         setStatus('Sesión iniciada.');
       } catch (e) {
-        setStatus('No se pudo iniciar sesión. Revisa la contraseña.');
+        const msg = `No se pudo iniciar sesión | ${String(e && e.message ? e.message : e)}`;
+        setStatus(msg);
+        alert(msg);
       }
     });
 
@@ -191,14 +230,24 @@
           credentials: 'same-origin',
           body: JSON.stringify({ images: currentImages })
         });
+        const payload = await readPayload(r);
         if (r.status === 401) {
-          alert('Necesitas iniciar sesión para guardar.');
+          const msg = formatErrorMessage('Necesitas iniciar sesión para guardar', r, payload);
+          setStatus(msg);
+          alert(msg);
           return;
         }
-        if (!r.ok) throw new Error('save_failed');
+        if (!r.ok || (payload && payload.ok === false)) {
+          const msg = formatErrorMessage('No se pudo guardar', r, payload);
+          setStatus(msg);
+          alert(msg);
+          return;
+        }
         alert('Guardado. El carrusel del inicio se actualiza automáticamente.');
       } catch (e) {
-        alert('No se pudo guardar. Intenta de nuevo.');
+        const msg = `No se pudo guardar | ${String(e && e.message ? e.message : e)}`;
+        setStatus(msg);
+        alert(msg);
       }
     });
 

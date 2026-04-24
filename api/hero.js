@@ -1,4 +1,5 @@
 const crypto = require('crypto');
+const { createClient } = require('redis');
 
 function base64url(buf) {
   return Buffer.from(buf)
@@ -67,6 +68,113 @@ async function kv(cmd) {
   return data.result;
 }
 
+let redisClient;
+let redisConnecting;
+
+async function getRedisClient() {
+  if (redisClient) return redisClient;
+  if (redisConnecting) return redisConnecting;
+
+  redisConnecting = (async () => {
+    const redisUrl = process.env.REDIS_URL;
+    const host = process.env.REDIS_HOST;
+    const port = Number(process.env.REDIS_PORT || '');
+    const username = process.env.REDIS_USERNAME || process.env.REDIS_USER;
+    const password = process.env.REDIS_PASSWORD || process.env.REDIS_PASS;
+
+    if (!redisUrl && !host) throw new Error('missing_redis_env');
+
+    const useTlsEnv = String(process.env.REDIS_TLS || '').toLowerCase();
+    const inferredTls =
+      (Number.isFinite(port) && port !== 6379) || String(host || '').includes('cloud.redislabs.com');
+    const useTls = useTlsEnv ? useTlsEnv === 'true' : inferredTls;
+
+    const client = redisUrl
+      ? createClient({ url: redisUrl })
+      : createClient({
+          username: username || undefined,
+          password: password || undefined,
+          socket: {
+            host,
+            port: Number.isFinite(port) ? port : 6379,
+            tls: useTls,
+            servername: useTls ? host : undefined
+          }
+        });
+
+    client.on('error', () => {});
+    await client.connect();
+    redisClient = client;
+    return redisClient;
+  })();
+
+  return redisConnecting;
+}
+
+async function storageGet(key) {
+  const kvUrl = process.env.KV_REST_API_URL;
+  const kvToken = process.env.KV_REST_API_TOKEN;
+  if (kvUrl && kvToken) return kv(['GET', key]);
+
+  const client = await getRedisClient();
+  return client.get(key);
+}
+
+async function storageSet(key, value) {
+  const kvUrl = process.env.KV_REST_API_URL;
+  const kvToken = process.env.KV_REST_API_TOKEN;
+  if (kvUrl && kvToken) return kv(['SET', key, value]);
+
+  const client = await getRedisClient();
+  return client.set(key, value);
+}
+
+function storageBackend() {
+  const kvUrl = process.env.KV_REST_API_URL;
+  const kvToken = process.env.KV_REST_API_TOKEN;
+  return kvUrl && kvToken ? 'kv' : 'redis';
+}
+
+function toPublicStorageError(err) {
+  const storage = storageBackend();
+  const code = err && err.code ? String(err.code) : '';
+  const message = String((err && err.message) || err || '');
+
+  if (message === 'missing_redis_env') {
+    return {
+      error: 'missing_storage_env',
+      storage: 'redis',
+      required: ['REDIS_URL', 'REDIS_HOST', 'REDIS_PORT', 'REDIS_USERNAME', 'REDIS_PASSWORD', 'REDIS_TLS']
+    };
+  }
+
+  if (message === 'missing_kv_env') {
+    return {
+      error: 'missing_storage_env',
+      storage: 'kv',
+      required: ['KV_REST_API_URL', 'KV_REST_API_TOKEN']
+    };
+  }
+
+  const safeDetail =
+    message && !/redis(s)?:\/\//i.test(message) && !message.includes('@') ? message.slice(0, 200) : '';
+
+  if (code) {
+    return {
+      error: 'storage_connection_failed',
+      storage,
+      code,
+      detail: safeDetail || undefined
+    };
+  }
+
+  return {
+    error: 'storage_failed',
+    storage,
+    detail: safeDetail || undefined
+  };
+}
+
 async function readJson(req) {
   return new Promise((resolve, reject) => {
     let raw = '';
@@ -94,7 +202,7 @@ module.exports = async (req, res) => {
   if (req.method === 'GET') {
     let images = DEFAULT_IMAGES;
     try {
-      const raw = await kv(['GET', 'heroImages']);
+      const raw = await storageGet('heroImages');
       if (raw) {
         const parsed = JSON.parse(raw);
         if (Array.isArray(parsed) && parsed.length) images = parsed;
@@ -112,7 +220,7 @@ module.exports = async (req, res) => {
     if (!isAdmin(req)) {
       res.statusCode = 401;
       res.setHeader('Content-Type', 'application/json');
-      res.end(JSON.stringify({ ok: false }));
+      res.end(JSON.stringify({ ok: false, error: 'unauthorized' }));
       return;
     }
 
@@ -142,11 +250,13 @@ module.exports = async (req, res) => {
     }
 
     try {
-      await kv(['SET', 'heroImages', JSON.stringify(cleaned)]);
+      await storageSet('heroImages', JSON.stringify(cleaned));
     } catch (e) {
-      res.statusCode = 500;
+      const code = e && e.code ? String(e.code) : '';
+      const message = String((e && e.message) || '');
+      res.statusCode = code || message === 'missing_redis_env' || message === 'missing_kv_env' ? 502 : 500;
       res.setHeader('Content-Type', 'application/json');
-      res.end(JSON.stringify({ ok: false, error: e.message || 'kv_failed' }));
+      res.end(JSON.stringify({ ok: false, ...toPublicStorageError(e) }));
       return;
     }
 
@@ -158,5 +268,5 @@ module.exports = async (req, res) => {
 
   res.statusCode = 405;
   res.setHeader('Content-Type', 'application/json');
-  res.end(JSON.stringify({ ok: false }));
+  res.end(JSON.stringify({ ok: false, error: 'method_not_allowed' }));
 };
