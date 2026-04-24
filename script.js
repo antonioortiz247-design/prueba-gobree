@@ -8,6 +8,10 @@
     });
   }
 
+  document.querySelectorAll('a[href="index.html"], a[href="../index.html"], a[href="../../index.html"]').forEach((a) => {
+    a.setAttribute('href', '/');
+  });
+
   document.querySelectorAll('a[href^="#"]').forEach((a) => {
     a.addEventListener('click', (e) => {
       const targetId = a.getAttribute('href');
