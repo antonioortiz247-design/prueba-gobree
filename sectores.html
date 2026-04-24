@@ -28,13 +28,66 @@
     </div>
   </header>
 
-  <main class="page-main container">
-    <section class="section">
-      <h1>Sectores Industriales</h1>
-      <p class="lead">Soluciones especializadas en bandas transportadoras para cada industria. Selecciona tu sector para recibir asesoría técnica.</p>
-      
-      <div id="sectorGrid" class="cards" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr));">
-        <!-- Sectores generados dinámicamente para facilitar mantenimiento -->
+  <main class="page-main">
+    <!-- Hero Section para Sectores -->
+    <section class="hero">
+      <img class="hero-bg" src="IndustriaAlimenticia.png" alt="Soluciones industriales Gobree Belt" loading="eager">
+      <div class="hero-overlay"></div>
+      <div class="container hero-content">
+        <h1>Soluciones por Sector Industrial</h1>
+        <p>Entendemos los retos específicos de tu industria. Ofrecemos bandas diseñadas para optimizar tus procesos productivos.</p>
+        <div class="hero-actions">
+          <a href="#sector-explorer" class="btn">Explorar Industrias</a>
+          <a href="contacto.html" class="btn btn-secondary">Asesoría Especializada</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="sector-explorer" class="section container">
+      <div class="catalog-layout">
+        <aside class="filters-sidebar">
+          <div class="filter-group">
+            <h3>Buscar Sector</h3>
+            <input id="sectorSearch" type="search" placeholder="Ej. Alimentaria, Papel..." aria-label="Buscar sectores">
+          </div>
+
+          <div class="filter-group">
+            <h3>Filtrar por Tipo</h3>
+            <div class="filter-buttons">
+              <button class="filter-btn active" data-category="all">Todos</button>
+              <button class="filter-btn" data-category="Alimentaria">Alimentaria</button>
+              <button class="filter-btn" data-category="Logística">Logística</button>
+              <button class="filter-btn" data-category="Manufactura">Manufactura</button>
+              <button class="filter-btn" data-category="Especializados">Especializados</button>
+            </div>
+          </div>
+        </aside>
+
+        <div class="catalog-results">
+          <div id="sectorGrid" class="cards" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr));">
+            <!-- Sectores generados dinámicamente -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section alt-bg">
+      <div class="container" style="text-align:center;">
+        <h2>¿Por qué confiar en Gobree Belt para tu industria?</h2>
+        <div class="cards three-col" style="margin-top:3rem;">
+          <article class="card">
+            <h3>✅ Experiencia Comprobada</h3>
+            <p>Más de 10 años equipando líneas de producción en los sectores más exigentes de México.</p>
+          </article>
+          <article class="card">
+            <h3>🚀 Optimización Real</h3>
+            <p>Nuestras bandas reducen paros técnicos y aumentan la eficiencia de transporte en un 20%.</p>
+          </article>
+          <article class="card">
+            <h3>🛠️ Soporte Integral</h3>
+            <p>No solo vendemos la banda; te acompañamos en la instalación y el mantenimiento preventivo.</p>
+          </article>
+        </div>
       </div>
     </section>
   </main>
@@ -93,54 +146,90 @@
   <script src="script.js"></script>
   <script>
     const sectors = [
-      { name: "Alimentaria", desc: "Soluciones higiénicas para procesamiento de alimentos.", img: "banda-transportadora-industria-alimentaria.png", alt: "Banda transportadora para industria alimentaria en líneas de producción", title: "Bandas para industria alimentaria" },
-      { name: "Industria Litográfica", desc: "Bandas de precisión para procesos de impresión.", img: "banda-transportadora-industria-litografica.png", alt: "Banda transportadora en industria litográfica para procesos de impresión", title: "Bandas para industria litográfica" },
-      { name: "Artes Gráficas", desc: "Tracción y transporte delicado de papel y sustratos.", img: "banda-transportadora-artes-graficas.png", alt: "Banda transportadora en artes gráficas para impresión y manejo de papel", title: "Bandas para artes gráficas" },
-      { name: "Industria Textil", desc: "Resistencia y durabilidad en el manejo de fibras.", img: "banda-transportadora-industria-textil.png", alt: "Banda transportadora en industria textil para manejo de telas y producción", title: "Bandas para industria textil" },
-      { name: "Industria del Mármol", desc: "Bandas robustas para materiales pesados y abrasivos.", img: "banda-transportadora-industria-marmol.png", alt: "Banda transportadora en industria del mármol para corte y traslado de piezas", title: "Bandas para industria del mármol" },
-      { name: "Cartón y Papel", desc: "Eficiencia en líneas de corrugado y empaque.", img: "banda-transportadora-carton-papel.png", alt: "Banda transportadora para industria de cartón y papel en procesos continuos", title: "Bandas para cartón y papel" },
-      { name: "Farmacéutica", desc: "Máxima higiene y precisión en ambientes controlados.", img: "banda-transportadora-industria-farmaceutica.png", alt: "Banda transportadora en industria farmacéutica en ambiente cleanroom", title: "Bandas para industria farmacéutica" },
-      { name: "Refresquera", desc: "Transporte de botellas y latas a alta velocidad.", img: "banda-transportadora-industria-refresquera.png", alt: "Banda transportadora en industria refresquera para embotellado y manejo de bebidas", title: "Bandas para industria refresquera" },
-      { name: "Chocolatera", desc: "Bandas con desprendimiento fácil para confitería.", img: "banda-transportadora-industria-chocolatera.png", alt: "Banda transportadora en industria chocolatera para procesos de producción continua", title: "Bandas para industria chocolatera" },
-      { name: "Lavanderías Industriales", desc: "Resistencia a la humedad y temperatura.", img: "banda-transportadora-lavanderia-industrial.png", alt: "Banda transportadora en lavandería industrial para manejo de textiles", title: "Bandas para lavandería industrial" },
-      { name: "Tabacalera", desc: "Procesos especializados de transporte de hoja.", img: "banda-transportadora-industria-tabacalera.png", alt: "Banda transportadora para industria tabacalera en procesos de manufactura", title: "Bandas para industria tabacalera" },
-      { name: "Industria de Madera", desc: "Bandas para lijado y transporte de paneles.", img: "banda-transportadora-industria-madera.png", alt: "Banda transportadora en industria de la madera para procesos de corte y traslado", title: "Bandas para industria maderera" },
-      { name: "Industria de Bolsas de Plástico", desc: "Precisión en corte y sellado.", img: "banda-transportadora-industria-plastico.png", alt: "Banda transportadora en industria del plástico para líneas de producción", title: "Bandas para industria del plástico" },
-      { name: "Rastros", desc: "Bandas sanitarias para procesamiento cárnico.", img: "banda-transportadora-rastros.png", alt: "Banda transportadora en rastros para procesamiento cárnico industrial", title: "Bandas para rastros" },
-      { name: "Offset", desc: "Bandas de transmisión para rotativas.", img: "banda-transportadora-offset.png", alt: "Banda transportadora para impresión offset en maquinaria industrial", title: "Bandas para impresión offset" },
-      { name: "Reciclaje y Gestión de Residuos", desc: "Alta resistencia al corte y desgaste.", img: "banda-transportadora-reciclaje.png", alt: "Banda transportadora para reciclaje y gestión de residuos industriales", title: "Bandas para reciclaje" },
-      { name: "Logística y Puertos", desc: "Movimiento masivo de carga y paquetería.", img: "banda-transportadora-logistica.png", alt: "Banda transportadora para logística y distribución de mercancía", title: "Bandas para logística" },
-      { name: "Agricultura", desc: "Soluciones para cosecha y empaque en campo.", img: "banda-transportadora-agricultura.png", alt: "Banda transportadora en agricultura para manejo de cosecha", title: "Bandas para agricultura" },
-      { name: "Carga y Descarga", desc: "Bandas telescópicas y de alto agarre.", img: "banda-transportadora-carga-descarga.png", alt: "Banda transportadora para carga y descarga de camiones en logística", title: "Bandas para carga y descarga" },
-      { name: "Confitería", desc: "Bandas para enfriamiento y recubrimiento.", img: "banda-transportadora-confiteria.png", alt: "Banda transportadora para confitería en manejo de dulces y productos", title: "Bandas para confitería" },
-      { name: "Boliche", desc: "Bandas específicas para retorno de bolas.", img: "banda-transportadora-boliche.png", alt: "Banda transportadora en boliche para retorno de bolas", title: "Bandas para boliche" },
-      { name: "Materias Primas", desc: "Transporte de graneles y polvos.", img: "Logistica.png" },
-      { name: "Aeropuertos", desc: "Sistemas confiables de manejo de equipaje.", img: "banda-transportadora-aeropuertos.png", alt: "Banda transportadora en aeropuertos para manejo de equipaje", title: "Bandas para aeropuertos" },
-      { name: "Hidrólisis", desc: "Resistencia química en procesos industriales.", img: "banda-transportadora-hidrolisis.png", alt: "Banda transportadora en proceso de hidrólisis para industria química", title: "Bandas para hidrólisis" }
+      { name: "Alimentaria", cat: "Alimentaria", desc: "Soluciones higiénicas para procesamiento de alimentos.", img: "banda-transportadora-industria-alimentaria.png", alt: "Banda transportadora para industria alimentaria en líneas de producción", title: "Bandas para industria alimentaria" },
+      { name: "Industria Litográfica", cat: "Manufactura", desc: "Bandas de precisión para procesos de impresión.", img: "banda-transportadora-industria-litografica.png", alt: "Banda transportadora en industria litográfica para procesos de impresión", title: "Bandas para industria litográfica" },
+      { name: "Artes Gráficas", cat: "Manufactura", desc: "Tracción y transporte delicado de papel y sustratos.", img: "banda-transportadora-artes-graficas.png", alt: "Banda transportadora en artes gráficas para impresión y manejo de papel", title: "Bandas para artes gráficas" },
+      { name: "Industria Textil", cat: "Manufactura", desc: "Resistencia y durabilidad en el manejo de fibras.", img: "banda-transportadora-industria-textil.png", alt: "Banda transportadora en industria textil para manejo de telas y producción", title: "Bandas para industria textil" },
+      { name: "Industria del Mármol", cat: "Manufactura", desc: "Bandas robustas para materiales pesados y abrasivos.", img: "banda-transportadora-industria-marmol.png", alt: "Banda transportadora en industria del mármol para corte y traslado de piezas", title: "Bandas para industria del mármol" },
+      { name: "Cartón y Papel", cat: "Manufactura", desc: "Eficiencia en líneas de corrugado y empaque.", img: "banda-transportadora-carton-papel.png", alt: "Banda transportadora para industria de cartón y papel en procesos continuos", title: "Bandas para cartón y papel" },
+      { name: "Farmacéutica", cat: "Especializados", desc: "Máxima higiene y precisión en ambientes controlados.", img: "banda-transportadora-industria-farmaceutica.png", alt: "Banda transportadora en industria farmacéutica en ambiente cleanroom", title: "Bandas para industria farmacéutica" },
+      { name: "Refresquera", cat: "Alimentaria", desc: "Transporte de botellas y latas a alta velocidad.", img: "banda-transportadora-industria-refresquera.png", alt: "Banda transportadora en industria refresquera para embotellado y manejo de bebidas", title: "Bandas para industria refresquera" },
+      { name: "Chocolatera", cat: "Alimentaria", desc: "Bandas con desprendimiento fácil para confitería.", img: "banda-transportadora-industria-chocolatera.png", alt: "Banda transportadora en industria chocolatera para procesos de producción continua", title: "Bandas para industria chocolatera" },
+      { name: "Lavanderías Industriales", cat: "Especializados", desc: "Resistencia a la humedad y temperatura.", img: "banda-transportadora-lavanderia-industrial.png", alt: "Banda transportadora en lavandería industrial para manejo de textiles", title: "Bandas para lavandería industrial" },
+      { name: "Tabacalera", cat: "Especializados", desc: "Procesos especializados de transporte de hoja.", img: "banda-transportadora-industria-tabacalera.png", alt: "Banda transportadora para industria tabacalera en procesos de manufactura", title: "Bandas para industria tabacalera" },
+      { name: "Industria de Madera", cat: "Manufactura", desc: "Bandas para lijado y transporte de paneles.", img: "banda-transportadora-industria-madera.png", alt: "Banda transportadora en industria de la madera para procesos de corte y traslado", title: "Bandas para industria maderera" },
+      { name: "Industria de Bolsas de Plástico", cat: "Manufactura", desc: "Precisión en corte y sellado.", img: "banda-transportadora-industria-plastico.png", alt: "Banda transportadora en industria del plástico para líneas de producción", title: "Bandas para industria del plástico" },
+      { name: "Rastros", cat: "Alimentaria", desc: "Bandas sanitarias para procesamiento cárnico.", img: "banda-transportadora-rastros.png", alt: "Banda transportadora en rastros para procesamiento cárnico industrial", title: "Bandas para rastros" },
+      { name: "Offset", cat: "Manufactura", desc: "Bandas de transmisión para rotativas.", img: "banda-transportadora-offset.png", alt: "Banda transportadora para impresión offset en maquinaria industrial", title: "Bandas para impresión offset" },
+      { name: "Reciclaje y Gestión de Residuos", cat: "Logística", desc: "Alta resistencia al corte y desgaste.", img: "banda-transportadora-reciclaje.png", alt: "Banda transportadora para reciclaje y gestión de residuos industriales", title: "Bandas para reciclaje" },
+      { name: "Logística y Puertos", cat: "Logística", desc: "Movimiento masivo de carga y paquetería.", img: "banda-transportadora-logistica.png", alt: "Banda transportadora para logística y distribución de mercancía", title: "Bandas para logística" },
+      { name: "Agricultura", cat: "Alimentaria", desc: "Soluciones para cosecha y empaque en campo.", img: "banda-transportadora-agricultura.png", alt: "Banda transportadora en agricultura para manejo de cosecha", title: "Bandas para agricultura" },
+      { name: "Carga y Descarga", cat: "Logística", desc: "Bandas telescópicas y de alto agarre.", img: "banda-transportadora-carga-descarga.png", alt: "Banda transportadora para carga y descarga de camiones en logística", title: "Bandas para carga y descarga" },
+      { name: "Confitería", cat: "Alimentaria", desc: "Bandas para enfriamiento y recubrimiento.", img: "banda-transportadora-confiteria.png", alt: "Banda transportadora para confitería en manejo de dulces y productos", title: "Bandas para confitería" },
+      { name: "Boliche", cat: "Especializados", desc: "Bandas específicas para retorno de bolas.", img: "banda-transportadora-boliche.png", alt: "Banda transportadora en boliche para retorno de bolas", title: "Bandas para boliche" },
+      { name: "Materias Primas", cat: "Especializados", desc: "Transporte de graneles y polvos.", img: "Logistica.png" },
+      { name: "Aeropuertos", cat: "Logística", desc: "Sistemas confiables de manejo de equipaje.", img: "banda-transportadora-aeropuertos.png", alt: "Banda transportadora en aeropuertos para manejo de equipaje", title: "Bandas para aeropuertos" },
+      { name: "Hidrólisis", cat: "Manufactura", desc: "Resistencia química en procesos industriales.", img: "banda-transportadora-hidrolisis.png", alt: "Banda transportadora en proceso de hidrólisis para industria química", title: "Bandas para hidrólisis" }
     ];
 
     function slugify(text) {
       return text.toString().toLowerCase()
-        .replace(/\s+/g, '-')           // Replace spaces with -
-        .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
-        .replace(/\-\-+/g, '-')         // Replace multiple - with single -
-        .replace(/^-+/, '')             // Trim - from start of text
-        .replace(/-+$/, '');            // Trim - from end of text
+        .replace(/\s+/g, '-')           
+        .replace(/[^\w\-]+/g, '')       
+        .replace(/\-\-+/g, '-')         
+        .replace(/^-+/, '')             
+        .replace(/-+$/, '');            
     }
 
     const grid = document.getElementById('sectorGrid');
-    grid.innerHTML = sectors.map(s => `
-      <article class="card">
-        <img src="${s.img.startsWith('banda-') ? '/IMAGENES GOBREE/' + s.img : s.img}" 
-             alt="${s.alt || s.name}" 
-             title="${s.title || s.name}" 
-             loading="lazy" 
-             style="aspect-ratio:16/9;object-fit:cover;">
-        <h2>${s.name}</h2>
-        <p>${s.desc}</p>
-        <a href="sectores/${slugify(s.name)}.html" class="btn">Ver soluciones</a>
-      </article>
-    `).join('');
+    const searchInput = document.getElementById('sectorSearch');
+    const filterBtns = document.querySelectorAll('.filter-btn');
+
+    function renderSectors(filtered) {
+      grid.innerHTML = filtered.map(s => `
+        <article class="card">
+          <div class="tag" style="margin-bottom:0.5rem; display:inline-block;">${s.cat}</div>
+          <img src="${s.img.startsWith('banda-') ? '/IMAGENES GOBREE/' + s.img : s.img}" 
+               alt="${s.alt || s.name}" 
+               title="${s.title || s.name}" 
+               loading="lazy" 
+               style="aspect-ratio:16/9;object-fit:cover;">
+          <h2>${s.name}</h2>
+          <p>${s.desc}</p>
+          <a href="sectores/${slugify(s.name)}.html" class="btn">Ver soluciones</a>
+        </article>
+      `).join('');
+
+      if (filtered.length === 0) {
+        grid.innerHTML = '<div class="empty-state"><h3>No se encontraron sectores</h3><p>Intenta con otra búsqueda o categoría.</p></div>';
+      }
+    }
+
+    function handleFilter() {
+      const searchTerm = searchInput.value.toLowerCase();
+      const activeCat = document.querySelector('.filter-btn.active').dataset.category;
+
+      const filtered = sectors.filter(s => {
+        const matchesSearch = s.name.toLowerCase().includes(searchTerm) || s.desc.toLowerCase().includes(searchTerm);
+        const matchesCat = activeCat === 'all' || s.cat === activeCat;
+        return matchesSearch && matchesCat;
+      });
+
+      renderSectors(filtered);
+    }
+
+    searchInput.addEventListener('input', handleFilter);
+
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        handleFilter();
+      });
+    });
+
+    // Inicializar
+    renderSectors(sectors);
   </script>
 </body>
 </html>
