@@ -30,10 +30,34 @@
     </div>
   </header>
 
-  <main class="page-main container">
-    <section class="section">
-      <h1>Catálogo de Bandas Industriales</h1>
-      <p class="lead">Explora nuestra gama completa de soluciones en bandas transportadoras y de transmisión.</p>
+  <main class="page-main">
+    <section class="hero" id="inicio">
+      <div id="heroCarousel" class="hero-carousel" aria-label="Galería principal de Gobree Belt">
+        <img class="hero-slide active" src="portadagobree.png" alt="Línea industrial con bandas transportadoras" loading="eager">
+        <img class="hero-slide" src="IndustriaAlimenticia.png" alt="Aplicación de bandas en industria alimenticia" loading="lazy">
+        <img class="hero-slide" src="Logistica.png" alt="Sistema de bandas para logística y distribución" loading="lazy">
+      </div>
+
+      <div class="carousel-controls">
+        <button class="carousel-prev" aria-label="Imagen anterior">❮</button>
+        <button class="carousel-next" aria-label="Imagen siguiente">❯</button>
+      </div>
+      <div class="carousel-indicators"></div>
+
+      <div class="hero-overlay"></div>
+      <div class="container hero-content">
+        <h1>Catálogo de Bandas Industriales</h1>
+        <p>Explora nuestra gama completa de soluciones en bandas transportadoras y de transmisión.</p>
+        <div class="hero-actions">
+          <a class="btn" href="#catalogo">Ver catálogo</a>
+          <a class="btn btn-secondary" href="contacto.html">Cotizar solución</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section container" id="catalogo">
+      <h2>Encuentra la banda ideal para tu proceso</h2>
+      <p class="lead">Filtra por categoría, propiedad y material para encontrar la solución adecuada.</p>
       
       <div class="catalog-layout">
         <aside class="filters-sidebar">
