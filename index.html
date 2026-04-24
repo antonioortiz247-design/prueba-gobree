@@ -48,11 +48,19 @@
 
   <main>
     <section class="hero" id="inicio">
-      <div class="hero-carousel" aria-label="Galería principal de Gobree Belt">
+      <div id="heroCarousel" class="hero-carousel" aria-label="Galería principal de Gobree Belt">
+        <!-- Las imágenes se cargarán desde script.js o localStorage -->
         <img class="hero-slide active" src="portadagobree.png" alt="Línea industrial con bandas transportadoras" loading="eager">
         <img class="hero-slide" src="IndustriaAlimenticia.png" alt="Aplicación de bandas en industria alimenticia" loading="lazy">
         <img class="hero-slide" src="Logistica.png" alt="Sistema de bandas para logística y distribución" loading="lazy">
       </div>
+      
+      <div class="carousel-controls">
+        <button class="carousel-prev" aria-label="Imagen anterior">❮</button>
+        <button class="carousel-next" aria-label="Imagen siguiente">❯</button>
+      </div>
+      <div class="carousel-indicators"></div>
+
       <div class="hero-overlay"></div>
       <div class="container hero-content">
         <h1>Especialistas en Bandas Transportadoras y Transmisión</h1>

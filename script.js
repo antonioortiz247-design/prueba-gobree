@@ -38,14 +38,72 @@
     });
   });
 
-  const heroSlides = document.querySelectorAll('.hero-carousel .hero-slide');
-  if (heroSlides.length > 1) {
+  const heroCarousel = document.getElementById('heroCarousel');
+  if (heroCarousel) {
+    let slides = Array.from(heroCarousel.querySelectorAll('.hero-slide'));
+    const indicatorsContainer = document.querySelector('.carousel-indicators');
+    const prevBtn = document.querySelector('.carousel-prev');
+    const nextBtn = document.querySelector('.carousel-next');
+    
     let currentSlide = 0;
-    setInterval(() => {
-      heroSlides[currentSlide].classList.remove('active');
-      currentSlide = (currentSlide + 1) % heroSlides.length;
-      heroSlides[currentSlide].classList.add('active');
-    }, 4500);
+    let autoPlayInterval;
+
+    // Cargar imágenes desde localStorage si existen (Panel Admin)
+    const storedImages = localStorage.getItem('heroImages');
+    if (storedImages) {
+      const images = JSON.parse(storedImages);
+      if (images.length > 0) {
+        heroCarousel.innerHTML = images.map((img, index) => `
+          <img class="hero-slide ${index === 0 ? 'active' : ''}" 
+               src="${img.url}" 
+               alt="${img.alt || 'Gobree Belt'}" 
+               loading="${index === 0 ? 'eager' : 'lazy'}">
+        `).join('');
+        slides = Array.from(heroCarousel.querySelectorAll('.hero-slide'));
+      }
+    }
+
+    const updateCarousel = (index) => {
+      slides[currentSlide].classList.remove('active');
+      const indicators = document.querySelectorAll('.indicator');
+      if (indicators.length) indicators[currentSlide].classList.remove('active');
+      
+      currentSlide = (index + slides.length) % slides.length;
+      
+      slides[currentSlide].classList.add('active');
+      if (indicators.length) indicators[currentSlide].classList.add('active');
+    };
+
+    const nextSlide = () => updateCarousel(currentSlide + 1);
+    const prevSlide = () => updateCarousel(currentSlide - 1);
+
+    const startAutoPlay = () => {
+      stopAutoPlay();
+      autoPlayInterval = setInterval(nextSlide, 5000);
+    };
+
+    const stopAutoPlay = () => {
+      if (autoPlayInterval) clearInterval(autoPlayInterval);
+    };
+
+    // Crear indicadores
+    if (indicatorsContainer) {
+      indicatorsContainer.innerHTML = slides.map((_, i) => `
+        <div class="indicator ${i === 0 ? 'active' : ''}" data-index="${i}"></div>
+      `).join('');
+      
+      indicatorsContainer.querySelectorAll('.indicator').forEach(ind => {
+        ind.addEventListener('click', () => {
+          updateCarousel(parseInt(ind.dataset.index));
+          startAutoPlay();
+        });
+      });
+    }
+
+    if (prevBtn) prevBtn.addEventListener('click', () => { prevSlide(); startAutoPlay(); });
+    if (nextBtn) nextBtn.addEventListener('click', () => { nextSlide(); startAutoPlay(); });
+
+    startAutoPlay();
   }
 
   function renderCatalog(items) {

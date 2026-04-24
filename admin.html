@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel de Administración | Gobree Belt</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .admin-container {
+      max-width: 800px;
+      margin: 4rem auto;
+      padding: 2rem;
+      background: white;
+      border-radius: 1rem;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+    .image-list {
+      margin-top: 2rem;
+      display: grid;
+      gap: 1rem;
+    }
+    .image-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+    }
+    .image-item img {
+      width: 100px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 0.3rem;
+    }
+    .image-item-info {
+      flex-grow: 1;
+    }
+    .admin-form {
+      display: grid;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      padding-bottom: 2rem;
+      border-bottom: 2px solid var(--surface-soft);
+    }
+    .btn-danger {
+      background: #ef4444;
+      color: white;
+    }
+    .btn-success {
+      background: #22c55e;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-container">
+    <h1>Gestión del Carrusel</h1>
+    <p>Agrega o quita imágenes del carrusel principal. Los cambios se guardarán localmente para tu vista previa.</p>
+    
+    <div class="admin-form">
+      <label>
+        URL de la imagen (ej: portadagobree.png o una URL externa)
+        <input type="text" id="imgUrl" placeholder="Ruta de la imagen">
+      </label>
+      <label>
+        Texto descriptivo (Alt)
+        <input type="text" id="imgAlt" placeholder="Ej: Banda transportadora en planta">
+      </label>
+      <button class="btn btn-success" id="addBtn">Agregar al Carrusel</button>
+    </div>
+
+    <h2>Imágenes Actuales</h2>
+    <div id="imageList" class="image-list"></div>
+
+    <div style="margin-top: 3rem; padding-top: 2rem; border-top: 2px solid var(--surface-soft);">
+      <h3>Finalizar Cambios</h3>
+      <p>Una vez que estés conforme con la vista previa en el Home, copia este código y envíalo al desarrollador o pégalo en el archivo de datos si tienes acceso.</p>
+      <button class="btn" id="exportBtn">Copiar Configuración</button>
+      <a href="index.html" class="btn btn-secondary">Ver Vista Previa</a>
+    </div>
+  </div>
+
+  <script>
+    const imageList = document.getElementById('imageList');
+    const imgUrl = document.getElementById('imgUrl');
+    const imgAlt = document.getElementById('imgAlt');
+    const addBtn = document.getElementById('addBtn');
+    const exportBtn = document.getElementById('exportBtn');
+
+    // Imágenes por defecto
+    const defaultImages = [
+      { url: 'portadagobree.png', alt: 'Línea industrial con bandas transportadoras' },
+      { url: 'IndustriaAlimenticia.png', alt: 'Aplicación de bandas en industria alimenticia' },
+      { url: 'Logistica.png', alt: 'Sistema de bandas para logística y distribución' }
+    ];
+
+    let currentImages = JSON.parse(localStorage.getItem('heroImages')) || defaultImages;
+
+    function renderList() {
+      imageList.innerHTML = currentImages.map((img, index) => `
+        <div class="image-item">
+          <img src="${img.url}" alt="${img.alt}">
+          <div class="image-item-info">
+            <strong>${img.url}</strong><br>
+            <small>${img.alt}</small>
+          </div>
+          <button class="btn btn-danger" onclick="removeImage(${index})">Eliminar</button>
+        </div>
+      `).join('');
+      localStorage.setItem('heroImages', JSON.stringify(currentImages));
+    }
+
+    window.removeImage = (index) => {
+      currentImages.splice(index, 1);
+      renderList();
+    };
+
+    addBtn.addEventListener('click', () => {
+      if (!imgUrl.value) return alert('Por favor ingresa la URL de la imagen');
+      currentImages.push({
+        url: imgUrl.value,
+        alt: imgAlt.value || 'Gobree Belt'
+      });
+      imgUrl.value = '';
+      imgAlt.value = '';
+      renderList();
+    });
+
+    exportBtn.addEventListener('click', () => {
+      const data = JSON.stringify(currentImages, null, 2);
+      navigator.clipboard.writeText(data).then(() => {
+        alert('Configuración copiada al portapapeles. Envíala por correo para hacer los cambios permanentes en el servidor.');
+      });
+    });
+
+    renderList();
+  </script>
+</body>
+</html>
