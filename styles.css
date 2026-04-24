@@ -519,24 +519,40 @@ iframe { width: 100%; min-height: 320px; border: 0; border-radius: 12px; }
   padding: .72rem 1rem;
   cursor: pointer;
 }
-.whatsapp-btn {
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+.gallery-img {
+  width: 100%;
+  aspect-ratio: 1/1;
+  object-fit: cover;
+  border-radius: 1rem;
+  transition: transform .3s ease;
+}
+.gallery-img:hover { transform: scale(1.02); }
+
+.call-btn-fixed {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  background: #22c55e;
-  color: var(--surface);
-  padding: .68rem 1rem;
+  background: var(--primary);
+  color: white;
+  padding: .68rem 1.2rem;
   border-radius: 999px;
   font-weight: 700;
-  box-shadow: 0 12px 22px rgba(34, 197, 94, .3);
+  box-shadow: 0 12px 22px rgba(30, 58, 138, .3);
   z-index: 110;
   transition: transform .2s ease, box-shadow .2s ease;
+  text-decoration: none;
 }
-.whatsapp-btn:hover { transform: translateY(-1px); box-shadow: 0 16px 26px rgba(34, 197, 94, .36); }
+.call-btn-fixed:hover { transform: translateY(-1px); box-shadow: 0 16px 26px rgba(30, 58, 138, .36); }
 
 @media (max-width: 980px) {
   .four-col, .three-col { grid-template-columns: repeat(2, minmax(0,1fr)); }
-  .gallery-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .gallery-grid { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 1rem; }
   .nav {
     position: absolute;
     top: 76px;
