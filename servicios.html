@@ -30,25 +30,87 @@
     </div>
   </header>
 
-  <main class="page-main container">
-    <section class="section">
-      <h1>Servicios</h1>
+  <main class="page-main">
+    <!-- Hero Section para Servicios -->
+    <section class="hero">
+      <img class="hero-bg" src="AsesoriaTecnica.png" alt="Servicio técnico Gobree Belt" loading="eager">
+      <div class="hero-overlay"></div>
+      <div class="container hero-content">
+        <h1>Servicios Especializados en Bandas</h1>
+        <p>Garantizamos la continuidad de tu operación con soporte técnico en sitio, instalación profesional y mantenimiento preventivo.</p>
+        <div class="hero-actions">
+          <a href="contacto.html" class="btn">Solicitar Soporte</a>
+          <a href="#nuestros-servicios" class="btn btn-secondary">Ver Servicios</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="nuestros-servicios" class="section container">
       <div class="cards three-col">
-        <article class="card">
-          <h2>🛠️ Mantenimiento</h2>
-          <p>Inspección preventiva y correctiva para evitar paros no programados.</p>
-           <img src="Mantenimiento.png">
+        <article class="card service-card">
+          <div class="service-icon">🛠️</div>
+          <h2>Mantenimiento</h2>
+          <p>Inspección integral para maximizar la vida útil de tus bandas y componentes.</p>
+          <ul class="spec-list">
+            <li>Diagnóstico de estado de banda</li>
+            <li>Limpieza y lubricación</li>
+            <li>Corrección de alineación</li>
+            <li>Empalmes y reparaciones</li>
+          </ul>
+          <img src="Mantenimiento.png" alt="Mantenimiento preventivo">
+          <a href="contacto.html?servicio=mantenimiento" class="btn btn-secondary" style="width:100%; margin-top:1rem;">Cotizar Mantenimiento</a>
         </article>
-        <article class="card">
-          <h2>🔧 Instalación</h2>
-          <p>Montaje profesional y ajuste de tensión para operación segura.</p>
-           <img src="Instalacion.png">
+
+        <article class="card service-card">
+          <div class="service-icon">🔧</div>
+          <h2>Instalación</h2>
+          <p>Montaje preciso de bandas transportadoras y de transmisión en tu planta.</p>
+          <ul class="spec-list">
+            <li>Vulcanizado en sitio (Prensa)</li>
+            <li>Cálculo de tensión óptima</li>
+            <li>Ajuste de rodillos y guías</li>
+            <li>Pruebas de carga real</li>
+          </ul>
+          <img src="Instalacion.png" alt="Instalación de bandas">
+          <a href="contacto.html?servicio=instalacion" class="btn btn-secondary" style="width:100%; margin-top:1rem;">Solicitar Instalación</a>
         </article>
-        <article class="card">
-          <h2>🧠 Asesoría técnica</h2>
-          <p>Selección de banda adecuada por producto, proceso y ambiente.</p>
-           <img src="AsesoriaTecnica.png">
+
+        <article class="card service-card">
+          <div class="service-icon">🧠</div>
+          <h2>Asesoría técnica</h2>
+          <p>Ingeniería aplicada para seleccionar la banda ideal según tu proceso.</p>
+          <ul class="spec-list">
+            <li>Análisis de producto transportado</li>
+            <li>Estudio de condiciones térmicas</li>
+            <li>Optimización de transmisiones</li>
+            <li>Solución a fallas recurrentes</li>
+          </ul>
+          <img src="AsesoriaTecnica.png" alt="Asesoría técnica especializada">
+          <a href="contacto.html?servicio=asesoria" class="btn btn-secondary" style="width:100%; margin-top:1rem;">Agendar Consulta</a>
         </article>
+      </div>
+    </section>
+
+    <section class="section alt-bg">
+      <div class="container" style="text-align:center;">
+        <h2>Nuestro Proceso de Servicio</h2>
+        <div class="cards three-col" style="margin-top:2rem;">
+          <div class="step-card">
+            <span class="step-num">01</span>
+            <h3>Contacto</h3>
+            <p>Recibimos tu solicitud y entendemos la urgencia o requerimiento técnico.</p>
+          </div>
+          <div class="step-card">
+            <span class="step-num">02</span>
+            <h3>Diagnóstico</h3>
+            <p>Realizamos una visita o análisis técnico para definir la mejor solución.</p>
+          </div>
+          <div class="step-card">
+            <span class="step-num">03</span>
+            <h3>Ejecución</h3>
+            <p>Implementamos el servicio con personal calificado y herramientas de precisión.</p>
+          </div>
+        </div>
       </div>
     </section>
   </main>

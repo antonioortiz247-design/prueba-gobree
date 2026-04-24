@@ -400,6 +400,37 @@ textarea:focus-visible,
   border-radius: 1rem;
   box-shadow: var(--shadow-sm);
 }
+
+/* Service Styles */
+.service-card {
+  display: flex;
+  flex-direction: column;
+}
+.service-icon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+.step-card {
+  padding: 2rem;
+  background: var(--surface);
+  border-radius: 1rem;
+  border: 1px solid var(--border);
+  position: relative;
+  transition: transform .2s ease;
+}
+.step-card:hover { transform: translateY(-5px); }
+.step-num {
+  font-size: 3rem;
+  font-weight: 800;
+  color: var(--primary);
+  opacity: 0.15;
+  position: absolute;
+  top: 10px;
+  right: 20px;
+}
+.step-card h3 { position: relative; z-index: 1; }
+.step-card p { position: relative; z-index: 1; }
+
 .spec-list { padding-left: 1rem; color: #334155; }
 .article img { margin: 1rem 0; aspect-ratio: 16/7; object-fit: cover; }
 .article-meta { color: var(--muted); font-size: .95rem; }

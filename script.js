@@ -177,6 +177,20 @@
 
   const contactForm = document.querySelector('.contact-form');
   if (contactForm) {
+    // Pre-llenar mensaje basado en parámetros URL
+    const params = new URLSearchParams(window.location.search);
+    const servicio = params.get('servicio');
+    const mensajeArea = contactForm.querySelector('textarea[name="mensaje"], textarea');
+    
+    if (servicio && mensajeArea) {
+      const serviciosMap = {
+        'mantenimiento': 'Hola, me interesa solicitar el servicio de Mantenimiento Preventivo/Correctivo.',
+        'instalacion': 'Hola, me interesa solicitar el servicio de Instalación de bandas transportadoras.',
+        'asesoria': 'Hola, me interesa agendar una Asesoría Técnica especializada.'
+      };
+      mensajeArea.value = serviciosMap[servicio] || '';
+    }
+
     contactForm.addEventListener('submit', (e) => {
       e.preventDefault();
 
