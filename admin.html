@@ -6,16 +6,60 @@
   <title>Panel de Administración | Gobree Belt</title>
   <link rel="stylesheet" href="styles.css">
   <style>
+    body {
+      background: linear-gradient(180deg, #f8fafc 0%, #eef6ff 55%, #f8fafc 100%);
+    }
     .admin-container {
       max-width: 800px;
-      margin: 4rem auto;
-      padding: 2rem;
-      background: white;
-      border-radius: 1rem;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      margin: 3.5rem auto;
+      padding: 1.6rem;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      border-radius: 1.1rem;
+      box-shadow: var(--shadow-md);
+      backdrop-filter: blur(12px);
     }
+    .admin-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .admin-top h1 {
+      font-size: 1.8rem;
+      margin: 0;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+    .admin-top p {
+      margin: .35rem 0 0;
+      color: var(--muted);
+      max-width: 56ch;
+    }
+    .admin-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      padding: .55rem .75rem;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.9);
+      box-shadow: var(--shadow-sm);
+      color: #334155;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .admin-badge a { color: var(--primary-dark); font-weight: 700; }
+    .admin-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      padding: 1.15rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .admin-card + .admin-card { margin-top: 1rem; }
     .image-list {
-      margin-top: 2rem;
       display: grid;
       gap: 1rem;
     }
@@ -25,23 +69,93 @@
       gap: 1rem;
       padding: 1rem;
       border: 1px solid var(--border);
-      border-radius: 0.5rem;
+      border-radius: 0.9rem;
+      background: linear-gradient(180deg, rgba(248, 250, 252, 0.85), rgba(255, 255, 255, 1));
     }
     .image-item img {
-      width: 100px;
-      height: 60px;
+      width: 140px;
+      height: 84px;
       object-fit: cover;
-      border-radius: 0.3rem;
+      border-radius: 0.7rem;
+      border: 1px solid rgba(148, 163, 184, 0.22);
     }
     .image-item-info {
       flex-grow: 1;
+      min-width: 0;
     }
     .admin-form {
       display: grid;
       gap: 1rem;
-      margin-bottom: 2rem;
-      padding-bottom: 2rem;
-      border-bottom: 2px solid var(--surface-soft);
+    }
+    .admin-form label {
+      display: grid;
+      gap: .45rem;
+      font-weight: 600;
+      color: #334155;
+    }
+    .admin-form input[type="text"],
+    .admin-form input[type="password"] {
+      width: 100%;
+      padding: .8rem .9rem;
+      border-radius: .8rem;
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      background: rgba(255, 255, 255, 0.92);
+      box-shadow: 0 1px 0 rgba(15, 23, 42, 0.03);
+      font-size: 1rem;
+    }
+    .admin-form small {
+      color: var(--muted);
+      font-weight: 500;
+    }
+    .admin-row {
+      display: flex;
+      gap: .75rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .admin-add-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 1rem;
+      align-items: start;
+    }
+    .upload-box {
+      position: relative;
+      border: 1px dashed rgba(37, 99, 235, 0.42);
+      border-radius: 1rem;
+      background: linear-gradient(180deg, rgba(37, 99, 235, 0.06), rgba(255, 255, 255, 0.92));
+      padding: 1rem;
+      min-height: 200px;
+      cursor: pointer;
+      box-shadow: 0 10px 22px rgba(15, 23, 42, 0.06);
+      transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+      display: grid;
+      align-content: center;
+      gap: .65rem;
+      text-align: center;
+      color: #334155;
+    }
+    .upload-box:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 28px rgba(15, 23, 42, 0.09);
+      border-color: rgba(37, 99, 235, 0.65);
+    }
+    .upload-box.dragover {
+      border-color: rgba(37, 99, 235, 0.95);
+      box-shadow: 0 0 0 4px var(--ring), 0 18px 42px rgba(15, 23, 42, 0.12);
+    }
+    .upload-preview {
+      width: 100%;
+      border-radius: .9rem;
+      border: 1px solid rgba(148, 163, 184, 0.22);
+      display: none;
+      max-height: 240px;
+      object-fit: cover;
+    }
+    .upload-meta {
+      color: var(--muted);
+      font-weight: 600;
+      font-size: .95rem;
     }
     .btn-danger {
       background: #ef4444;
@@ -50,6 +164,34 @@
     .btn-success {
       background: #22c55e;
       color: white;
+    }
+    .admin-savebar {
+      margin-top: 1rem;
+      display: flex;
+      gap: .75rem;
+      flex-wrap: wrap;
+    }
+    @media (max-width: 680px) {
+      .admin-container { margin: 1.25rem auto; padding: 1.05rem; border-radius: 1rem; }
+      .admin-top { flex-direction: column; align-items: stretch; }
+      .admin-badge { justify-content: space-between; }
+      .admin-add-grid { grid-template-columns: 1fr; }
+      .image-item { flex-direction: column; align-items: stretch; }
+      .image-item img { width: 100%; height: 180px; }
+      .admin-savebar {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 50;
+        padding: .9rem;
+        background: rgba(255, 255, 255, 0.86);
+        border-top: 1px solid rgba(148, 163, 184, 0.25);
+        backdrop-filter: blur(12px);
+        justify-content: center;
+      }
+      body { padding-bottom: 92px; }
+      .admin-savebar .btn, .admin-savebar a.btn { flex: 1; }
     }
   </style>
   <script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
@@ -60,40 +202,70 @@
 </head>
 <body>
   <div class="admin-container">
-    <h1>Gestión del Carrusel</h1>
-    <p>Agrega, ordena o quita imágenes del carrusel del inicio. Los cambios se guardan en el servidor.</p>
-
-    <div class="admin-form" style="border-bottom: 0; padding-bottom: 0; margin-bottom: 1.25rem;">
-      <label>
-        Contraseña del panel
-        <input type="password" id="adminPassword" placeholder="Contraseña">
-      </label>
-      <div style="display:flex; gap:.75rem; flex-wrap:wrap;">
-        <button class="btn" id="loginBtn">Iniciar sesión</button>
-        <button class="btn btn-secondary" id="logoutBtn">Cerrar sesión</button>
+    <div class="admin-top">
+      <div>
+        <h1>Panel del Carrusel</h1>
+        <p>Agrega, ordena o quita imágenes del carrusel del inicio. Al guardar, los cambios se aplican automáticamente.</p>
       </div>
-      <p id="authStatus" style="margin:0; color: var(--muted); font-size: .95rem;"></p>
-    </div>
-    
-    <div class="admin-form">
-      <label>
-        URL de la imagen (ej: portadagobree.png o una URL externa)
-        <input type="text" id="imgUrl" placeholder="Ruta de la imagen">
-      </label>
-      <label>
-        Texto descriptivo (Alt)
-        <input type="text" id="imgAlt" placeholder="Ej: Banda transportadora en planta">
-      </label>
-      <button class="btn btn-success" id="addBtn">Agregar al Carrusel</button>
+      <div class="admin-badge">
+        <span id="authStatus">Sesión no iniciada</span>
+        <a href="/" class="text-link">Ver inicio</a>
+      </div>
     </div>
 
-    <h2>Imágenes Actuales</h2>
-    <div id="imageList" class="image-list"></div>
+    <div class="admin-card">
+      <h2 style="margin:0 0 .75rem;">Acceso</h2>
+      <div class="admin-form" style="margin:0;">
+        <label>
+          Contraseña del panel
+          <input type="password" id="adminPassword" placeholder="Contraseña">
+        </label>
+        <div class="admin-row">
+          <button class="btn" id="loginBtn" type="button">Iniciar sesión</button>
+          <button class="btn btn-secondary" id="logoutBtn" type="button">Cerrar sesión</button>
+        </div>
+        <small>Si no has iniciado sesión, no podrás guardar cambios.</small>
+      </div>
+    </div>
 
-    <div style="margin-top: 3rem; padding-top: 2rem; border-top: 2px solid var(--surface-soft);">
-      <h3>Finalizar Cambios</h3>
-      <p>Guarda para aplicar los cambios al carrusel del inicio.</p>
-      <button class="btn" id="saveBtn">Guardar en el sitio</button>
+    <div class="admin-card">
+      <h2 style="margin:0 0 .75rem;">Agregar imagen</h2>
+      <div class="admin-add-grid">
+        <div class="upload-box" id="uploadBox" tabindex="0" role="button" aria-label="Seleccionar imagen">
+          <strong>Subir desde tu dispositivo</strong>
+          <div class="upload-meta" id="uploadMeta">Toca aquí o arrastra una imagen (JPG/PNG). Se optimiza automáticamente.</div>
+          <div class="admin-row" style="justify-content:center;">
+            <button class="btn btn-secondary" type="button" id="pickFileBtn">Seleccionar imagen</button>
+            <button class="btn btn-secondary" type="button" id="clearFileBtn">Limpiar</button>
+          </div>
+          <input type="file" id="imgFile" accept="image/*" style="display:none;">
+          <img id="filePreview" class="upload-preview" alt="">
+        </div>
+
+        <div class="admin-form" style="margin:0;">
+          <label>
+            URL de la imagen
+            <input type="text" id="imgUrl" placeholder="portadagobree.png o https://... o (se llena al subir)">
+          </label>
+          <label>
+            Texto descriptivo (Alt)
+            <input type="text" id="imgAlt" placeholder="Ej: Banda transportadora en planta">
+          </label>
+          <small>Tip: para mejor desempeño, usa 2–4 imágenes.</small>
+          <div class="admin-row">
+            <button class="btn btn-success" id="addBtn" type="button">Agregar al carrusel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="admin-card">
+      <h2 style="margin:0 0 .75rem;">Imágenes actuales</h2>
+      <div id="imageList" class="image-list"></div>
+    </div>
+
+    <div class="admin-savebar">
+      <button class="btn" id="saveBtn" type="button">Guardar cambios</button>
       <a href="/" class="btn btn-secondary">Ver Inicio</a>
     </div>
   </div>
@@ -108,11 +280,96 @@
     const loginBtn = document.getElementById('loginBtn');
     const logoutBtn = document.getElementById('logoutBtn');
     const authStatus = document.getElementById('authStatus');
+    const imgFile = document.getElementById('imgFile');
+    const uploadBox = document.getElementById('uploadBox');
+    const pickFileBtn = document.getElementById('pickFileBtn');
+    const clearFileBtn = document.getElementById('clearFileBtn');
+    const filePreview = document.getElementById('filePreview');
+    const uploadMeta = document.getElementById('uploadMeta');
 
     let currentImages = [];
 
     function setStatus(text) {
       authStatus.textContent = text || '';
+    }
+
+    function setUploadMeta(text) {
+      uploadMeta.textContent = text || '';
+    }
+
+    function approximateBytesFromDataUrl(dataUrl) {
+      const comma = String(dataUrl || '').indexOf(',');
+      if (comma === -1) return 0;
+      const base64Len = dataUrl.length - comma - 1;
+      return Math.floor((base64Len * 3) / 4);
+    }
+
+    function prettyBytes(bytes) {
+      const n = Number(bytes || 0);
+      if (!Number.isFinite(n) || n <= 0) return '0 KB';
+      const kb = n / 1024;
+      if (kb < 1024) return `${Math.round(kb)} KB`;
+      return `${(kb / 1024).toFixed(2)} MB`;
+    }
+
+    function filenameToAlt(name) {
+      const base = String(name || '').replace(/\.[a-z0-9]+$/i, '').replace(/[_\-]+/g, ' ').trim();
+      return base ? base.charAt(0).toUpperCase() + base.slice(1) : '';
+    }
+
+    async function fileToOptimizedDataUrl(file) {
+      if (!file) throw new Error('missing_file');
+      if (!String(file.type || '').startsWith('image/')) throw new Error('not_image');
+      if (file.size > 12_000_000) throw new Error('file_too_large');
+
+      const objectUrl = URL.createObjectURL(file);
+      try {
+        const img = await new Promise((resolve, reject) => {
+          const el = new Image();
+          el.onload = () => resolve(el);
+          el.onerror = () => reject(new Error('image_load_failed'));
+          el.src = objectUrl;
+        });
+
+        const maxW = 1600;
+        const scale = img.width > maxW ? maxW / img.width : 1;
+        const w = Math.max(1, Math.round(img.width * scale));
+        const h = Math.max(1, Math.round(img.height * scale));
+
+        const canvas = document.createElement('canvas');
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+
+        const maxBytes = 420_000;
+        let q = 0.86;
+        let dataUrl = canvas.toDataURL('image/jpeg', q);
+        let bytes = approximateBytesFromDataUrl(dataUrl);
+        while (bytes > maxBytes && q > 0.62) {
+          q = Math.max(0.62, q - 0.06);
+          dataUrl = canvas.toDataURL('image/jpeg', q);
+          bytes = approximateBytesFromDataUrl(dataUrl);
+        }
+
+        if (bytes > 1_200_000) throw new Error('encoded_too_large');
+        return { dataUrl, width: w, height: h, bytes };
+      } finally {
+        URL.revokeObjectURL(objectUrl);
+      }
+    }
+
+    function showPreview(dataUrl, altText) {
+      filePreview.src = dataUrl;
+      filePreview.alt = altText || 'Vista previa';
+      filePreview.style.display = 'block';
+    }
+
+    function clearSelectedFile() {
+      imgFile.value = '';
+      filePreview.src = '';
+      filePreview.style.display = 'none';
+      setUploadMeta('Toca aquí o arrastra una imagen (JPG/PNG). Se optimiza automáticamente.');
     }
 
     async function readPayload(r) {
@@ -147,11 +404,20 @@
     }
 
     function renderList() {
+      const displayUrl = (url) => {
+        const u = String(url || '');
+        if (u.startsWith('data:image/')) {
+          const bytes = approximateBytesFromDataUrl(u);
+          return `Imagen subida (${prettyBytes(bytes)})`;
+        }
+        return u;
+      };
+
       imageList.innerHTML = currentImages.map((img, index) => `
         <div class="image-item">
           <img src="${img.url}" alt="${img.alt}">
           <div class="image-item-info">
-            <strong>${img.url}</strong><br>
+            <strong>${displayUrl(img.url)}</strong><br>
             <small>${img.alt}</small>
           </div>
           <div style="display:flex; gap:.5rem; flex-wrap:wrap; justify-content:flex-end;">
@@ -185,7 +451,63 @@
       });
       imgUrl.value = '';
       imgAlt.value = '';
+      clearSelectedFile();
       renderList();
+    });
+
+    pickFileBtn.addEventListener('click', () => {
+      imgFile.click();
+    });
+
+    clearFileBtn.addEventListener('click', () => {
+      clearSelectedFile();
+    });
+
+    uploadBox.addEventListener('click', (e) => {
+      if (e.target === pickFileBtn || e.target === clearFileBtn) return;
+      imgFile.click();
+    });
+
+    uploadBox.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        imgFile.click();
+      }
+    });
+
+    imgFile.addEventListener('change', async () => {
+      const file = imgFile.files && imgFile.files[0];
+      if (!file) return;
+      setUploadMeta('Procesando imagen...');
+      try {
+        const out = await fileToOptimizedDataUrl(file);
+        imgUrl.value = out.dataUrl;
+        if (!imgAlt.value) imgAlt.value = filenameToAlt(file.name) || 'Gobree Belt';
+        showPreview(out.dataUrl, imgAlt.value);
+        setUploadMeta(`Optimizada: ${out.width}×${out.height} • ${prettyBytes(out.bytes)}`);
+      } catch (e) {
+        clearSelectedFile();
+        setUploadMeta('No se pudo procesar la imagen.');
+        alert(`No se pudo procesar la imagen | ${String(e && e.message ? e.message : e)}`);
+      }
+    });
+
+    uploadBox.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadBox.classList.add('dragover');
+    });
+
+    uploadBox.addEventListener('dragleave', () => {
+      uploadBox.classList.remove('dragover');
+    });
+
+    uploadBox.addEventListener('drop', async (e) => {
+      e.preventDefault();
+      uploadBox.classList.remove('dragover');
+      const file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+      if (!file) return;
+      imgFile.files = e.dataTransfer.files;
+      imgFile.dispatchEvent(new Event('change'));
     });
 
     loginBtn.addEventListener('click', async () => {

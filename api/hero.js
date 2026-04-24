@@ -180,7 +180,7 @@ async function readJson(req) {
     let raw = '';
     req.on('data', (chunk) => {
       raw += chunk;
-      if (raw.length > 200_000) reject(new Error('payload_too_large'));
+      if (raw.length > 4_000_000) reject(new Error('payload_too_large'));
     });
     req.on('end', () => {
       try {
@@ -237,7 +237,7 @@ module.exports = async (req, res) => {
     const images = Array.isArray(data.images) ? data.images : [];
     const cleaned = images
       .map((img) => ({
-        url: String(img.url || '').trim().slice(0, 500),
+        url: String(img.url || '').trim().slice(0, 1_200_000),
         alt: String(img.alt || 'Gobree Belt').trim().slice(0, 200)
       }))
       .filter((img) => img.url);
