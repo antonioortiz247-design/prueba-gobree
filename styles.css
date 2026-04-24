@@ -517,6 +517,8 @@ textarea:focus-visible,
 .article img { margin: 1rem 0; aspect-ratio: 16/7; object-fit: cover; }
 .article-meta { color: var(--muted); font-size: .95rem; }
 .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.contact-section { margin-top: -5rem; position: relative; z-index: 2; }
+.contact-form-wrap { padding: 2.5rem; }
 .contact-form label { display: grid; gap: .45rem; margin-bottom: .78rem; font-weight: 600; color: #334155; }
 .contact-form input,
 .contact-form select,
@@ -660,8 +662,10 @@ iframe { width: 100%; min-height: 320px; border: 0; border-radius: 12px; }
   .three-col,
   .product-detail,
   .contact-grid { grid-template-columns: 1fr; }
-  .footer-grid { grid-template-columns: 1fr; }
+  .contact-section { margin-top: 0; }
+  .contact-form-wrap { padding: 1.25rem; }
   .footer-form-grid { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: 1fr; }
   .footer-glass-form { grid-template-columns: 1fr; }
   .section { padding: 2.15rem 0; }
 }
