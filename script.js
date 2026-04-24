@@ -75,7 +75,10 @@
         <div class="cards">
           ${products.map((p) => `
             <article class="card product-card">
-              <img src="Bandasanitaria.png" alt="${p.nombre}" loading="lazy">
+              <img src="${p.img ? '/IMAGENES GOBREE/' + p.img : 'Bandasanitaria.png'}" 
+                   alt="${p.alt || p.nombre}" 
+                   title="${p.title || p.nombre}" 
+                   loading="lazy">
               <div class="product-info">
                 <h3>${p.nombre}</h3>
                 <p class="product-desc">${p.descripcion}</p>
@@ -153,7 +156,10 @@
     detail.innerHTML = `
       <h1>${p.nombre}</h1>
       <div class="product-detail">
-        <img src="Bandasanitaria.png" alt="${p.nombre}" loading="lazy">
+        <img src="${p.img ? '/IMAGENES GOBREE/' + p.img : 'Bandasanitaria.png'}" 
+             alt="${p.alt || p.nombre}" 
+             title="${p.title || p.nombre}" 
+             loading="lazy">
         <div>
           <p>${p.descripcion}</p>
           <ul class="spec-list">

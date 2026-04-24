@@ -1,0 +1,183 @@
+{
+  "banda-transportadora-industria-alimentaria-produccion.png": {
+    "alt": "Banda transportadora para industria alimentaria en líneas de producción",
+    "title": "Bandas para industria alimentaria"
+  },
+  "banda-transportadora-industria-refresquera-embotellado.png": {
+    "alt": "Banda transportadora en industria refresquera para embotellado y manejo de bebidas",
+    "title": "Bandas para industria refresquera"
+  },
+  "banda-transportadora-industria-chocolatera-procesos.png": {
+    "alt": "Banda transportadora en industria chocolatera para procesos de producción continua",
+    "title": "Bandas para industria chocolatera"
+  },
+  "banda-transportadora-confiteria-produccion.png": {
+    "alt": "Banda transportadora para confitería en manejo de dulces y productos",
+    "title": "Bandas para confitería"
+  },
+  "banda-transportadora-industria-tabacalera-manufactura.png": {
+    "alt": "Banda transportadora para industria tabacalera en procesos de manufactura",
+    "title": "Bandas para industria tabacalera"
+  },
+  "banda-transportadora-artes-graficas-impresion.png": {
+    "alt": "Banda transportadora en artes gráficas para impresión y manejo de papel",
+    "title": "Bandas para artes gráficas"
+  },
+  "banda-transportadora-industria-litografica.png": {
+    "alt": "Banda transportadora en industria litográfica para procesos de impresión",
+    "title": "Bandas para industria litográfica"
+  },
+  "banda-transportadora-offset-impresion.png": {
+    "alt": "Banda transportadora para impresión offset en maquinaria industrial",
+    "title": "Bandas para impresión offset"
+  },
+  "banda-transportadora-industria-textil-produccion.png": {
+    "alt": "Banda transportadora en industria textil para manejo de telas y producción",
+    "title": "Bandas para industria textil"
+  },
+  "banda-transportadora-industria-marmol-corte.png": {
+    "alt": "Banda transportadora en industria del mármol para corte y traslado de piezas",
+    "title": "Bandas para industria del mármol"
+  },
+  "banda-transportadora-industria-madera-procesos.png": {
+    "alt": "Banda transportadora en industria de la madera para procesos de corte y traslado",
+    "title": "Bandas para industria maderera"
+  },
+  "banda-transportadora-industria-plastico-produccion.png": {
+    "alt": "Banda transportadora en industria del plástico para líneas de producción",
+    "title": "Bandas para industria del plástico"
+  },
+  "banda-transportadora-carton-papel-industria.png": {
+    "alt": "Banda transportadora para industria de cartón y papel en procesos continuos",
+    "title": "Bandas para cartón y papel"
+  },
+  "banda-transportadora-logistica-distribucion.png": {
+    "alt": "Banda transportadora para logística y distribución de mercancía",
+    "title": "Bandas para logística"
+  },
+  "banda-transportadora-aeropuertos-equipaje.png": {
+    "alt": "Banda transportadora en aeropuertos para manejo de equipaje",
+    "title": "Bandas para aeropuertos"
+  },
+  "banda-transportadora-puertos-carga.png": {
+    "alt": "Banda transportadora en puertos para carga y descarga de mercancía",
+    "title": "Bandas para puertos"
+  },
+  "banda-transportadora-reciclaje-residuos.png": {
+    "alt": "Banda transportadora para reciclaje y gestión de residuos industriales",
+    "title": "Bandas para reciclaje"
+  },
+  "banda-transportadora-agricultura-cosecha.png": {
+    "alt": "Banda transportadora en agricultura para manejo de cosecha",
+    "title": "Bandas para agricultura"
+  },
+  "banda-transportadora-carga-descarga-camiones.png": {
+    "alt": "Banda transportadora para carga y descarga de camiones en logística",
+    "title": "Bandas para carga y descarga"
+  },
+  "banda-transportadora-rastros-procesamiento.png": {
+    "alt": "Banda transportadora en rastros para procesamiento cárnico industrial",
+    "title": "Bandas para rastros"
+  },
+  "banda-transportadora-industria-farmaceutica-cleanroom.png": {
+    "alt": "Banda transportadora en industria farmacéutica en ambiente cleanroom",
+    "title": "Bandas para industria farmacéutica"
+  },
+  "banda-transportadora-lavanderia-industrial-servicio.png": {
+    "alt": "Banda transportadora en lavandería industrial para manejo de textiles",
+    "title": "Bandas para lavandería industrial"
+  },
+  "banda-transportadora-gimnasios-caminadoras.png": {
+    "alt": "Banda transportadora en caminadoras de gimnasio para uso fitness",
+    "title": "Bandas para gimnasios"
+  },
+  "banda-transportadora-boliche-retorno-bolas.png": {
+    "alt": "Banda transportadora en boliche para retorno de bolas",
+    "title": "Bandas para boliche"
+  },
+  "banda-transportadora-hidrolisis-proceso-quimico.png": {
+    "alt": "Banda transportadora en proceso de hidrólisis para industria química",
+    "title": "Bandas para hidrólisis"
+  },
+
+  "banda-pvc-industrial-transporte-ligero.png": {
+    "alt": "Banda transportadora de PVC para transporte ligero en industria",
+    "title": "Banda PVC industrial"
+  },
+  "banda-poliuretano-industrial-alta-precision.png": {
+    "alt": "Banda de poliuretano para procesos industriales de alta precisión",
+    "title": "Banda poliuretano"
+  },
+  "banda-silicon-industrial-alta-temperatura.png": {
+    "alt": "Banda de silicón resistente a altas temperaturas industriales",
+    "title": "Banda de silicón"
+  },
+  "banda-modular-acetal-industrial-alta-resistencia.png": {
+    "alt": "Banda modular de acetal para uso industrial de alta resistencia",
+    "title": "Banda modular acetal"
+  },
+  "banda-modular-pp-industrial-uso-general.png": {
+    "alt": "Banda modular de polipropileno para transporte industrial general",
+    "title": "Banda modular PP"
+  },
+  "banda-modular-pe-industrial-flexible-impacto.png": {
+    "alt": "Banda modular de polietileno flexible resistente a impactos",
+    "title": "Banda modular PE"
+  },
+  "banda-textil-industrial-alta-traccion.png": {
+    "alt": "Banda transportadora textil con alta tracción para industria",
+    "title": "Banda textil"
+  },
+  "banda-nylon-industrial-alta-resistencia.png": {
+    "alt": "Banda transportadora de nylon de alta resistencia industrial",
+    "title": "Banda nylon"
+  },
+  "banda-dentada-simple-transmision.png": {
+    "alt": "Banda dentada para transmisión de movimiento en maquinaria",
+    "title": "Banda dentada simple"
+  },
+  "banda-dentada-recubrimiento-alta-traccion.png": {
+    "alt": "Banda dentada con recubrimiento para mayor tracción industrial",
+    "title": "Banda dentada con recubrimiento"
+  },
+  "banda-dentada-perforada-ventilacion.png": {
+    "alt": "Banda dentada perforada para ventilación y procesos especiales",
+    "title": "Banda dentada perforada"
+  },
+  "banda-recubrimiento-griptop-alta-adherencia.png": {
+    "alt": "Banda con recubrimiento griptop de alta adherencia industrial",
+    "title": "Recubrimiento griptop"
+  },
+  "banda-recubrimiento-diamante-antideslizante.png": {
+    "alt": "Banda con recubrimiento diamante antideslizante",
+    "title": "Recubrimiento diamante"
+  },
+  "banda-recubrimiento-nitrilo-resistencia-quimica.png": {
+    "alt": "Banda con recubrimiento nitrilo resistente a químicos y aceites",
+    "title": "Recubrimiento nitrilo"
+  },
+  "banda-recubrimiento-corcho-agarrre-controlado.png": {
+    "alt": "Banda con recubrimiento de corcho para agarre controlado",
+    "title": "Recubrimiento corcho"
+  },
+  "banda-teflon-fibra-alta-temperatura.png": {
+    "alt": "Banda de teflón con fibra para alta temperatura industrial",
+    "title": "Banda teflón fibra"
+  },
+  "banda-teflon-lisa-antiadherente.png": {
+    "alt": "Banda de teflón lisa con superficie antiadherente",
+    "title": "Banda teflón lisa"
+  },
+  "banda-teflon-malla-ventilacion.png": {
+    "alt": "Banda de teflón tipo malla para ventilación y calor",
+    "title": "Banda teflón malla"
+  },
+  "banda-polycord-transmision-ligera.png": {
+    "alt": "Banda tipo polycord redonda para transmisión ligera",
+    "title": "Polycord"
+  },
+  "banda-abierta-industrial-sin-empalme.png": {
+    "alt": "Banda transportadora abierta sin empalme para instalación",
+    "title": "Banda abierta"
+  }
+}
