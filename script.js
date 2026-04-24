@@ -52,20 +52,32 @@
     let currentSlide = 0;
     let autoPlayInterval;
 
-    // Cargar imágenes desde localStorage si existen (Panel Admin)
-    const storedImages = localStorage.getItem('heroImages');
-    if (storedImages) {
-      const images = JSON.parse(storedImages);
-      if (images.length > 0) {
-        heroCarousel.innerHTML = images.map((img, index) => `
+    const applyHeroImages = (images) => {
+      if (!Array.isArray(images) || !images.length) return;
+      stopAutoPlay();
+      currentSlide = 0;
+      heroCarousel.innerHTML = images
+        .map(
+          (img, index) => `
           <img class="hero-slide ${index === 0 ? 'active' : ''}" 
                src="${img.url}" 
                alt="${img.alt || 'Gobree Belt'}" 
                loading="${index === 0 ? 'eager' : 'lazy'}">
-        `).join('');
-        slides = Array.from(heroCarousel.querySelectorAll('.hero-slide'));
-      }
-    }
+        `
+        )
+        .join('');
+      slides = Array.from(heroCarousel.querySelectorAll('.hero-slide'));
+      startAutoPlay();
+    };
+
+    const loadHeroImages = async () => {
+      try {
+        const r = await fetch('/api/hero', { cache: 'no-store' });
+        if (!r.ok) return;
+        const data = await r.json();
+        if (data?.images?.length) applyHeroImages(data.images);
+      } catch (e) {}
+    };
 
     const updateCarousel = (index) => {
       slides[currentSlide].classList.remove('active');
@@ -108,6 +120,21 @@
     if (nextBtn) nextBtn.addEventListener('click', () => { nextSlide(); startAutoPlay(); });
 
     startAutoPlay();
+    loadHeroImages().then(() => {
+      if (!slides.length) return;
+      currentSlide = 0;
+      if (indicatorsContainer) {
+        indicatorsContainer.innerHTML = slides.map((_, i) => `
+          <div class="indicator ${i === 0 ? 'active' : ''}" data-index="${i}"></div>
+        `).join('');
+        indicatorsContainer.querySelectorAll('.indicator').forEach((ind) => {
+          ind.addEventListener('click', () => {
+            updateCarousel(parseInt(ind.dataset.index));
+            startAutoPlay();
+          });
+        });
+      }
+    });
   }
 
   function renderCatalog(items) {
@@ -274,19 +301,27 @@
       const industria = contactForm.querySelector('select[name="industria"]')?.value?.trim() || '';
       const mensaje = contactForm.querySelector('textarea[name="mensaje"], textarea')?.value?.trim() || '';
 
-      const asunto = encodeURIComponent('Solicitud de cotización - Gobree Belt');
-      const cuerpo = encodeURIComponent([
-        'Hola, quiero una cotización de Gobree Belt.',
-        nombre ? `Nombre: ${nombre}` : '',
-        correo ? `Correo: ${correo}` : '',
-        telefono ? `Teléfono: ${telefono}` : '',
-        industria ? `Industria: ${industria}` : '',
-        mensaje ? `Mensaje: ${mensaje}` : ''
-      ].filter(Boolean).join('\n'));
-
-      window.location.href = `mailto:contacto@gobreebelt.com?subject=${asunto}&body=${cuerpo}`;
-      alert('Gracias por contactarnos. Se abrirá tu cliente de correo para enviar la solicitud.');
-      contactForm.reset();
+      fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nombre,
+          email: correo,
+          telefono,
+          industria,
+          mensaje,
+          source: window.location.pathname
+        })
+      })
+        .then((r) => r.json().catch(() => ({})).then((data) => ({ ok: r.ok, data })))
+        .then(({ ok }) => {
+          if (!ok) throw new Error('send_failed');
+          alert('Gracias. Tu solicitud fue enviada. Te contactaremos por correo o llamada.');
+          contactForm.reset();
+        })
+        .catch(() => {
+          alert('No se pudo enviar en este momento. Intenta de nuevo o llámanos al 55 5835 1555.');
+        });
     });
   }
 
@@ -298,17 +333,28 @@
       const telefono = form.querySelector('input[name="telefono"]')?.value?.trim() || '';
       const industria = form.querySelector('select[name="industria"]')?.value?.trim() || '';
       const mensaje = form.querySelector('textarea[name="mensaje"]')?.value?.trim() || '';
-      const asunto = encodeURIComponent('Solicitud de asesoría - Formulario footer Gobree Belt');
-      const cuerpo = encodeURIComponent([
-        'Hola, me interesa una cotización de bandas transportadoras.',
-        nombre ? `Nombre: ${nombre}` : '',
-        email ? `Correo de contacto: ${email}` : '',
-        telefono ? `Teléfono: ${telefono}` : '',
-        industria ? `Industria: ${industria}` : '',
-        mensaje ? `Detalle: ${mensaje}` : ''
-      ].filter(Boolean).join('\n'));
-      window.location.href = `mailto:contacto@gobreebelt.com?subject=${asunto}&body=${cuerpo}`;
-      form.reset();
+
+      fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nombre,
+          email,
+          telefono,
+          industria,
+          mensaje,
+          source: window.location.pathname + '#footer'
+        })
+      })
+        .then((r) => r.json().catch(() => ({})).then((data) => ({ ok: r.ok, data })))
+        .then(({ ok }) => {
+          if (!ok) throw new Error('send_failed');
+          alert('Gracias. Tu solicitud fue enviada. Te contactaremos por correo o llamada.');
+          form.reset();
+        })
+        .catch(() => {
+          alert('No se pudo enviar en este momento. Intenta de nuevo o llámanos al 55 5835 1555.');
+        });
     });
   });
 })();

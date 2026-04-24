@@ -56,7 +56,19 @@
 <body>
   <div class="admin-container">
     <h1>Gestión del Carrusel</h1>
-    <p>Agrega o quita imágenes del carrusel principal. Los cambios se guardarán localmente para tu vista previa.</p>
+    <p>Agrega, ordena o quita imágenes del carrusel del inicio. Los cambios se guardan en el servidor.</p>
+
+    <div class="admin-form" style="border-bottom: 0; padding-bottom: 0; margin-bottom: 1.25rem;">
+      <label>
+        Contraseña del panel
+        <input type="password" id="adminPassword" placeholder="Contraseña">
+      </label>
+      <div style="display:flex; gap:.75rem; flex-wrap:wrap;">
+        <button class="btn" id="loginBtn">Iniciar sesión</button>
+        <button class="btn btn-secondary" id="logoutBtn">Cerrar sesión</button>
+      </div>
+      <p id="authStatus" style="margin:0; color: var(--muted); font-size: .95rem;"></p>
+    </div>
     
     <div class="admin-form">
       <label>
@@ -75,9 +87,9 @@
 
     <div style="margin-top: 3rem; padding-top: 2rem; border-top: 2px solid var(--surface-soft);">
       <h3>Finalizar Cambios</h3>
-      <p>Una vez que estés conforme con la vista previa en el Home, copia este código y envíalo al desarrollador o pégalo en el archivo de datos si tienes acceso.</p>
-      <button class="btn" id="exportBtn">Copiar Configuración</button>
-      <a href="index.html" class="btn btn-secondary">Ver Vista Previa</a>
+      <p>Guarda para aplicar los cambios al carrusel del inicio.</p>
+      <button class="btn" id="saveBtn">Guardar en el sitio</button>
+      <a href="/" class="btn btn-secondary">Ver Inicio</a>
     </div>
   </div>
 
@@ -86,16 +98,17 @@
     const imgUrl = document.getElementById('imgUrl');
     const imgAlt = document.getElementById('imgAlt');
     const addBtn = document.getElementById('addBtn');
-    const exportBtn = document.getElementById('exportBtn');
+    const saveBtn = document.getElementById('saveBtn');
+    const adminPassword = document.getElementById('adminPassword');
+    const loginBtn = document.getElementById('loginBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const authStatus = document.getElementById('authStatus');
 
-    // Imágenes por defecto
-    const defaultImages = [
-      { url: 'portadagobree.png', alt: 'Línea industrial con bandas transportadoras' },
-      { url: 'IndustriaAlimenticia.png', alt: 'Aplicación de bandas en industria alimenticia' },
-      { url: 'Logistica.png', alt: 'Sistema de bandas para logística y distribución' }
-    ];
+    let currentImages = [];
 
-    let currentImages = JSON.parse(localStorage.getItem('heroImages')) || defaultImages;
+    function setStatus(text) {
+      authStatus.textContent = text || '';
+    }
 
     function renderList() {
       imageList.innerHTML = currentImages.map((img, index) => `
@@ -105,14 +118,26 @@
             <strong>${img.url}</strong><br>
             <small>${img.alt}</small>
           </div>
-          <button class="btn btn-danger" onclick="removeImage(${index})">Eliminar</button>
+          <div style="display:flex; gap:.5rem; flex-wrap:wrap; justify-content:flex-end;">
+            <button class="btn btn-secondary" onclick="moveImage(${index}, -1)">↑</button>
+            <button class="btn btn-secondary" onclick="moveImage(${index}, 1)">↓</button>
+            <button class="btn btn-danger" onclick="removeImage(${index})">Eliminar</button>
+          </div>
         </div>
       `).join('');
-      localStorage.setItem('heroImages', JSON.stringify(currentImages));
     }
 
     window.removeImage = (index) => {
       currentImages.splice(index, 1);
+      renderList();
+    };
+
+    window.moveImage = (index, dir) => {
+      const next = index + dir;
+      if (next < 0 || next >= currentImages.length) return;
+      const tmp = currentImages[index];
+      currentImages[index] = currentImages[next];
+      currentImages[next] = tmp;
       renderList();
     };
 
@@ -127,14 +152,65 @@
       renderList();
     });
 
-    exportBtn.addEventListener('click', () => {
-      const data = JSON.stringify(currentImages, null, 2);
-      navigator.clipboard.writeText(data).then(() => {
-        alert('Configuración copiada al portapapeles. Envíala por correo para hacer los cambios permanentes en el servidor.');
-      });
+    loginBtn.addEventListener('click', async () => {
+      setStatus('Iniciando sesión...');
+      try {
+        const r = await fetch('/api/admin-login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'same-origin',
+          body: JSON.stringify({ password: adminPassword.value || '' })
+        });
+        if (!r.ok) throw new Error('login_failed');
+        setStatus('Sesión iniciada.');
+      } catch (e) {
+        setStatus('No se pudo iniciar sesión. Revisa la contraseña.');
+      }
     });
 
-    renderList();
+    logoutBtn.addEventListener('click', async () => {
+      setStatus('Cerrando sesión...');
+      try {
+        await fetch('/api/admin-logout', { method: 'POST', credentials: 'same-origin' });
+        setStatus('Sesión cerrada.');
+      } catch (e) {
+        setStatus('Sesión cerrada.');
+      }
+    });
+
+    saveBtn.addEventListener('click', async () => {
+      try {
+        const r = await fetch('/api/hero', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'same-origin',
+          body: JSON.stringify({ images: currentImages })
+        });
+        if (r.status === 401) {
+          alert('Necesitas iniciar sesión para guardar.');
+          return;
+        }
+        if (!r.ok) throw new Error('save_failed');
+        alert('Guardado. El carrusel del inicio se actualiza automáticamente.');
+      } catch (e) {
+        alert('No se pudo guardar. Intenta de nuevo.');
+      }
+    });
+
+    (async () => {
+      try {
+        const r = await fetch('/api/hero', { cache: 'no-store' });
+        const data = await r.json();
+        currentImages = Array.isArray(data.images) ? data.images : [];
+      } catch (e) {
+        currentImages = [
+          { url: 'portadagobree.png', alt: 'Línea industrial con bandas transportadoras' },
+          { url: 'IndustriaAlimenticia.png', alt: 'Aplicación de bandas en industria alimenticia' },
+          { url: 'Logistica.png', alt: 'Sistema de bandas para logística y distribución' }
+        ];
+      }
+      renderList();
+    })();
   </script>
 </body>
 </html>
