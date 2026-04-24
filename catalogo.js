@@ -8,7 +8,7 @@ const productos = [
     tags: ["PVC", "higiene", "transporte", "general"],
     material: "PVC",
     propiedad: "Higiene",
-    img: "banda-pvc-industrial.png",
+    img: "banda-pvc-industrial.webp",
     alt: "Banda transportadora de PVC para transporte ligero en industria",
     title: "Banda PVC industrial"
   },
@@ -20,7 +20,7 @@ const productos = [
     tags: ["Poliuretano", "PU", "higiene", "alimentos"],
     material: "Poliuretano",
     propiedad: "Higiene",
-    img: "banda-poliuretano-industrial.png",
+    img: "banda-poliuretano-industrial.webp",
     alt: "Banda de poliuretano para procesos industriales de alta precisión",
     title: "Banda poliuretano"
   },
@@ -32,7 +32,7 @@ const productos = [
     tags: ["Silicón", "higiene", "antiadherente"],
     material: "Silicón",
     propiedad: "Higiene",
-    img: "banda-silicon-industrial.png",
+    img: "banda-silicon-industrial.webp",
     alt: "Banda de silicón resistente a altas temperaturas industriales",
     title: "Banda de silicón"
   },
@@ -46,7 +46,7 @@ const productos = [
     tags: ["Acetal", "carga pesada", "modular", "todas las industrias"],
     material: "Acetal",
     propiedad: "Carga pesada",
-    img: "banda-modular-acetal-industrial.png",
+    img: "banda-modular-acetal-industrial.webp",
     alt: "Banda modular de acetal para uso industrial de alta resistencia",
     title: "Banda modular acetal"
   },
@@ -58,7 +58,7 @@ const productos = [
     tags: ["Polipropileno", "PP", "modular", "química", "todas las industrias"],
     material: "Polipropileno",
     propiedad: "Higiene",
-    img: "banda-modular-pp-industrial.png",
+    img: "banda-modular-pp-industrial.webp",
     alt: "Banda modular de polipropileno para transporte industrial general",
     title: "Banda modular PP"
   },
@@ -70,7 +70,7 @@ const productos = [
     tags: ["Polietileno", "PE", "modular", "baja temperatura", "todas las industrias"],
     material: "Polietileno",
     propiedad: "Higiene",
-    img: "banda-modular-pe-industrial.png",
+    img: "banda-modular-pe-industrial.webp",
     alt: "Banda modular de polietileno flexible resistente a impactos",
     title: "Banda modular PE"
   },
@@ -93,7 +93,7 @@ const productos = [
     tags: ["Textil", "flexibilidad", "ligero"],
     material: "Textil",
     propiedad: "Transmisión",
-    img: "banda-textil-industrial.png",
+    img: "banda-textil-industrial.webp",
     alt: "Banda transportadora textil con alta tracción para industria",
     title: "Banda textil"
   },
@@ -105,7 +105,7 @@ const productos = [
     tags: ["Transmisión", "potencia", "fuerza"],
     material: "Nylon",
     propiedad: "Transmisión",
-    img: "banda-nylon-industrial.png",
+    img: "banda-nylon-industrial.webp",
     alt: "Banda transportadora de nylon de alta resistencia industrial",
     title: "Banda nylon"
   },
@@ -117,7 +117,7 @@ const productos = [
     tags: ["Nylon", "poliamida", "estabilidad", "transmisión"],
     material: "Nylon",
     propiedad: "Transmisión",
-    img: "banda-nylon-industrial.png",
+    img: "banda-nylon-industrial.webp",
     alt: "Banda transportadora de nylon de alta resistencia industrial",
     title: "Banda nylon"
   },
@@ -131,7 +131,7 @@ const productos = [
     tags: ["Dentada", "sincrónica", "precisión"],
     material: "Poliuretano",
     propiedad: "Precisión",
-    img: "banda-dentada-simple-industrial.png",
+    img: "banda-dentada-simple-industrial.webp",
     alt: "Banda dentada para transmisión de movimiento en maquinaria",
     title: "Banda dentada simple"
   },
@@ -152,7 +152,7 @@ const productos = [
     tags: ["Dentada", "Grip Top", "recubrimiento", "tracción"],
     material: "PVC",
     propiedad: "Precisión",
-    img: "banda-recubrimiento-griptop.png",
+    img: "banda-recubrimiento-griptop.webp",
     alt: "Banda con recubrimiento griptop de alta adherencia industrial",
     title: "Recubrimiento griptop"
   },
@@ -164,7 +164,7 @@ const productos = [
     tags: ["Dentada", "Diamante", "recubrimiento"],
     material: "PVC",
     propiedad: "Precisión",
-    img: "banda-recubrimiento-diamante.png",
+    img: "banda-recubrimiento-diamante.webp",
     alt: "Banda con recubrimiento diamante antideslizante",
     title: "Recubrimiento diamante"
   },
@@ -176,7 +176,7 @@ const productos = [
     tags: ["Dentada", "Linatrile", "recubrimiento", "aceites"],
     material: "Nitrilo",
     propiedad: "Precisión",
-    img: "banda-recubrimiento-nitrilo.png",
+    img: "banda-recubrimiento-nitrilo.webp",
     alt: "Banda con recubrimiento nitrilo resistente a químicos y aceites",
     title: "Recubrimiento nitrilo"
   },
@@ -197,7 +197,7 @@ const productos = [
     tags: ["Dentada", "Nitrilo", "recubrimiento", "química"],
     material: "Nitrilo",
     propiedad: "Precisión",
-    img: "banda-recubrimiento-nitrilo.png",
+    img: "banda-recubrimiento-nitrilo.webp",
     alt: "Banda con recubrimiento nitrilo resistente a químicos y aceites",
     title: "Recubrimiento nitrilo"
   },
@@ -209,7 +209,7 @@ const productos = [
     tags: ["Dentada", "Corcho", "Hule", "recubrimiento"],
     material: "Hule",
     propiedad: "Precisión",
-    img: "banda-recubrimiento-corcho.png",
+    img: "banda-recubrimiento-corcho.webp",
     alt: "Banda con recubrimiento de corcho para agarre controlado",
     title: "Recubrimiento corcho"
   },
@@ -230,7 +230,7 @@ const productos = [
     tags: ["Dentada", "perforaciones", "vacío"],
     material: "Poliuretano",
     propiedad: "Precisión",
-    img: "banda-dentada-perforada-industrial.png",
+    img: "banda-dentada-perforada-industrial.webp",
     alt: "Banda dentada perforada para ventilación y procesos especiales",
     title: "Banda dentada perforada"
   },
@@ -253,7 +253,7 @@ const productos = [
     tags: ["Teflón", "PTFE", "fibra de vidrio", "alta temperatura"],
     material: "Teflón",
     propiedad: "Alta temperatura",
-    img: "banda-teflon-fibra.png",
+    img: "banda-teflon-fibra.webp",
     alt: "Banda de teflón con fibra para alta temperatura industrial",
     title: "Banda teflón fibra"
   },
@@ -265,7 +265,7 @@ const productos = [
     tags: ["Teflón", "PTFE", "elástica", "química"],
     material: "Teflón",
     propiedad: "Alta temperatura",
-    img: "banda-teflon-lisa.png",
+    img: "banda-teflon-lisa.webp",
     alt: "Banda de teflón lisa con superficie antiadherente",
     title: "Banda teflón lisa"
   },
@@ -279,7 +279,7 @@ const productos = [
     tags: ["Abierta", "instalación", "personalizado"],
     material: "Poliuretano",
     propiedad: "Transmisión",
-    img: "banda-abierta-industrial.png",
+    img: "banda-abierta-industrial.webp",
     alt: "Banda transportadora abierta sin empalme para instalación",
     title: "Banda abierta"
   },
@@ -291,7 +291,7 @@ const productos = [
     tags: ["Circular", "Polycord", "naranja", "potencia"],
     material: "Poliuretano",
     propiedad: "Transmisión",
-    img: "banda-polycord.png",
+    img: "banda-polycord.webp",
     alt: "Banda tipo polycord redonda para transmisión ligera",
     title: "Polycord"
   },
@@ -303,7 +303,7 @@ const productos = [
     tags: ["Circular", "Polycord", "verde", "tracción"],
     material: "Poliuretano",
     propiedad: "Transmisión",
-    img: "banda-polycord.png",
+    img: "banda-polycord.webp",
     alt: "Banda tipo polycord redonda para transmisión ligera",
     title: "Polycord"
   }
