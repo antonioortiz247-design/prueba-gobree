@@ -28,50 +28,67 @@
     </div>
   </header>
 
-  <main class="page-main container">
-    <section class="section">
-      <h1>Contáctanos</h1>
-      <p class="lead">Ismael Núñez · <a href="tel:+525510185910">+525510185910</a></p>
+  <main class="page-main">
+    <section class="hero" style="min-height:40vh;">
+      <div class="hero-overlay" style="background:linear-gradient(116deg, rgba(30,58,138,1) 0%, rgba(37,99,235,0.8) 100%);"></div>
+      <div class="container hero-content" style="text-align:center;">
+        <h1>Estamos listos para apoyarte</h1>
+        <p>Solicita una cotización técnica o asesoría en sitio. Respuesta en menos de 24 horas.</p>
+      </div>
     </section>
 
-    <section class="section contact-grid">
-      <form id="formulario-contacto" class="card contact-form" aria-label="Formulario completo de cotización">
-        <div class="footer-form-grid">
-          <label>
-            Nombre
-            <input type="text" name="nombre" placeholder="Tu nombre" required>
-          </label>
-          <label>
-            Correo
-            <input type="email" name="email" placeholder="tuempresa@correo.com" required>
-          </label>
-          <label>
-            Teléfono
-            <input type="tel" name="telefono" placeholder="55 0000 0000" required>
-          </label>
-          <label>
-            Industria
-            <select name="industria" required>
-              <option value="">Selecciona una opción</option>
-              <option>Alimenticia</option>
-              <option>Logística</option>
-              <option>Manufactura</option>
-              <option>Farmacéutica</option>
-              <option>Otra</option>
-            </select>
-          </label>
+    <section class="section container" style="margin-top:-5rem; position:relative; z-index:2;">
+      <div class="contact-grid">
+        <div class="card contact-form-wrap" style="padding:2.5rem;">
+          <h2 style="margin-bottom:1.5rem;">Envíanos tu requerimiento</h2>
+          <form id="formulario-contacto" class="contact-form" aria-label="Formulario completo de cotización">
+            <div class="footer-form-grid" style="grid-template-columns: 1fr 1fr; gap:1.5rem;">
+              <label>
+                Nombre Completo
+                <input type="text" name="nombre" placeholder="Tu nombre" required>
+              </label>
+              <label>
+                Correo Corporativo
+                <input type="email" name="email" placeholder="tuempresa@correo.com" required>
+              </label>
+              <label>
+                Teléfono / WhatsApp
+                <input type="tel" name="telefono" placeholder="55 0000 0000" required>
+              </label>
+              <label>
+                Industria / Sector
+                <select name="industria" required>
+                  <option value="">Selecciona una opción</option>
+                  <option>Alimenticia</option>
+                  <option>Logística</option>
+                  <option>Manufactura</option>
+                  <option>Farmacéutica</option>
+                  <option>Otra</option>
+                </select>
+              </label>
+            </div>
+            <label style="margin-top:1.5rem;">
+              ¿Qué necesitas transportar o qué problema buscas resolver?
+              <textarea name="mensaje" rows="5" placeholder="Describe tu proceso, tipo de banda, dimensiones o condiciones de operación." required></textarea>
+            </label>
+            <button class="btn" type="submit" style="width:100%; margin-top:1.5rem; font-size:1.1rem;">Enviar Solicitud Técnica</button>
+          </form>
         </div>
-        <label>
-          ¿Qué necesitas transportar?
-          <textarea name="mensaje" rows="4" placeholder="Cuéntanos tu proceso y tipo de banda que necesitas." required></textarea>
-        </label>
-        <button class="btn" type="submit">Encuentra tu banda adecuada</button>
-      </form>
 
-      <div class="card">
-        <h2>Zona de cobertura</h2>
-        <iframe title="Mapa de cobertura en la Megalópolis de México" src="https://www.google.com/maps/d/u/1/embed?mid=1Yg_CvV6muq6M81DNV-PjZn1jpaqxbZI&ehbc=2E312F&noprof=1" width="640" height="480" loading="lazy"></iframe>
-        <p><a class="btn btn-secondary" href="#formulario-contacto">Encuentra tu banda adecuada</a></p>
+        <div class="contact-info-column">
+          <div class="card" style="margin-bottom:1.5rem; padding:2rem;">
+            <h3>Atención Directa</h3>
+            <p style="margin-bottom:0.5rem;"><strong>Ismael Núñez</strong></p>
+            <p style="font-size:1.2rem;"><a href="tel:+525510185910" class="text-link">📞 +52 55 1018 5910</a></p>
+            <p style="margin-top:1rem;"><a href="https://wa.me/525510185910" class="btn btn-secondary" style="width:100%;">Escribir por WhatsApp</a></p>
+          </div>
+          
+          <div class="card" style="padding:1rem;">
+            <h3 style="padding:1rem 1rem 0;">Zona de Cobertura</h3>
+            <p style="padding:0 1rem 1rem; font-size:0.9rem; color:var(--muted);">Servicio técnico e instalación en toda la República Mexicana.</p>
+            <iframe title="Mapa de cobertura" src="https://www.google.com/maps/d/u/1/embed?mid=1Yg_CvV6muq6M81DNV-PjZn1jpaqxbZI&ehbc=2E312F&noprof=1" width="100%" height="300" style="border-radius:0.5rem;" loading="lazy"></iframe>
+          </div>
+        </div>
       </div>
     </section>
   </main>

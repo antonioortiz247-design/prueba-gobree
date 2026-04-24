@@ -123,6 +123,18 @@
       renderCatalog(filtered);
     };
 
+    // Aplicar filtro inicial desde URL si existe
+    const urlParams = new URLSearchParams(window.location.search);
+    const catParam = urlParams.get('categoria');
+    if (catParam) {
+      activeFilters.category = catParam;
+      const btn = document.querySelector(`.filter-btn[data-value="${catParam}"]`);
+      if (btn) {
+        document.querySelectorAll('.filter-btn[data-filter="category"]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      }
+    }
+
     document.querySelectorAll('.filter-btn').forEach((btn) => {
       btn.addEventListener('click', () => {
         const filterType = btn.dataset.filter;
