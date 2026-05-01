@@ -26,6 +26,13 @@
     .project-video:has(video:focus)::after,
     .project-video:has(video:active)::after { opacity:0; }
 
+    .media-trigger { cursor:pointer; border:0; background:none; padding:0; width:100%; text-align:inherit; }
+    .media-modal { position:fixed; inset:0; background:rgba(0,0,0,.85); display:none; align-items:center; justify-content:center; z-index:9999; padding:1rem; }
+    .media-modal.open { display:flex; }
+    .media-modal-content { width:min(980px,100%); }
+    .media-modal-content img, .media-modal-content video { width:100%; max-height:85vh; object-fit:contain; border-radius:12px; background:#000; }
+    .media-modal-close { position:absolute; top:1rem; right:1rem; border:0; background:#fff; color:#111; width:2.2rem; height:2.2rem; border-radius:999px; font-size:1.25rem; cursor:pointer; }
+
     .project-card h3 { font-size:1.1rem; margin:0 0 .5rem; }
     .project-card p { font-size:.98rem; line-height:1.45; }
     .project-tech { font-size:.92rem; }
@@ -86,7 +93,7 @@
       <div class="projects-grid">
         <article class="card project-card">
           <span class="tag project-tag">Alimenticio</span>
-          <div class="project-media"><img src="/IMAGENES GOBREE/banda-transportadora-industria-alimentaria.webp" alt="Proyecto de línea alimenticia" loading="lazy"></div>
+          <button class="project-media media-trigger" type="button" data-type="image" data-src="/IMAGENES GOBREE/banda-transportadora-industria-alimentaria.webp" data-alt="Proyecto de línea alimenticia"><img src="/IMAGENES GOBREE/banda-transportadora-industria-alimentaria.webp" alt="Proyecto de línea alimenticia" loading="lazy"></button>
           <h3>Línea de empaque cárnico</h3>
           <p>Implementación sanitaria para transporte continuo en producción de alimentos perecederos.</p>
           <p class="project-tech"><strong>Banda:</strong> PVC grado alimenticio · <strong>Año:</strong> 2025</p>
@@ -94,12 +101,9 @@
 
         <article class="card project-card">
           <span class="tag project-tag">Logística</span>
-          <div class="project-media project-video">
-            <video controls preload="none" playsinline poster="/IMAGENES GOBREE/banda-transportadora-logistica.webp" aria-label="Video del proyecto de clasificación logística">
-              <source src="/videos/proyectos/clasificacion-paqueteria.mp4" type="video/mp4">
-              Tu navegador no soporta video HTML5.
-            </video>
-          </div>
+          <button class="project-media project-video media-trigger" type="button" data-type="video" data-src="/videos/proyectos/clasificacion-paqueteria.mp4" data-poster="/IMAGENES GOBREE/banda-transportadora-logistica.webp" data-alt="Video del proyecto de clasificación logística">
+            <img src="/IMAGENES GOBREE/banda-transportadora-logistica.webp" alt="Video del proyecto de clasificación logística" loading="lazy">
+          </button>
           <h3>Clasificación de paquetería</h3>
           <p>Sistema modular para centro de distribución con alto volumen y ventanas de despacho críticas.</p>
           <p class="project-tech"><strong>Banda:</strong> Modular PP · <strong>Año:</strong> 2024</p>
@@ -107,7 +111,7 @@
 
         <article class="card project-card">
           <span class="tag project-tag">Manufactura</span>
-          <div class="project-media"><img src="/IMAGENES GOBREE/banda-transportadora-industria-litografica.webp" alt="Proyecto industria litográfica" loading="lazy"></div>
+          <button class="project-media media-trigger" type="button" data-type="image" data-src="/IMAGENES GOBREE/banda-transportadora-industria-litografica.webp" data-alt="Proyecto industria litográfica"><img src="/IMAGENES GOBREE/banda-transportadora-industria-litografica.webp" alt="Proyecto industria litográfica" loading="lazy"></button>
           <h3>Transporte en impresión offset</h3>
           <p>Integración para manejo estable de sustratos con precisión de sincronía entre estaciones.</p>
           <p class="project-tech"><strong>Banda:</strong> Nylon transmisión · <strong>Año:</strong> 2025</p>
@@ -115,7 +119,7 @@
 
         <article class="card project-card">
           <span class="tag project-tag">Empaque</span>
-          <div class="project-media"><img src="/IMAGENES GOBREE/banda-transportadora-carton-papel.webp" alt="Proyecto empaque cartón" loading="lazy"></div>
+          <button class="project-media media-trigger" type="button" data-type="image" data-src="/IMAGENES GOBREE/banda-transportadora-carton-papel.webp" data-alt="Proyecto empaque cartón"><img src="/IMAGENES GOBREE/banda-transportadora-carton-papel.webp" alt="Proyecto empaque cartón" loading="lazy"></button>
           <h3>Empaque de cartón corrugado</h3>
           <p>Automatización de flujo de cajas con reducción de paros por desalineación en banda.</p>
           <p class="project-tech"><strong>Banda:</strong> Dentada con recubrimiento · <strong>Año:</strong> 2023</p>
@@ -123,7 +127,7 @@
 
         <article class="card project-card">
           <span class="tag project-tag">Alimenticio</span>
-          <div class="project-media"><img src="/IMAGENES GOBREE/banda-transportadora-confiteria.webp" alt="Proyecto confitería" loading="lazy"></div>
+          <button class="project-media media-trigger" type="button" data-type="image" data-src="/IMAGENES GOBREE/banda-transportadora-confiteria.webp" data-alt="Proyecto confitería"><img src="/IMAGENES GOBREE/banda-transportadora-confiteria.webp" alt="Proyecto confitería" loading="lazy"></button>
           <h3>Línea de confitería continua</h3>
           <p>Solución antiadherente para enfriamiento y traslado de producto terminado.</p>
           <p class="project-tech"><strong>Banda:</strong> Teflón malla · <strong>Año:</strong> 2024</p>
@@ -131,12 +135,9 @@
 
         <article class="card project-card">
           <span class="tag project-tag">Logística</span>
-          <div class="project-media project-video">
-            <video controls preload="none" playsinline poster="/IMAGENES GOBREE/banda-transportadora-aeropuertos.webp" aria-label="Video del proyecto de aeropuerto">
-              <source src="/videos/proyectos/manejo-equipaje-aeropuerto.mp4" type="video/mp4">
-              Tu navegador no soporta video HTML5.
-            </video>
-          </div>
+          <button class="project-media project-video media-trigger" type="button" data-type="video" data-src="/videos/proyectos/manejo-equipaje-aeropuerto.mp4" data-poster="/IMAGENES GOBREE/banda-transportadora-aeropuertos.webp" data-alt="Video del proyecto de aeropuerto">
+            <img src="/IMAGENES GOBREE/banda-transportadora-aeropuertos.webp" alt="Video del proyecto de aeropuerto" loading="lazy">
+          </button>
           <h3>Manejo de equipaje en aeropuerto</h3>
           <p>Actualización de tramo transportador para mejorar continuidad operativa en picos de demanda.</p>
           <p class="project-tech"><strong>Banda:</strong> PVC antidesgaste · <strong>Año:</strong> 2026</p>
@@ -151,6 +152,12 @@
       </div>
     </section>
   </main>
+
+
+  <div id="mediaModal" class="media-modal" aria-hidden="true">
+    <button class="media-modal-close" id="mediaModalClose" aria-label="Cerrar">×</button>
+    <div class="media-modal-content" id="mediaModalContent"></div>
+  </div>
 
   <footer class="site-footer">
     <div class="container footer-grid">
@@ -170,5 +177,41 @@
     </div>
   </footer>
   <script src="script.js"></script>
+
+  <script>
+    (() => {
+      const modal = document.getElementById('mediaModal');
+      const content = document.getElementById('mediaModalContent');
+      const closeBtn = document.getElementById('mediaModalClose');
+      const triggers = document.querySelectorAll('.media-trigger');
+
+      const closeModal = () => {
+        modal.classList.remove('open');
+        modal.setAttribute('aria-hidden', 'true');
+        content.innerHTML = '';
+      };
+
+      triggers.forEach((el) => {
+        el.addEventListener('click', () => {
+          const type = el.dataset.type;
+          const src = el.dataset.src;
+          const alt = el.dataset.alt || 'Proyecto';
+
+          if (type === 'video') {
+            content.innerHTML = `<video controls autoplay playsinline poster="${el.dataset.poster || ''}"><source src="${src}" type="video/mp4">Tu navegador no soporta video HTML5.</video>`;
+          } else {
+            content.innerHTML = `<img src="${src}" alt="${alt}">`;
+          }
+
+          modal.classList.add('open');
+          modal.setAttribute('aria-hidden', 'false');
+        });
+      });
+
+      closeBtn.addEventListener('click', closeModal);
+      modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+    })();
+  </script>
 </body>
 </html>
