@@ -15,13 +15,16 @@
     .projects-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1rem; }
     .project-card { position:relative; overflow:hidden; }
     .project-media { position:relative; aspect-ratio: 16 / 10; overflow:hidden; border-radius:12px; margin-bottom:1rem; }
-    .project-media img { width:100%; height:100%; object-fit:cover; }
+    .project-media img, .project-media video { width:100%; height:100%; object-fit:cover; display:block; }
     .project-tag { position:absolute; top:.75rem; left:.75rem; z-index:2; }
     .project-tech { margin-top:.5rem; color:#4b5563; font-size:.95rem; }
     .project-video::after {
       content:'▶'; position:absolute; inset:0; display:grid; place-items:center;
-      color:#fff; font-size:2rem; background:rgba(0,0,0,.28);
+      color:#fff; font-size:2rem; background:rgba(0,0,0,.28); pointer-events:none;
     }
+    .project-video:has(video:hover)::after,
+    .project-video:has(video:focus)::after,
+    .project-video:has(video:active)::after { opacity:0; }
     @media (min-width: 960px) {
       .projects-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
     }
@@ -82,9 +85,12 @@
 
         <article class="card project-card">
           <span class="tag project-tag">Logística</span>
-          <a class="project-media project-video" href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" rel="noopener noreferrer" aria-label="Ver video del proyecto de clasificación logística">
-            <img src="/IMAGENES GOBREE/banda-transportadora-logistica.webp" alt="Video proyecto logística" loading="lazy">
-          </a>
+          <div class="project-media project-video">
+            <video controls preload="none" playsinline poster="/IMAGENES GOBREE/banda-transportadora-logistica.webp" aria-label="Video del proyecto de clasificación logística">
+              <source src="/videos/proyectos/clasificacion-paqueteria.mp4" type="video/mp4">
+              Tu navegador no soporta video HTML5.
+            </video>
+          </div>
           <h3>Clasificación de paquetería</h3>
           <p>Sistema modular para centro de distribución con alto volumen y ventanas de despacho críticas.</p>
           <p class="project-tech"><strong>Banda:</strong> Modular PP · <strong>Año:</strong> 2024</p>
@@ -116,9 +122,12 @@
 
         <article class="card project-card">
           <span class="tag project-tag">Logística</span>
-          <a class="project-media project-video" href="https://vimeo.com/148751763" target="_blank" rel="noopener noreferrer" aria-label="Ver video del proyecto de aeropuerto">
-            <img src="/IMAGENES GOBREE/banda-transportadora-aeropuertos.webp" alt="Video proyecto aeropuerto" loading="lazy">
-          </a>
+          <div class="project-media project-video">
+            <video controls preload="none" playsinline poster="/IMAGENES GOBREE/banda-transportadora-aeropuertos.webp" aria-label="Video del proyecto de aeropuerto">
+              <source src="/videos/proyectos/manejo-equipaje-aeropuerto.mp4" type="video/mp4">
+              Tu navegador no soporta video HTML5.
+            </video>
+          </div>
           <h3>Manejo de equipaje en aeropuerto</h3>
           <p>Actualización de tramo transportador para mejorar continuidad operativa en picos de demanda.</p>
           <p class="project-tech"><strong>Banda:</strong> PVC antidesgaste · <strong>Año:</strong> 2026</p>
