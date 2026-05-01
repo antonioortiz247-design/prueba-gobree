@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Proyectos industriales realizados por Gobree Belt con bandas transportadoras en distintas industrias.">
+  <title>Proyectos realizados | Gobree Belt</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="favicongobree.png">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .project-filters { display:flex; gap:.75rem; flex-wrap:wrap; margin-top:1.5rem; }
+    .projects-grid { display:grid; grid-template-columns:1fr; gap:1rem; }
+    .project-card { position:relative; overflow:hidden; padding:1rem; }
+    .project-media { position:relative; aspect-ratio: 16 / 9; overflow:hidden; border-radius:12px; margin-bottom:1rem; }
+    .project-media img, .project-media video { width:100%; height:100%; object-fit:cover; display:block; }
+    .project-tag { position:absolute; top:.75rem; left:.75rem; z-index:2; }
+    .project-tech { margin-top:.5rem; color:#4b5563; font-size:.95rem; }
+    .project-video::after {
+      content:'▶'; position:absolute; inset:0; display:grid; place-items:center;
+      color:#fff; font-size:2rem; background:rgba(0,0,0,.28); pointer-events:none;
+    }
+    .project-video:has(video:hover)::after,
+    .project-video:has(video:focus)::after,
+    .project-video:has(video:active)::after { opacity:0; }
+
+    .project-card h3 { font-size:1.1rem; margin:0 0 .5rem; }
+    .project-card p { font-size:.98rem; line-height:1.45; }
+    .project-tech { font-size:.92rem; }
+    .project-filters { overflow-x:auto; padding-bottom:.25rem; -webkit-overflow-scrolling:touch; }
+    .project-filters .btn { white-space:nowrap; }
+    @media (min-width: 640px) {
+      .projects-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    }
+    @media (min-width: 960px) {
+      .projects-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
+    }
+  </style>
+  <script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
+  <script>
+    window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
+  </script>
+  <script defer src="/_vercel/speed-insights/script.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-wrap">
+      <a class="logo" href="index.html"><img src="logoonlinegobree.png" alt="Logo Gobree Belt" loading="lazy"></a>
+      <button class="menu-toggle" aria-label="Abrir menú">☰</button>
+      <nav class="nav" id="mainNav">
+        <a href="index.html">Inicio</a>
+        <a href="nosotros.html">Nosotros</a>
+        <a href="sectores.html">Sectores</a>
+        <a href="productos.html">Productos</a>
+        <a href="servicios.html">Servicios</a>
+        <a href="proyectos.html" class="active">Proyectos</a>
+        <a href="contacto.html">Contacto</a>
+      </nav>
+      <a class="phone-btn" href="contacto.html#formulario-contacto">Cotiza Ahora</a>
+    </div>
+  </header>
+
+  <main class="page-main">
+    <section class="hero">
+      <img class="hero-bg" src="IndustriaAlimenticia.png" alt="Proyectos industriales Gobree Belt" loading="eager">
+      <div class="hero-overlay"></div>
+      <div class="container hero-content">
+        <h1>Proyectos realizados</h1>
+        <p>Aplicaciones reales de bandas transportadoras en distintas industrias</p>
+      </div>
+    </section>
+
+    <section class="section container">
+      <div class="project-filters" aria-label="Filtros de industria">
+        <button class="btn active" type="button">Todos</button>
+        <button class="btn btn-secondary" type="button">Alimenticio</button>
+        <button class="btn btn-secondary" type="button">Logística</button>
+        <button class="btn btn-secondary" type="button">Manufactura</button>
+        <button class="btn btn-secondary" type="button">Empaque</button>
+      </div>
+    </section>
+
+    <section class="section container">
+      <div class="projects-grid">
+        <article class="card project-card">
+          <span class="tag project-tag">Alimenticio</span>
+          <div class="project-media"><img src="/IMAGENES GOBREE/banda-transportadora-industria-alimentaria.webp" alt="Proyecto de línea alimenticia" loading="lazy"></div>
+          <h3>Línea de empaque cárnico</h3>
+          <p>Implementación sanitaria para transporte continuo en producción de alimentos perecederos.</p>
+          <p class="project-tech"><strong>Banda:</strong> PVC grado alimenticio · <strong>Año:</strong> 2025</p>
+        </article>
+
+        <article class="card project-card">
+          <span class="tag project-tag">Logística</span>
+          <div class="project-media project-video">
+            <video controls preload="none" playsinline poster="/IMAGENES GOBREE/banda-transportadora-logistica.webp" aria-label="Video del proyecto de clasificación logística">
+              <source src="/videos/proyectos/clasificacion-paqueteria.mp4" type="video/mp4">
+              Tu navegador no soporta video HTML5.
+            </video>
+          </div>
+          <h3>Clasificación de paquetería</h3>
+          <p>Sistema modular para centro de distribución con alto volumen y ventanas de despacho críticas.</p>
+          <p class="project-tech"><strong>Banda:</strong> Modular PP · <strong>Año:</strong> 2024</p>
+        </article>
+
+        <article class="card project-card">
+          <span class="tag project-tag">Manufactura</span>
+          <div class="project-media"><img src="/IMAGENES GOBREE/banda-transportadora-industria-litografica.webp" alt="Proyecto industria litográfica" loading="lazy"></div>
+          <h3>Transporte en impresión offset</h3>
+          <p>Integración para manejo estable de sustratos con precisión de sincronía entre estaciones.</p>
+          <p class="project-tech"><strong>Banda:</strong> Nylon transmisión · <strong>Año:</strong> 2025</p>
+        </article>
+
+        <article class="card project-card">
+          <span class="tag project-tag">Empaque</span>
+          <div class="project-media"><img src="/IMAGENES GOBREE/banda-transportadora-carton-papel.webp" alt="Proyecto empaque cartón" loading="lazy"></div>
+          <h3>Empaque de cartón corrugado</h3>
+          <p>Automatización de flujo de cajas con reducción de paros por desalineación en banda.</p>
+          <p class="project-tech"><strong>Banda:</strong> Dentada con recubrimiento · <strong>Año:</strong> 2023</p>
+        </article>
+
+        <article class="card project-card">
+          <span class="tag project-tag">Alimenticio</span>
+          <div class="project-media"><img src="/IMAGENES GOBREE/banda-transportadora-confiteria.webp" alt="Proyecto confitería" loading="lazy"></div>
+          <h3>Línea de confitería continua</h3>
+          <p>Solución antiadherente para enfriamiento y traslado de producto terminado.</p>
+          <p class="project-tech"><strong>Banda:</strong> Teflón malla · <strong>Año:</strong> 2024</p>
+        </article>
+
+        <article class="card project-card">
+          <span class="tag project-tag">Logística</span>
+          <div class="project-media project-video">
+            <video controls preload="none" playsinline poster="/IMAGENES GOBREE/banda-transportadora-aeropuertos.webp" aria-label="Video del proyecto de aeropuerto">
+              <source src="/videos/proyectos/manejo-equipaje-aeropuerto.mp4" type="video/mp4">
+              Tu navegador no soporta video HTML5.
+            </video>
+          </div>
+          <h3>Manejo de equipaje en aeropuerto</h3>
+          <p>Actualización de tramo transportador para mejorar continuidad operativa en picos de demanda.</p>
+          <p class="project-tech"><strong>Banda:</strong> PVC antidesgaste · <strong>Año:</strong> 2026</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section alt-bg">
+      <div class="container" style="text-align:center;">
+        <h2>¿Necesitas una solución similar?</h2>
+        <a class="btn" href="contacto.html">Solicitar cotización</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div><h3>Gobree Belt</h3><p>Bandas transportadoras y soluciones de transmisión para la industria.</p></div>
+      <div>
+        <h4>Enlaces rápidos</h4>
+        <ul>
+          <li><a href="servicios.html">Servicios</a></li>
+          <li><a href="proyectos.html">Proyectos</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contacto</h4>
+        <p>Ismael Núñez</p>
+        <p><a href="tel:+525558351555">55 5835 1555</a></p>
+      </div>
+    </div>
+  </footer>
+  <script src="script.js"></script>
+</body>
+</html>
