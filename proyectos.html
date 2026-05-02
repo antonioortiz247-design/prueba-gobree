@@ -90,7 +90,7 @@
     </section>
 
     <section class="section container">
-      <div class="projects-grid">
+      <div class="projects-grid" id="projectsGrid">
         <article class="card project-card">
           <span class="tag project-tag">Alimenticio</span>
           <button class="project-media media-trigger" type="button" data-type="image" data-src="/IMAGENES GOBREE/banda-transportadora-industria-alimentaria.webp" data-alt="Proyecto de línea alimenticia"><img src="/IMAGENES GOBREE/banda-transportadora-industria-alimentaria.webp" alt="Proyecto de línea alimenticia" loading="lazy"></button>
@@ -189,7 +189,44 @@
       const modal = document.getElementById('mediaModal');
       const content = document.getElementById('mediaModalContent');
       const closeBtn = document.getElementById('mediaModalClose');
-      const triggers = document.querySelectorAll('.media-trigger');
+      const projectsGrid = document.getElementById('projectsGrid');
+      const projectCardHtml = (item) => {
+        const media = item.mediaType === 'video'
+          ? `<button class="project-media project-video media-trigger" type="button" data-type="video" data-src="${item.mediaSrc}" data-poster="${item.mediaPoster || ''}" data-alt="${item.mediaAlt || ''}"><img src="${item.mediaPoster || item.mediaSrc}" alt="${item.mediaAlt || ''}" loading="lazy"></button>`
+          : `<button class="project-media media-trigger" type="button" data-type="image" data-src="${item.mediaSrc}" data-alt="${item.mediaAlt || ''}"><img src="${item.mediaSrc}" alt="${item.mediaAlt || ''}" loading="lazy"></button>`;
+        return `<article class="card project-card"><span class="tag project-tag">${item.category || ''}</span>${media}<h3>${item.title || ''}</h3><p>${item.description || ''}</p><p class="project-tech"><strong>Banda:</strong> ${item.band || ''} · <strong>Año:</strong> ${item.year || ''}</p><a class="btn btn-secondary" href="contacto.html#formulario-contacto">Solicitar proyecto similar</a></article>`;
+      };
+      const bindMediaTriggers = () => {
+        const triggers = document.querySelectorAll('.media-trigger');
+        triggers.forEach((el) => {
+          el.addEventListener('click', () => {
+            const type = el.dataset.type;
+            const src = el.dataset.src;
+            if (!src) return;
+            if (type === 'video') {
+              content.innerHTML = `<video controls autoplay playsinline poster="${el.dataset.poster || ''}"><source src="${src}" type="video/mp4">Tu navegador no soporta video HTML5.</video>`;
+            } else {
+              content.innerHTML = `<img src="${src}" alt="${el.dataset.alt || 'Proyecto'}">`;
+            }
+            modal.classList.add('open');
+            modal.setAttribute('aria-hidden', 'false');
+          });
+        });
+      };
+      const loadProjects = async () => {
+        if (!projectsGrid) return;
+        try {
+          const r = await fetch('/api/projects', { cache: 'no-store' });
+          if (!r.ok) return bindMediaTriggers();
+          const data = await r.json();
+          if (!Array.isArray(data.projects) || !data.projects.length) return bindMediaTriggers();
+          projectsGrid.innerHTML = data.projects.map(projectCardHtml).join('');
+          bindMediaTriggers();
+        } catch (_) {
+          bindMediaTriggers();
+        }
+      };
+
 
       const closeModal = () => {
         modal.classList.remove('open');
@@ -197,22 +234,7 @@
         content.innerHTML = '';
       };
 
-      triggers.forEach((el) => {
-        el.addEventListener('click', () => {
-          const type = el.dataset.type;
-          const src = el.dataset.src;
-          const alt = el.dataset.alt || 'Proyecto';
-
-          if (type === 'video') {
-            content.innerHTML = `<video controls autoplay playsinline poster="${el.dataset.poster || ''}"><source src="${src}" type="video/mp4">Tu navegador no soporta video HTML5.</video>`;
-          } else {
-            content.innerHTML = `<img src="${src}" alt="${alt}">`;
-          }
-
-          modal.classList.add('open');
-          modal.setAttribute('aria-hidden', 'false');
-        });
-      });
+      loadProjects();
 
       closeBtn.addEventListener('click', closeModal);
       modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
