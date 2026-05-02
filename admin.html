@@ -268,6 +268,32 @@
 
     <div class="admin-card">
       <h2 style="margin:0 0 .75rem;">Tarjetas de Proyectos</h2>
+      <div class="admin-add-grid" style="margin-bottom:1rem;">
+        <div class="upload-box" id="projectUploadBox" tabindex="0" role="button" aria-label="Seleccionar media de proyecto">
+          <strong>Subir media del proyecto</strong>
+          <div class="upload-meta" id="projectUploadMeta">Toca aquí o arrastra una imagen o video. Se sube al servidor y genera una URL.</div>
+          <div class="admin-row" style="justify-content:center;">
+            <button class="btn btn-secondary" type="button" id="pickProjectMediaBtn">Seleccionar</button>
+            <button class="btn btn-secondary" type="button" id="uploadProjectMediaBtn">Subir</button>
+            <button class="btn btn-secondary" type="button" id="clearProjectMediaBtn">Limpiar</button>
+          </div>
+          <input type="file" id="projectMediaFile" accept="image/*,video/*" style="display:none;">
+          <img id="projectMediaPreviewImg" class="upload-preview" alt="">
+          <video id="projectMediaPreviewVideo" class="upload-preview" controls playsinline style="display:none;"></video>
+        </div>
+
+        <div class="upload-box" id="projectPosterUploadBox" tabindex="0" role="button" aria-label="Seleccionar miniatura de video">
+          <strong>Subir miniatura (opcional)</strong>
+          <div class="upload-meta" id="projectPosterUploadMeta">Solo si el tipo de media es Video. Sube una imagen para mostrar como portada.</div>
+          <div class="admin-row" style="justify-content:center;">
+            <button class="btn btn-secondary" type="button" id="pickProjectPosterBtn">Seleccionar</button>
+            <button class="btn btn-secondary" type="button" id="uploadProjectPosterBtn">Subir</button>
+            <button class="btn btn-secondary" type="button" id="clearProjectPosterBtn">Limpiar</button>
+          </div>
+          <input type="file" id="projectPosterFile" accept="image/*" style="display:none;">
+          <img id="projectPosterPreviewImg" class="upload-preview" alt="">
+        </div>
+      </div>
       <div class="admin-form" style="margin-bottom:1rem;">
         <label>Categoría<input type="text" id="projectCategory" placeholder="Alimenticio"></label>
         <label>Título<input type="text" id="projectTitle" placeholder="Nombre del proyecto"></label>
@@ -320,6 +346,23 @@
     const projectMediaPoster = document.getElementById('projectMediaPoster');
     const projectMediaAlt = document.getElementById('projectMediaAlt');
 
+    const projectUploadBox = document.getElementById('projectUploadBox');
+    const projectUploadMeta = document.getElementById('projectUploadMeta');
+    const projectMediaFile = document.getElementById('projectMediaFile');
+    const pickProjectMediaBtn = document.getElementById('pickProjectMediaBtn');
+    const uploadProjectMediaBtn = document.getElementById('uploadProjectMediaBtn');
+    const clearProjectMediaBtn = document.getElementById('clearProjectMediaBtn');
+    const projectMediaPreviewImg = document.getElementById('projectMediaPreviewImg');
+    const projectMediaPreviewVideo = document.getElementById('projectMediaPreviewVideo');
+
+    const projectPosterUploadBox = document.getElementById('projectPosterUploadBox');
+    const projectPosterUploadMeta = document.getElementById('projectPosterUploadMeta');
+    const projectPosterFile = document.getElementById('projectPosterFile');
+    const pickProjectPosterBtn = document.getElementById('pickProjectPosterBtn');
+    const uploadProjectPosterBtn = document.getElementById('uploadProjectPosterBtn');
+    const clearProjectPosterBtn = document.getElementById('clearProjectPosterBtn');
+    const projectPosterPreviewImg = document.getElementById('projectPosterPreviewImg');
+
 
     let currentImages = [];
     let currentProjects = [];
@@ -330,6 +373,14 @@
 
     function setUploadMeta(text) {
       uploadMeta.textContent = text || '';
+    }
+
+    function setProjectUploadMeta(text) {
+      projectUploadMeta.textContent = text || '';
+    }
+
+    function setProjectPosterUploadMeta(text) {
+      projectPosterUploadMeta.textContent = text || '';
     }
 
     function approximateBytesFromDataUrl(dataUrl) {
@@ -405,6 +456,82 @@
       filePreview.src = '';
       filePreview.style.display = 'none';
       setUploadMeta('Toca aquí o arrastra una imagen (JPG/PNG). Se optimiza automáticamente.');
+    }
+
+    let projectMediaObjectUrl = '';
+    let projectPosterObjectUrl = '';
+
+    function clearProjectMediaSelection() {
+      if (projectMediaObjectUrl) URL.revokeObjectURL(projectMediaObjectUrl);
+      projectMediaObjectUrl = '';
+      projectMediaFile.value = '';
+      projectMediaPreviewImg.src = '';
+      projectMediaPreviewImg.style.display = 'none';
+      projectMediaPreviewVideo.pause();
+      projectMediaPreviewVideo.removeAttribute('src');
+      projectMediaPreviewVideo.style.display = 'none';
+      setProjectUploadMeta('Toca aquí o arrastra una imagen o video. Se sube al servidor y genera una URL.');
+    }
+
+    function clearProjectPosterSelection() {
+      if (projectPosterObjectUrl) URL.revokeObjectURL(projectPosterObjectUrl);
+      projectPosterObjectUrl = '';
+      projectPosterFile.value = '';
+      projectPosterPreviewImg.src = '';
+      projectPosterPreviewImg.style.display = 'none';
+      setProjectPosterUploadMeta('Solo si el tipo de media es Video. Sube una imagen para mostrar como portada.');
+    }
+
+    function previewProjectMedia(file) {
+      if (projectMediaObjectUrl) URL.revokeObjectURL(projectMediaObjectUrl);
+      projectMediaObjectUrl = URL.createObjectURL(file);
+
+      if (String(file.type || '').startsWith('video/')) {
+        projectMediaPreviewImg.style.display = 'none';
+        projectMediaPreviewVideo.src = projectMediaObjectUrl;
+        projectMediaPreviewVideo.style.display = 'block';
+        projectMediaType.value = 'video';
+      } else {
+        projectMediaPreviewVideo.pause();
+        projectMediaPreviewVideo.removeAttribute('src');
+        projectMediaPreviewVideo.style.display = 'none';
+        projectMediaPreviewImg.src = projectMediaObjectUrl;
+        projectMediaPreviewImg.alt = projectMediaAlt.value || 'Vista previa';
+        projectMediaPreviewImg.style.display = 'block';
+        projectMediaType.value = 'image';
+      }
+
+      if (!projectMediaAlt.value) projectMediaAlt.value = filenameToAlt(file.name) || 'Proyecto Gobree';
+      setProjectUploadMeta(`Seleccionado: ${file.name} • ${prettyBytes(file.size)}`);
+    }
+
+    function previewProjectPoster(file) {
+      if (projectPosterObjectUrl) URL.revokeObjectURL(projectPosterObjectUrl);
+      projectPosterObjectUrl = URL.createObjectURL(file);
+      projectPosterPreviewImg.src = projectPosterObjectUrl;
+      projectPosterPreviewImg.alt = 'Miniatura';
+      projectPosterPreviewImg.style.display = 'block';
+      setProjectPosterUploadMeta(`Seleccionado: ${file.name} • ${prettyBytes(file.size)}`);
+    }
+
+    async function uploadDeviceFile(file) {
+      if (!file) throw new Error('missing_file');
+      if (file.size > 12_000_000) throw new Error('file_too_large');
+      const buf = await file.arrayBuffer();
+      const r = await fetch('/api/upload-media', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+          'Content-Type': file.type || 'application/octet-stream',
+          'X-Filename': encodeURIComponent(file.name || 'media')
+        },
+        body: buf
+      });
+      const payload = await readPayload(r);
+      if (!r.ok || !payload || payload.ok !== true) {
+        throw new Error(formatErrorMessage('No se pudo subir', r, payload));
+      }
+      return payload;
     }
 
     async function readPayload(r) {
@@ -500,6 +627,76 @@
       imgAlt.value = '';
       clearSelectedFile();
       renderList();
+    });
+
+    pickProjectMediaBtn.addEventListener('click', () => projectMediaFile.click());
+    pickProjectPosterBtn.addEventListener('click', () => projectPosterFile.click());
+
+    clearProjectMediaBtn.addEventListener('click', () => clearProjectMediaSelection());
+    clearProjectPosterBtn.addEventListener('click', () => clearProjectPosterSelection());
+
+    projectUploadBox.addEventListener('click', (e) => {
+      if (e.target === pickProjectMediaBtn || e.target === uploadProjectMediaBtn || e.target === clearProjectMediaBtn) return;
+      projectMediaFile.click();
+    });
+
+    projectPosterUploadBox.addEventListener('click', (e) => {
+      if (e.target === pickProjectPosterBtn || e.target === uploadProjectPosterBtn || e.target === clearProjectPosterBtn) return;
+      projectPosterFile.click();
+    });
+
+    projectUploadBox.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      projectUploadBox.classList.add('dragover');
+    });
+    projectUploadBox.addEventListener('dragleave', () => projectUploadBox.classList.remove('dragover'));
+    projectUploadBox.addEventListener('drop', (e) => {
+      e.preventDefault();
+      projectUploadBox.classList.remove('dragover');
+      const file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+      if (!file) return;
+      projectMediaFile.files = e.dataTransfer.files;
+      projectMediaFile.dispatchEvent(new Event('change'));
+    });
+
+    projectMediaFile.addEventListener('change', () => {
+      const file = projectMediaFile.files && projectMediaFile.files[0];
+      if (!file) return;
+      previewProjectMedia(file);
+    });
+
+    projectPosterFile.addEventListener('change', () => {
+      const file = projectPosterFile.files && projectPosterFile.files[0];
+      if (!file) return;
+      previewProjectPoster(file);
+    });
+
+    uploadProjectMediaBtn.addEventListener('click', async () => {
+      const file = projectMediaFile.files && projectMediaFile.files[0];
+      if (!file) return alert('Selecciona primero una imagen o video.');
+      setProjectUploadMeta('Subiendo...');
+      try {
+        const out = await uploadDeviceFile(file);
+        projectMediaSrc.value = out.url || '';
+        setProjectUploadMeta(`Subido: ${out.url}`);
+      } catch (e) {
+        setProjectUploadMeta('No se pudo subir.');
+        alert(String(e && e.message ? e.message : e));
+      }
+    });
+
+    uploadProjectPosterBtn.addEventListener('click', async () => {
+      const file = projectPosterFile.files && projectPosterFile.files[0];
+      if (!file) return alert('Selecciona primero una imagen.');
+      setProjectPosterUploadMeta('Subiendo...');
+      try {
+        const out = await uploadDeviceFile(file);
+        projectMediaPoster.value = out.url || '';
+        setProjectPosterUploadMeta(`Subido: ${out.url}`);
+      } catch (e) {
+        setProjectPosterUploadMeta('No se pudo subir.');
+        alert(String(e && e.message ? e.message : e));
+      }
     });
 
     pickFileBtn.addEventListener('click', () => {
