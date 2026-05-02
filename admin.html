@@ -94,7 +94,8 @@
       color: #334155;
     }
     .admin-form input[type="text"],
-    .admin-form input[type="password"] {
+    .admin-form input[type="password"],
+    .admin-form select {
       width: 100%;
       padding: .8rem .9rem;
       border-radius: .8rem;
@@ -264,6 +265,26 @@
       <div id="imageList" class="image-list"></div>
     </div>
 
+
+    <div class="admin-card">
+      <h2 style="margin:0 0 .75rem;">Tarjetas de Proyectos</h2>
+      <div class="admin-form" style="margin-bottom:1rem;">
+        <label>Categoría<input type="text" id="projectCategory" placeholder="Alimenticio"></label>
+        <label>Título<input type="text" id="projectTitle" placeholder="Nombre del proyecto"></label>
+        <label>Descripción<input type="text" id="projectDescription" placeholder="Descripción breve"></label>
+        <label>Banda<input type="text" id="projectBand" placeholder="PVC grado alimenticio"></label>
+        <label>Año<input type="text" id="projectYear" placeholder="2026"></label>
+        <label>Tipo de media
+          <select id="projectMediaType"><option value="image">Imagen</option><option value="video">Video</option></select>
+        </label>
+        <label>URL media<input type="text" id="projectMediaSrc" placeholder="/IMAGENES... o /videos..."></label>
+        <label>URL miniatura video (opcional)<input type="text" id="projectMediaPoster" placeholder="Solo para video"></label>
+        <label>Alt media<input type="text" id="projectMediaAlt" placeholder="Texto descriptivo"></label>
+        <div class="admin-row"><button class="btn btn-success" id="addProjectBtn" type="button">Agregar tarjeta</button></div>
+      </div>
+      <div id="projectList" class="image-list"></div>
+    </div>
+
     <div class="admin-savebar">
       <button class="btn" id="saveBtn" type="button">Guardar cambios</button>
       <a href="/" class="btn btn-secondary">Ver Inicio</a>
@@ -287,7 +308,21 @@
     const filePreview = document.getElementById('filePreview');
     const uploadMeta = document.getElementById('uploadMeta');
 
+    const projectList = document.getElementById('projectList');
+    const addProjectBtn = document.getElementById('addProjectBtn');
+    const projectCategory = document.getElementById('projectCategory');
+    const projectTitle = document.getElementById('projectTitle');
+    const projectDescription = document.getElementById('projectDescription');
+    const projectBand = document.getElementById('projectBand');
+    const projectYear = document.getElementById('projectYear');
+    const projectMediaType = document.getElementById('projectMediaType');
+    const projectMediaSrc = document.getElementById('projectMediaSrc');
+    const projectMediaPoster = document.getElementById('projectMediaPoster');
+    const projectMediaAlt = document.getElementById('projectMediaAlt');
+
+
     let currentImages = [];
+    let currentProjects = [];
 
     function setStatus(text) {
       authStatus.textContent = text || '';
@@ -443,6 +478,18 @@
       renderList();
     };
 
+
+    function renderProjectList() {
+      projectList.innerHTML = currentProjects.map((p, index) => `
+        <div class="image-item">
+          <img src="${p.mediaType === 'video' ? (p.mediaPoster || p.mediaSrc) : p.mediaSrc}" alt="${p.mediaAlt || p.title}">
+          <div class="image-item-info"><strong>${p.title}</strong><br><small>${p.category} · ${p.band} · ${p.year}</small><br><small>${p.description}</small></div>
+          <div style="display:flex; gap:.5rem;"><button class="btn btn-secondary" onclick="editProject(${index})">Editar</button><button class="btn btn-danger" onclick="removeProject(${index})">Eliminar</button></div>
+        </div>`).join('');
+    }
+    window.removeProject=(index)=>{ currentProjects.splice(index,1); renderProjectList(); };
+    window.editProject=(index)=>{ const p=currentProjects[index]; projectCategory.value=p.category||''; projectTitle.value=p.title||''; projectDescription.value=p.description||''; projectBand.value=p.band||''; projectYear.value=p.year||''; projectMediaType.value=p.mediaType||'image'; projectMediaSrc.value=p.mediaSrc||''; projectMediaPoster.value=p.mediaPoster||''; projectMediaAlt.value=p.mediaAlt||''; currentProjects.splice(index,1); renderProjectList(); };
+
     addBtn.addEventListener('click', () => {
       if (!imgUrl.value) return alert('Por favor ingresa la URL de la imagen');
       currentImages.push({
@@ -510,6 +557,25 @@
       imgFile.dispatchEvent(new Event('change'));
     });
 
+
+    addProjectBtn.addEventListener('click', () => {
+      if (!projectTitle.value || !projectMediaSrc.value) return alert('Título y URL media son obligatorios');
+      currentProjects.push({
+        category: projectCategory.value || 'General',
+        title: projectTitle.value,
+        description: projectDescription.value,
+        band: projectBand.value,
+        year: projectYear.value,
+        mediaType: projectMediaType.value === 'video' ? 'video' : 'image',
+        mediaSrc: projectMediaSrc.value,
+        mediaPoster: projectMediaPoster.value,
+        mediaAlt: projectMediaAlt.value || projectTitle.value
+      });
+      [projectCategory,projectTitle,projectDescription,projectBand,projectYear,projectMediaSrc,projectMediaPoster,projectMediaAlt].forEach(el=>el.value='');
+      projectMediaType.value='image';
+      renderProjectList();
+    });
+
     loginBtn.addEventListener('click', async () => {
       setStatus('Iniciando sesión...');
       try {
@@ -565,7 +631,9 @@
           alert(msg);
           return;
         }
-        alert('Guardado. El carrusel del inicio se actualiza automáticamente.');
+        const pr = await fetch('/api/projects', { method:'POST', headers:{ 'Content-Type':'application/json' }, credentials:'same-origin', body: JSON.stringify({ projects: currentProjects }) });
+        if (!pr.ok) { const pp = await readPayload(pr); throw new Error(formatErrorMessage('No se pudo guardar Proyectos', pr, pp)); }
+        alert('Guardado. Se actualizaron carrusel y proyectos.');
       } catch (e) {
         const msg = `No se pudo guardar | ${String(e && e.message ? e.message : e)}`;
         setStatus(msg);
@@ -586,6 +654,14 @@
         ];
       }
       renderList();
+      try {
+        const rp = await fetch('/api/projects', { cache: 'no-store' });
+        const dp = await rp.json();
+        currentProjects = Array.isArray(dp.projects) ? dp.projects : [];
+      } catch (e) {
+        currentProjects = [];
+      }
+      renderProjectList();
     })();
   </script>
 </body>
