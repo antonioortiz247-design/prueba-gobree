@@ -299,7 +299,6 @@
         <label>Título<input type="text" id="projectTitle" placeholder="Nombre del proyecto"></label>
         <label>Descripción<input type="text" id="projectDescription" placeholder="Descripción breve"></label>
         <label>Banda<input type="text" id="projectBand" placeholder="PVC grado alimenticio"></label>
-        <label>Año<input type="text" id="projectYear" placeholder="2026"></label>
         <label>Tipo de media
           <select id="projectMediaType"><option value="image">Imagen</option><option value="video">Video</option></select>
         </label>
@@ -340,7 +339,6 @@
     const projectTitle = document.getElementById('projectTitle');
     const projectDescription = document.getElementById('projectDescription');
     const projectBand = document.getElementById('projectBand');
-    const projectYear = document.getElementById('projectYear');
     const projectMediaType = document.getElementById('projectMediaType');
     const projectMediaSrc = document.getElementById('projectMediaSrc');
     const projectMediaPoster = document.getElementById('projectMediaPoster');
@@ -610,12 +608,12 @@
       projectList.innerHTML = currentProjects.map((p, index) => `
         <div class="image-item">
           <img src="${p.mediaType === 'video' ? (p.mediaPoster || p.mediaSrc) : p.mediaSrc}" alt="${p.mediaAlt || p.title}">
-          <div class="image-item-info"><strong>${p.title}</strong><br><small>${p.category} · ${p.band} · ${p.year}</small><br><small>${p.description}</small></div>
+          <div class="image-item-info"><strong>${p.title}</strong><br><small>${p.category} · ${p.band}</small><br><small>${p.description}</small></div>
           <div style="display:flex; gap:.5rem;"><button class="btn btn-secondary" onclick="editProject(${index})">Editar</button><button class="btn btn-danger" onclick="removeProject(${index})">Eliminar</button></div>
         </div>`).join('');
     }
     window.removeProject=(index)=>{ currentProjects.splice(index,1); renderProjectList(); };
-    window.editProject=(index)=>{ const p=currentProjects[index]; projectCategory.value=p.category||''; projectTitle.value=p.title||''; projectDescription.value=p.description||''; projectBand.value=p.band||''; projectYear.value=p.year||''; projectMediaType.value=p.mediaType||'image'; projectMediaSrc.value=p.mediaSrc||''; projectMediaPoster.value=p.mediaPoster||''; projectMediaAlt.value=p.mediaAlt||''; currentProjects.splice(index,1); renderProjectList(); };
+    window.editProject=(index)=>{ const p=currentProjects[index]; projectCategory.value=p.category||''; projectTitle.value=p.title||''; projectDescription.value=p.description||''; projectBand.value=p.band||''; projectMediaType.value=p.mediaType||'image'; projectMediaSrc.value=p.mediaSrc||''; projectMediaPoster.value=p.mediaPoster||''; projectMediaAlt.value=p.mediaAlt||''; currentProjects.splice(index,1); renderProjectList(); };
 
     addBtn.addEventListener('click', () => {
       if (!imgUrl.value) return alert('Por favor ingresa la URL de la imagen');
@@ -762,13 +760,12 @@
         title: projectTitle.value,
         description: projectDescription.value,
         band: projectBand.value,
-        year: projectYear.value,
         mediaType: projectMediaType.value === 'video' ? 'video' : 'image',
         mediaSrc: projectMediaSrc.value,
         mediaPoster: projectMediaPoster.value,
         mediaAlt: projectMediaAlt.value || projectTitle.value
       });
-      [projectCategory,projectTitle,projectDescription,projectBand,projectYear,projectMediaSrc,projectMediaPoster,projectMediaAlt].forEach(el=>el.value='');
+      [projectCategory,projectTitle,projectDescription,projectBand,projectMediaSrc,projectMediaPoster,projectMediaAlt].forEach(el=>el.value='');
       projectMediaType.value='image';
       renderProjectList();
     });

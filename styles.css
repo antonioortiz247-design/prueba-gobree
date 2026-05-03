@@ -212,6 +212,61 @@ p { margin: 0 0 1rem; color: var(--muted); }
 .hero p { max-width: 660px; font-size: 1.08rem; margin-bottom: 1.5rem; color: #dbeafe; }
 .hero-actions { display: flex; gap: .85rem; flex-wrap: wrap; }
 
+.hero-home {
+  min-height: auto;
+  display: block;
+  padding: 0 0 2.5rem;
+}
+
+.hero-home-media {
+  position: relative;
+  width: 100%;
+  height: clamp(320px, 62vh, 640px);
+  overflow: hidden;
+  background: #0b1220;
+}
+
+.hero-home .hero-carousel {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.hero-home .carousel-controls { display: none; }
+
+.hero-home-controls {
+  display: flex;
+  justify-content: center;
+  padding: .9rem 0 0;
+}
+
+.hero-home .carousel-indicators {
+  position: static;
+  left: auto;
+  bottom: auto;
+  transform: none;
+}
+
+.hero-home .indicator {
+  background: rgba(15, 23, 42, 0.18);
+  border: 2px solid rgba(37, 99, 235, 0.55);
+}
+
+.hero-home .indicator.active {
+  background: rgba(37, 99, 235, 0.95);
+  border-color: rgba(37, 99, 235, 0.95);
+}
+
+.hero-home .hero-content {
+  color: var(--text);
+  padding-top: 1.25rem;
+  z-index: 0;
+}
+
+.hero-home.hero h1 { color: var(--text); }
+.hero-home.hero p { color: #475569; }
+
 .btn {
   display: inline-flex;
   align-items: center;

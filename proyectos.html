@@ -96,7 +96,7 @@
           <button class="project-media media-trigger" type="button" data-type="image" data-src="/IMAGENES GOBREE/banda-transportadora-industria-alimentaria.webp" data-alt="Proyecto de línea alimenticia"><img src="/IMAGENES GOBREE/banda-transportadora-industria-alimentaria.webp" alt="Proyecto de línea alimenticia" loading="lazy"></button>
           <h3>Línea de empaque cárnico</h3>
           <p>Implementación sanitaria para transporte continuo en producción de alimentos perecederos.</p>
-          <p class="project-tech"><strong>Banda:</strong> PVC grado alimenticio · <strong>Año:</strong> 2025</p>
+          <p class="project-tech"><strong>Banda:</strong> PVC grado alimenticio</p>
           <a class="btn btn-secondary" href="contacto.html#formulario-contacto">Solicitar proyecto similar</a>
         </article>
 
@@ -107,7 +107,7 @@
           </button>
           <h3>Clasificación de paquetería</h3>
           <p>Sistema modular para centro de distribución con alto volumen y ventanas de despacho críticas.</p>
-          <p class="project-tech"><strong>Banda:</strong> Modular PP · <strong>Año:</strong> 2024</p>
+          <p class="project-tech"><strong>Banda:</strong> Modular PP</p>
           <a class="btn btn-secondary" href="contacto.html#formulario-contacto">Solicitar proyecto similar</a>
         </article>
 
@@ -116,7 +116,7 @@
           <button class="project-media media-trigger" type="button" data-type="image" data-src="/IMAGENES GOBREE/banda-transportadora-industria-litografica.webp" data-alt="Proyecto industria litográfica"><img src="/IMAGENES GOBREE/banda-transportadora-industria-litografica.webp" alt="Proyecto industria litográfica" loading="lazy"></button>
           <h3>Transporte en impresión offset</h3>
           <p>Integración para manejo estable de sustratos con precisión de sincronía entre estaciones.</p>
-          <p class="project-tech"><strong>Banda:</strong> Nylon transmisión · <strong>Año:</strong> 2025</p>
+          <p class="project-tech"><strong>Banda:</strong> Nylon transmisión</p>
           <a class="btn btn-secondary" href="contacto.html#formulario-contacto">Solicitar proyecto similar</a>
         </article>
 
@@ -125,7 +125,7 @@
           <button class="project-media media-trigger" type="button" data-type="image" data-src="/IMAGENES GOBREE/banda-transportadora-carton-papel.webp" data-alt="Proyecto empaque cartón"><img src="/IMAGENES GOBREE/banda-transportadora-carton-papel.webp" alt="Proyecto empaque cartón" loading="lazy"></button>
           <h3>Empaque de cartón corrugado</h3>
           <p>Automatización de flujo de cajas con reducción de paros por desalineación en banda.</p>
-          <p class="project-tech"><strong>Banda:</strong> Dentada con recubrimiento · <strong>Año:</strong> 2023</p>
+          <p class="project-tech"><strong>Banda:</strong> Dentada con recubrimiento</p>
           <a class="btn btn-secondary" href="contacto.html#formulario-contacto">Solicitar proyecto similar</a>
         </article>
 
@@ -134,7 +134,7 @@
           <button class="project-media media-trigger" type="button" data-type="image" data-src="/IMAGENES GOBREE/banda-transportadora-confiteria.webp" data-alt="Proyecto confitería"><img src="/IMAGENES GOBREE/banda-transportadora-confiteria.webp" alt="Proyecto confitería" loading="lazy"></button>
           <h3>Línea de confitería continua</h3>
           <p>Solución antiadherente para enfriamiento y traslado de producto terminado.</p>
-          <p class="project-tech"><strong>Banda:</strong> Teflón malla · <strong>Año:</strong> 2024</p>
+          <p class="project-tech"><strong>Banda:</strong> Teflón malla</p>
           <a class="btn btn-secondary" href="contacto.html#formulario-contacto">Solicitar proyecto similar</a>
         </article>
 
@@ -145,7 +145,7 @@
           </button>
           <h3>Manejo de equipaje en aeropuerto</h3>
           <p>Actualización de tramo transportador para mejorar continuidad operativa en picos de demanda.</p>
-          <p class="project-tech"><strong>Banda:</strong> PVC antidesgaste · <strong>Año:</strong> 2026</p>
+          <p class="project-tech"><strong>Banda:</strong> PVC antidesgaste</p>
           <a class="btn btn-secondary" href="contacto.html#formulario-contacto">Solicitar proyecto similar</a>
         </article>
       </div>
@@ -194,7 +194,7 @@
         const media = item.mediaType === 'video'
           ? `<button class="project-media project-video media-trigger" type="button" data-type="video" data-src="${item.mediaSrc}" data-poster="${item.mediaPoster || ''}" data-alt="${item.mediaAlt || ''}"><img src="${item.mediaPoster || item.mediaSrc}" alt="${item.mediaAlt || ''}" loading="lazy"></button>`
           : `<button class="project-media media-trigger" type="button" data-type="image" data-src="${item.mediaSrc}" data-alt="${item.mediaAlt || ''}"><img src="${item.mediaSrc}" alt="${item.mediaAlt || ''}" loading="lazy"></button>`;
-        return `<article class="card project-card"><span class="tag project-tag">${item.category || ''}</span>${media}<h3>${item.title || ''}</h3><p>${item.description || ''}</p><p class="project-tech"><strong>Banda:</strong> ${item.band || ''} · <strong>Año:</strong> ${item.year || ''}</p><a class="btn btn-secondary" href="contacto.html#formulario-contacto">Solicitar proyecto similar</a></article>`;
+        return `<article class="card project-card"><span class="tag project-tag">${item.category || ''}</span>${media}<h3>${item.title || ''}</h3><p>${item.description || ''}</p><p class="project-tech"><strong>Banda:</strong> ${item.band || ''}</p><a class="btn btn-secondary" href="contacto.html#formulario-contacto">Solicitar proyecto similar</a></article>`;
       };
       const bindMediaTriggers = () => {
         const triggers = document.querySelectorAll('.media-trigger');

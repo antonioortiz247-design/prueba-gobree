@@ -193,8 +193,8 @@ async function readJson(req) {
 }
 
 const DEFAULT_PROJECTS = [
-  { category:'Alimenticio', title:'Línea de empaque cárnico', description:'Implementación sanitaria para transporte continuo en producción de alimentos perecederos.', band:'PVC grado alimenticio', year:'2025', mediaType:'image', mediaSrc:'/IMAGENES GOBREE/banda-transportadora-industria-alimentaria.webp', mediaPoster:'', mediaAlt:'Proyecto de línea alimenticia' },
-  { category:'Logística', title:'Clasificación de paquetería', description:'Sistema modular para centro de distribución con alto volumen y ventanas de despacho críticas.', band:'Modular PP', year:'2024', mediaType:'video', mediaSrc:'/videos/proyectos/clasificacion-paqueteria.mp4', mediaPoster:'/IMAGENES GOBREE/banda-transportadora-logistica.webp', mediaAlt:'Video del proyecto de clasificación logística' }
+  { category:'Alimenticio', title:'Línea de empaque cárnico', description:'Implementación sanitaria para transporte continuo en producción de alimentos perecederos.', band:'PVC grado alimenticio', mediaType:'image', mediaSrc:'/IMAGENES GOBREE/banda-transportadora-industria-alimentaria.webp', mediaPoster:'', mediaAlt:'Proyecto de línea alimenticia' },
+  { category:'Logística', title:'Clasificación de paquetería', description:'Sistema modular para centro de distribución con alto volumen y ventanas de despacho críticas.', band:'Modular PP', mediaType:'video', mediaSrc:'/videos/proyectos/clasificacion-paqueteria.mp4', mediaPoster:'/IMAGENES GOBREE/banda-transportadora-logistica.webp', mediaAlt:'Video del proyecto de clasificación logística' }
 ];
 
 module.exports = async (req, res) => {
@@ -240,7 +240,6 @@ module.exports = async (req, res) => {
         title: String(img.title || '').trim().slice(0, 120),
         description: String(img.description || '').trim().slice(0, 400),
         band: String(img.band || '').trim().slice(0, 120),
-        year: String(img.year || '').trim().slice(0, 4),
         mediaType: String(img.mediaType || 'image').trim() === 'video' ? 'video' : 'image',
         mediaSrc: String(img.mediaSrc || '').trim().slice(0, 1_200_000),
         mediaPoster: String(img.mediaPoster || '').trim().slice(0, 1_200_000),
