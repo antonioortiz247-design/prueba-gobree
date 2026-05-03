@@ -53,25 +53,37 @@
   </header>
 
   <main>
-    <section class="hero hero-home" id="inicio">
-      <div class="hero-home-media" aria-label="Galería principal de Gobree Belt">
-        <div id="heroCarousel" class="hero-carousel">
-          <img class="hero-slide active" src="portadagobree.png" alt="Línea industrial con bandas transportadoras" loading="eager">
-          <img class="hero-slide" src="IndustriaAlimenticia.png" alt="Aplicación de bandas en industria alimenticia" loading="lazy">
-          <img class="hero-slide" src="Logistica.png" alt="Sistema de bandas para logística y distribución" loading="lazy">
-        </div>
+    <section class="hero" id="inicio">
+      <div id="heroCarousel" class="hero-carousel" aria-label="Galería principal de Gobree Belt">
+        <img class="hero-slide active" src="portadagobree.png" alt="Línea industrial con bandas transportadoras" loading="eager">
+        <img class="hero-slide" src="IndustriaAlimenticia.png" alt="Aplicación de bandas en industria alimenticia" loading="lazy">
+        <img class="hero-slide" src="Logistica.png" alt="Sistema de bandas para logística y distribución" loading="lazy">
       </div>
 
-      <div class="hero-home-controls">
-        <div class="carousel-indicators" aria-label="Controles del carrusel"></div>
+      <div class="carousel-controls">
       </div>
+      <div class="carousel-indicators"></div>
 
+      <div class="hero-overlay"></div>
       <div class="container hero-content">
         <h1>Especialistas en Bandas Transportadoras y Transmisión</h1>
         <p>Soluciones técnicas de alto desempeño para la industria alimentaria, logística y manufactura en todo México.</p>
         <div class="hero-actions">
           <a class="btn" href="contacto.html">Cotizar Solución</a>
           <a class="btn btn-secondary" href="sectores.html">Explorar Sectores</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="hero-carousel-clone" aria-label="Galería debajo del hero">
+      <div class="container">
+        <div class="hero-carousel-clone-wrap">
+          <div id="heroCarouselClone" class="hero-carousel-clone-track">
+            <img class="hero-slide active" src="portadagobree.png" alt="Línea industrial con bandas transportadoras" loading="lazy">
+            <img class="hero-slide" src="IndustriaAlimenticia.png" alt="Aplicación de bandas en industria alimenticia" loading="lazy">
+            <img class="hero-slide" src="Logistica.png" alt="Sistema de bandas para logística y distribución" loading="lazy">
+          </div>
+          <div class="carousel-indicators" id="heroCarouselCloneIndicators"></div>
         </div>
       </div>
     </section>

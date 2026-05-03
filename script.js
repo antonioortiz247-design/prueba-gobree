@@ -152,97 +152,127 @@
 
   const heroCarousel = document.getElementById('heroCarousel');
   if (heroCarousel) {
-    let slides = Array.from(heroCarousel.querySelectorAll('.hero-slide'));
-    const indicatorsContainer = document.querySelector('.carousel-indicators');
-    const prevBtn = document.querySelector('.carousel-prev');
-    const nextBtn = document.querySelector('.carousel-next');
-    
-    let currentSlide = 0;
-    let autoPlayInterval;
+    const heroSection = heroCarousel.closest('.hero') || document;
+    const mainIndicators = heroSection.querySelector('.carousel-indicators');
+    const prevBtn = heroSection.querySelector('.carousel-prev');
+    const nextBtn = heroSection.querySelector('.carousel-next');
 
-    const applyHeroImages = (images) => {
-      if (!Array.isArray(images) || !images.length) return;
-      stopAutoPlay();
-      currentSlide = 0;
-      heroCarousel.innerHTML = images
-        .map(
-          (img, index) => `
+    const cloneCarousel = document.getElementById('heroCarouselClone');
+    const cloneIndicators = document.getElementById('heroCarouselCloneIndicators');
+
+    const createCarousel = (carouselEl, indicatorsEl, opts) => {
+      const options = opts || {};
+      let slides = Array.from(carouselEl.querySelectorAll('.hero-slide'));
+      let currentSlide = 0;
+      let autoPlayInterval;
+
+      const buildIndicators = () => {
+        if (!indicatorsEl) return;
+        indicatorsEl.innerHTML = slides
+          .map((_, i) => `<div class="indicator ${i === 0 ? 'active' : ''}" data-index="${i}"></div>`)
+          .join('');
+        indicatorsEl.querySelectorAll('.indicator').forEach((ind) => {
+          ind.addEventListener('click', () => {
+            setSlide(parseInt(ind.dataset.index), { restart: true });
+          });
+        });
+      };
+
+      const setSlide = (index, action) => {
+        const a = action || {};
+        if (!slides.length) return;
+
+        slides[currentSlide].classList.remove('active');
+        if (indicatorsEl) {
+          const inds = Array.from(indicatorsEl.querySelectorAll('.indicator'));
+          if (inds[currentSlide]) inds[currentSlide].classList.remove('active');
+        }
+
+        currentSlide = (index + slides.length) % slides.length;
+
+        slides[currentSlide].classList.add('active');
+        if (indicatorsEl) {
+          const inds = Array.from(indicatorsEl.querySelectorAll('.indicator'));
+          if (inds[currentSlide]) inds[currentSlide].classList.add('active');
+        }
+
+        if (a.restart) startAutoPlay();
+        if (!a.silent && typeof options.onChange === 'function') options.onChange(currentSlide);
+      };
+
+      const nextSlide = () => setSlide(currentSlide + 1, { silent: false });
+      const prevSlide = () => setSlide(currentSlide - 1, { silent: false });
+
+      const startAutoPlay = () => {
+        if (options.autoplay === false) return;
+        stopAutoPlay();
+        autoPlayInterval = setInterval(nextSlide, options.intervalMs || 5000);
+      };
+
+      const stopAutoPlay = () => {
+        if (autoPlayInterval) clearInterval(autoPlayInterval);
+      };
+
+      const applyImages = (images, eagerFirst) => {
+        if (!Array.isArray(images) || !images.length) return;
+        stopAutoPlay();
+        currentSlide = 0;
+        carouselEl.innerHTML = images
+          .map(
+            (img, index) => `
           <img class="hero-slide ${index === 0 ? 'active' : ''}" 
                src="${img.url}" 
                alt="${img.alt || 'Gobree Belt'}" 
-               loading="${index === 0 ? 'eager' : 'lazy'}">
+               loading="${index === 0 && eagerFirst ? 'eager' : 'lazy'}">
         `
-        )
-        .join('');
-      slides = Array.from(heroCarousel.querySelectorAll('.hero-slide'));
+          )
+          .join('');
+        slides = Array.from(carouselEl.querySelectorAll('.hero-slide'));
+        buildIndicators();
+        startAutoPlay();
+      };
+
+      buildIndicators();
       startAutoPlay();
+
+      return { applyImages, setSlide, startAutoPlay, stopAutoPlay, nextSlide, prevSlide };
     };
+
+    let clone = null;
+    const main = createCarousel(heroCarousel, mainIndicators, {
+      autoplay: true,
+      intervalMs: 5000,
+      onChange: (i) => {
+        if (clone) clone.setSlide(i, { silent: true });
+      }
+    });
+
+    if (cloneCarousel && cloneIndicators) {
+      clone = createCarousel(cloneCarousel, cloneIndicators, {
+        autoplay: false,
+        onChange: (i) => {
+          main.setSlide(i, { restart: true, silent: true });
+        }
+      });
+    }
+
+    if (prevBtn) prevBtn.addEventListener('click', () => { main.prevSlide(); main.startAutoPlay(); });
+    if (nextBtn) nextBtn.addEventListener('click', () => { main.nextSlide(); main.startAutoPlay(); });
 
     const loadHeroImages = async () => {
       try {
         const r = await fetch('/api/hero', { cache: 'no-store' });
         if (!r.ok) return;
         const data = await r.json();
-        if (data?.images?.length) applyHeroImages(data.images);
+        if (data?.images?.length) {
+          main.applyImages(data.images, true);
+          if (clone) clone.applyImages(data.images, false);
+          if (clone) clone.setSlide(0, { silent: true });
+        }
       } catch (e) {}
     };
 
-    const updateCarousel = (index) => {
-      slides[currentSlide].classList.remove('active');
-      const indicators = document.querySelectorAll('.indicator');
-      if (indicators.length) indicators[currentSlide].classList.remove('active');
-      
-      currentSlide = (index + slides.length) % slides.length;
-      
-      slides[currentSlide].classList.add('active');
-      if (indicators.length) indicators[currentSlide].classList.add('active');
-    };
-
-    const nextSlide = () => updateCarousel(currentSlide + 1);
-    const prevSlide = () => updateCarousel(currentSlide - 1);
-
-    const startAutoPlay = () => {
-      stopAutoPlay();
-      autoPlayInterval = setInterval(nextSlide, 5000);
-    };
-
-    const stopAutoPlay = () => {
-      if (autoPlayInterval) clearInterval(autoPlayInterval);
-    };
-
-    // Crear indicadores
-    if (indicatorsContainer) {
-      indicatorsContainer.innerHTML = slides.map((_, i) => `
-        <div class="indicator ${i === 0 ? 'active' : ''}" data-index="${i}"></div>
-      `).join('');
-      
-      indicatorsContainer.querySelectorAll('.indicator').forEach(ind => {
-        ind.addEventListener('click', () => {
-          updateCarousel(parseInt(ind.dataset.index));
-          startAutoPlay();
-        });
-      });
-    }
-
-    if (prevBtn) prevBtn.addEventListener('click', () => { prevSlide(); startAutoPlay(); });
-    if (nextBtn) nextBtn.addEventListener('click', () => { nextSlide(); startAutoPlay(); });
-
-    startAutoPlay();
-    loadHeroImages().then(() => {
-      if (!slides.length) return;
-      currentSlide = 0;
-      if (indicatorsContainer) {
-        indicatorsContainer.innerHTML = slides.map((_, i) => `
-          <div class="indicator ${i === 0 ? 'active' : ''}" data-index="${i}"></div>
-        `).join('');
-        indicatorsContainer.querySelectorAll('.indicator').forEach((ind) => {
-          ind.addEventListener('click', () => {
-            updateCarousel(parseInt(ind.dataset.index));
-            startAutoPlay();
-          });
-        });
-      }
-    });
+    loadHeroImages();
   }
 
   function renderCatalog(items) {

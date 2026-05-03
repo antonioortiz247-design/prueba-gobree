@@ -212,60 +212,41 @@ p { margin: 0 0 1rem; color: var(--muted); }
 .hero p { max-width: 660px; font-size: 1.08rem; margin-bottom: 1.5rem; color: #dbeafe; }
 .hero-actions { display: flex; gap: .85rem; flex-wrap: wrap; }
 
-.hero-home {
-  min-height: auto;
-  display: block;
-  padding: 0 0 2.5rem;
+.hero-carousel-clone { padding: 0 0 2.25rem; }
+
+.hero-carousel-clone-wrap {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 1.25rem;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
 }
 
-.hero-home-media {
+.hero-carousel-clone-track {
   position: relative;
-  width: 100%;
-  height: clamp(320px, 62vh, 640px);
-  overflow: hidden;
+  height: clamp(200px, 34vh, 320px);
   background: #0b1220;
 }
 
-.hero-home .hero-carousel {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
+.hero-carousel-clone-track .hero-slide { transition: opacity 0.75s ease-in-out; }
 
-.hero-home .carousel-controls { display: none; }
-
-.hero-home-controls {
+.hero-carousel-clone-wrap .carousel-indicators {
+  position: static;
+  transform: none;
   display: flex;
   justify-content: center;
-  padding: .9rem 0 0;
+  padding: 1rem 0 1.05rem;
 }
 
-.hero-home .carousel-indicators {
-  position: static;
-  left: auto;
-  bottom: auto;
-  transform: none;
+.hero-carousel-clone-wrap .indicator {
+  background: rgba(15, 23, 42, 0.16);
+  border: 2px solid rgba(255, 255, 255, 0.9);
 }
 
-.hero-home .indicator {
-  background: rgba(15, 23, 42, 0.18);
-  border: 2px solid rgba(37, 99, 235, 0.55);
+.hero-carousel-clone-wrap .indicator.active {
+  background: rgba(255, 255, 255, 0.98);
+  transform: scale(1.2);
 }
-
-.hero-home .indicator.active {
-  background: rgba(37, 99, 235, 0.95);
-  border-color: rgba(37, 99, 235, 0.95);
-}
-
-.hero-home .hero-content {
-  color: var(--text);
-  padding-top: 1.25rem;
-  z-index: 0;
-}
-
-.hero-home.hero h1 { color: var(--text); }
-.hero-home.hero p { color: #475569; }
 
 .btn {
   display: inline-flex;
