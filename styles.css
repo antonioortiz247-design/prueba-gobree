@@ -230,21 +230,32 @@ p { margin: 0 0 1rem; color: var(--muted); }
 
 .hero-carousel-clone-track .hero-slide { transition: opacity 0.75s ease-in-out; }
 
+.hero-carousel-caption {
+  padding: .9rem 1rem;
+  background: linear-gradient(135deg, rgba(30, 58, 138, 0.96), rgba(37, 99, 235, 0.9));
+  color: #fff;
+  font-weight: 600;
+  letter-spacing: 0.1px;
+}
+
+.hero-carousel-caption:empty { display: none; }
+
 .hero-carousel-clone-wrap .carousel-indicators {
   position: static;
   transform: none;
   display: flex;
   justify-content: center;
-  padding: 1rem 0 1.05rem;
+  padding: .9rem 0 1.05rem;
 }
 
 .hero-carousel-clone-wrap .indicator {
-  background: rgba(15, 23, 42, 0.16);
-  border: 2px solid rgba(255, 255, 255, 0.9);
+  background: rgba(37, 99, 235, 0.12);
+  border: 2px solid rgba(37, 99, 235, 0.55);
 }
 
 .hero-carousel-clone-wrap .indicator.active {
-  background: rgba(255, 255, 255, 0.98);
+  background: rgba(37, 99, 235, 0.95);
+  border-color: rgba(37, 99, 235, 0.95);
   transform: scale(1.2);
 }
 

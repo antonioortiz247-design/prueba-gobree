@@ -252,6 +252,10 @@
             Texto descriptivo (Alt)
             <input type="text" id="imgAlt" placeholder="Ej: Banda transportadora en planta">
           </label>
+          <label>
+            Descripción (pie de imagen)
+            <input type="text" id="imgCaption" placeholder="Ej: Instalación en línea de empaque alimenticio">
+          </label>
           <small>Tip: para mejor desempeño, usa 2–4 imágenes.</small>
           <div class="admin-row">
             <button class="btn btn-success" id="addBtn" type="button">Agregar al carrusel</button>
@@ -320,6 +324,7 @@
     const imageList = document.getElementById('imageList');
     const imgUrl = document.getElementById('imgUrl');
     const imgAlt = document.getElementById('imgAlt');
+    const imgCaption = document.getElementById('imgCaption');
     const addBtn = document.getElementById('addBtn');
     const saveBtn = document.getElementById('saveBtn');
     const adminPassword = document.getElementById('adminPassword');
@@ -564,6 +569,14 @@
     }
 
     function renderList() {
+      const esc = (v) =>
+        String(v || '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+
       const displayUrl = (url) => {
         const u = String(url || '');
         if (u.startsWith('data:image/')) {
@@ -577,8 +590,17 @@
         <div class="image-item">
           <img src="${img.url}" alt="${img.alt}">
           <div class="image-item-info">
-            <strong>${displayUrl(img.url)}</strong><br>
-            <small>${img.alt}</small>
+            <strong>${esc(displayUrl(img.url))}</strong>
+            <div style="display:grid; gap:.45rem; margin-top:.5rem;">
+              <label style="display:grid; gap:.3rem; font-size:.9rem;">
+                Alt
+                <input type="text" value="${esc(img.alt || '')}" oninput="setImageAlt(${index}, this.value)">
+              </label>
+              <label style="display:grid; gap:.3rem; font-size:.9rem;">
+                Descripción
+                <input type="text" value="${esc(img.caption || '')}" oninput="setImageCaption(${index}, this.value)">
+              </label>
+            </div>
           </div>
           <div style="display:flex; gap:.5rem; flex-wrap:wrap; justify-content:flex-end;">
             <button class="btn btn-secondary" onclick="moveImage(${index}, -1)">↑</button>
@@ -592,6 +614,16 @@
     window.removeImage = (index) => {
       currentImages.splice(index, 1);
       renderList();
+    };
+
+    window.setImageAlt = (index, value) => {
+      if (!currentImages[index]) return;
+      currentImages[index].alt = String(value || '').slice(0, 200);
+    };
+
+    window.setImageCaption = (index, value) => {
+      if (!currentImages[index]) return;
+      currentImages[index].caption = String(value || '').slice(0, 240);
     };
 
     window.moveImage = (index, dir) => {
@@ -619,10 +651,12 @@
       if (!imgUrl.value) return alert('Por favor ingresa la URL de la imagen');
       currentImages.push({
         url: imgUrl.value,
-        alt: imgAlt.value || 'Gobree Belt'
+        alt: imgAlt.value || 'Gobree Belt',
+        caption: imgCaption.value || ''
       });
       imgUrl.value = '';
       imgAlt.value = '';
+      imgCaption.value = '';
       clearSelectedFile();
       renderList();
     });
@@ -842,9 +876,9 @@
         currentImages = Array.isArray(data.images) ? data.images : [];
       } catch (e) {
         currentImages = [
-          { url: 'portadagobree.png', alt: 'Línea industrial con bandas transportadoras' },
-          { url: 'IndustriaAlimenticia.png', alt: 'Aplicación de bandas en industria alimenticia' },
-          { url: 'Logistica.png', alt: 'Sistema de bandas para logística y distribución' }
+          { url: 'portadagobree.png', alt: 'Línea industrial con bandas transportadoras', caption: '' },
+          { url: 'IndustriaAlimenticia.png', alt: 'Aplicación de bandas en industria alimenticia', caption: '' },
+          { url: 'Logistica.png', alt: 'Sistema de bandas para logística y distribución', caption: '' }
         ];
       }
       renderList();

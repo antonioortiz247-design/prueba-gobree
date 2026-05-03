@@ -193,9 +193,9 @@ async function readJson(req) {
 }
 
 const DEFAULT_IMAGES = [
-  { url: 'portadagobree.png', alt: 'Línea industrial con bandas transportadoras' },
-  { url: 'IndustriaAlimenticia.png', alt: 'Aplicación de bandas en industria alimenticia' },
-  { url: 'Logistica.png', alt: 'Sistema de bandas para logística y distribución' }
+  { url: 'portadagobree.png', alt: 'Línea industrial con bandas transportadoras', caption: '' },
+  { url: 'IndustriaAlimenticia.png', alt: 'Aplicación de bandas en industria alimenticia', caption: '' },
+  { url: 'Logistica.png', alt: 'Sistema de bandas para logística y distribución', caption: '' }
 ];
 
 module.exports = async (req, res) => {
@@ -208,6 +208,16 @@ module.exports = async (req, res) => {
         if (Array.isArray(parsed) && parsed.length) images = parsed;
       }
     } catch (e) {}
+
+    images = Array.isArray(images)
+      ? images
+          .map((img) => ({
+            url: String((img && img.url) || '').trim(),
+            alt: String((img && img.alt) || 'Gobree Belt').trim(),
+            caption: String((img && img.caption) || '').trim()
+          }))
+          .filter((img) => img.url)
+      : DEFAULT_IMAGES;
 
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json');
@@ -238,7 +248,8 @@ module.exports = async (req, res) => {
     const cleaned = images
       .map((img) => ({
         url: String(img.url || '').trim().slice(0, 1_200_000),
-        alt: String(img.alt || 'Gobree Belt').trim().slice(0, 200)
+        alt: String(img.alt || 'Gobree Belt').trim().slice(0, 200),
+        caption: String(img.caption || '').trim().slice(0, 240)
       }))
       .filter((img) => img.url);
 

@@ -150,28 +150,32 @@
     });
   });
 
-  const heroCarousel = document.getElementById('heroCarousel');
-  if (heroCarousel) {
-    const heroSection = heroCarousel.closest('.hero') || document;
-    const mainIndicators = heroSection.querySelector('.carousel-indicators');
-    const prevBtn = heroSection.querySelector('.carousel-prev');
-    const nextBtn = heroSection.querySelector('.carousel-next');
+  const homeCarousel = document.getElementById('homeCarousel');
+  if (homeCarousel) {
+    const indicatorsEl = document.getElementById('homeCarouselIndicators');
+    const captionEl = document.getElementById('homeCarouselCaption');
 
-    const cloneCarousel = document.getElementById('heroCarouselClone');
-    const cloneIndicators = document.getElementById('heroCarouselCloneIndicators');
-
-    const createCarousel = (carouselEl, indicatorsEl, opts) => {
-      const options = opts || {};
+    const createCarousel = (carouselEl, indicators, caption) => {
       let slides = Array.from(carouselEl.querySelectorAll('.hero-slide'));
+      let items = slides.map((img) => ({
+        alt: img.getAttribute('alt') || 'Gobree Belt',
+        caption: ''
+      }));
       let currentSlide = 0;
       let autoPlayInterval;
 
+      const setCaption = (i) => {
+        if (!caption) return;
+        const text = (items[i] && items[i].caption) || '';
+        caption.textContent = text;
+      };
+
       const buildIndicators = () => {
-        if (!indicatorsEl) return;
-        indicatorsEl.innerHTML = slides
+        if (!indicators) return;
+        indicators.innerHTML = slides
           .map((_, i) => `<div class="indicator ${i === 0 ? 'active' : ''}" data-index="${i}"></div>`)
           .join('');
-        indicatorsEl.querySelectorAll('.indicator').forEach((ind) => {
+        indicators.querySelectorAll('.indicator').forEach((ind) => {
           ind.addEventListener('click', () => {
             setSlide(parseInt(ind.dataset.index), { restart: true });
           });
@@ -183,96 +187,75 @@
         if (!slides.length) return;
 
         slides[currentSlide].classList.remove('active');
-        if (indicatorsEl) {
-          const inds = Array.from(indicatorsEl.querySelectorAll('.indicator'));
+        if (indicators) {
+          const inds = Array.from(indicators.querySelectorAll('.indicator'));
           if (inds[currentSlide]) inds[currentSlide].classList.remove('active');
         }
 
         currentSlide = (index + slides.length) % slides.length;
 
         slides[currentSlide].classList.add('active');
-        if (indicatorsEl) {
-          const inds = Array.from(indicatorsEl.querySelectorAll('.indicator'));
+        if (indicators) {
+          const inds = Array.from(indicators.querySelectorAll('.indicator'));
           if (inds[currentSlide]) inds[currentSlide].classList.add('active');
         }
 
+        setCaption(currentSlide);
         if (a.restart) startAutoPlay();
-        if (!a.silent && typeof options.onChange === 'function') options.onChange(currentSlide);
       };
 
-      const nextSlide = () => setSlide(currentSlide + 1, { silent: false });
-      const prevSlide = () => setSlide(currentSlide - 1, { silent: false });
+      const nextSlide = () => setSlide(currentSlide + 1);
 
       const startAutoPlay = () => {
-        if (options.autoplay === false) return;
         stopAutoPlay();
-        autoPlayInterval = setInterval(nextSlide, options.intervalMs || 5000);
+        autoPlayInterval = setInterval(nextSlide, 5000);
       };
 
       const stopAutoPlay = () => {
         if (autoPlayInterval) clearInterval(autoPlayInterval);
       };
 
-      const applyImages = (images, eagerFirst) => {
+      const applyImages = (images) => {
         if (!Array.isArray(images) || !images.length) return;
         stopAutoPlay();
         currentSlide = 0;
+        items = images.map((img) => ({
+          alt: img && img.alt ? String(img.alt) : 'Gobree Belt',
+          caption: img && img.caption ? String(img.caption) : ''
+        }));
         carouselEl.innerHTML = images
           .map(
             (img, index) => `
-          <img class="hero-slide ${index === 0 ? 'active' : ''}" 
-               src="${img.url}" 
-               alt="${img.alt || 'Gobree Belt'}" 
-               loading="${index === 0 && eagerFirst ? 'eager' : 'lazy'}">
+          <img class="hero-slide ${index === 0 ? 'active' : ''}"
+               src="${img.url}"
+               alt="${img.alt || 'Gobree Belt'}"
+               loading="${index === 0 ? 'eager' : 'lazy'}">
         `
           )
           .join('');
         slides = Array.from(carouselEl.querySelectorAll('.hero-slide'));
         buildIndicators();
+        setCaption(0);
         startAutoPlay();
       };
 
       buildIndicators();
+      setCaption(0);
       startAutoPlay();
 
-      return { applyImages, setSlide, startAutoPlay, stopAutoPlay, nextSlide, prevSlide };
+      return { applyImages };
     };
 
-    let clone = null;
-    const main = createCarousel(heroCarousel, mainIndicators, {
-      autoplay: true,
-      intervalMs: 5000,
-      onChange: (i) => {
-        if (clone) clone.setSlide(i, { silent: true });
-      }
-    });
+    const c = createCarousel(homeCarousel, indicatorsEl, captionEl);
 
-    if (cloneCarousel && cloneIndicators) {
-      clone = createCarousel(cloneCarousel, cloneIndicators, {
-        autoplay: false,
-        onChange: (i) => {
-          main.setSlide(i, { restart: true, silent: true });
-        }
-      });
-    }
-
-    if (prevBtn) prevBtn.addEventListener('click', () => { main.prevSlide(); main.startAutoPlay(); });
-    if (nextBtn) nextBtn.addEventListener('click', () => { main.nextSlide(); main.startAutoPlay(); });
-
-    const loadHeroImages = async () => {
+    (async () => {
       try {
         const r = await fetch('/api/hero', { cache: 'no-store' });
         if (!r.ok) return;
         const data = await r.json();
-        if (data?.images?.length) {
-          main.applyImages(data.images, true);
-          if (clone) clone.applyImages(data.images, false);
-          if (clone) clone.setSlide(0, { silent: true });
-        }
+        if (data?.images?.length) c.applyImages(data.images);
       } catch (e) {}
-    };
-
-    loadHeroImages();
+    })();
   }
 
   function renderCatalog(items) {
