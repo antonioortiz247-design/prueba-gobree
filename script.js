@@ -406,7 +406,7 @@
     
     if (servicio && mensajeArea) {
       const serviciosMap = {
-        'mantenimiento': 'Hola, me interesa solicitar el servicio de Mantenimiento Preventivo/Correctivo.',
+        'thermal-fusion-vulcanizado': 'Hola, me interesa solicitar el servicio de Thermal Fusion y Vulcanizado.',
         'instalacion': 'Hola, me interesa solicitar el servicio de Instalación de bandas transportadoras.',
         'asesoria': 'Hola, me interesa agendar una Asesoría Técnica especializada.'
       };
