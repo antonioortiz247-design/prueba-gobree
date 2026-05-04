@@ -258,6 +258,74 @@
     })();
   }
 
+  const homeProjectsGrid = document.getElementById('homeProjectsGrid');
+  if (homeProjectsGrid) {
+    const toText = (v, max) => String(v || '').trim().slice(0, max || 500);
+
+    const buildCard = (item) => {
+      const category = toText(item && item.category, 60) || 'Proyecto';
+      const title = toText(item && item.title, 120) || 'Proyecto';
+      const description = toText(item && item.description, 240);
+      const mediaType = toText(item && item.mediaType, 10) === 'video' ? 'video' : 'image';
+      const mediaSrc = toText(item && item.mediaSrc, 1200);
+      const mediaPoster = toText(item && item.mediaPoster, 1200);
+      const mediaAlt = toText(item && item.mediaAlt, 200) || title;
+      const src = mediaType === 'video' ? (mediaPoster || '/portadagobree.png') : mediaSrc;
+      if (!src) return null;
+
+      const card = document.createElement('article');
+      card.className = 'card';
+
+      const tag = document.createElement('span');
+      tag.className = 'tag';
+      tag.textContent = category;
+
+      const img = document.createElement('img');
+      img.src = src;
+      img.alt = mediaAlt;
+      img.loading = 'lazy';
+
+      const h3 = document.createElement('h3');
+      h3.textContent = title;
+
+      const p = document.createElement('p');
+      p.textContent = description;
+
+      const a = document.createElement('a');
+      a.className = 'text-link';
+      a.href = '/proyectos';
+      a.textContent = 'Ver proyectos →';
+
+      card.appendChild(tag);
+      card.appendChild(img);
+      card.appendChild(h3);
+      if (description) card.appendChild(p);
+      card.appendChild(a);
+
+      return card;
+    };
+
+    (async () => {
+      try {
+        const r = await fetch('/api/projects', { cache: 'no-store' });
+        if (!r.ok) return;
+        const data = await r.json();
+        const list = Array.isArray(data && data.projects) ? data.projects : [];
+        if (!list.length) return;
+
+        const top = list.slice(0, 3);
+        const frag = document.createDocumentFragment();
+        top.forEach((item) => {
+          const card = buildCard(item);
+          if (card) frag.appendChild(card);
+        });
+        if (!frag.childNodes.length) return;
+        homeProjectsGrid.innerHTML = '';
+        homeProjectsGrid.appendChild(frag);
+      } catch (e) {}
+    })();
+  }
+
   function renderCatalog(items) {
     const grid = document.getElementById('catalogGrid');
     if (!grid || typeof productos === 'undefined') return;
