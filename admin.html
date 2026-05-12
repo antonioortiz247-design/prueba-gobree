@@ -205,8 +205,8 @@
   <div class="admin-container">
     <div class="admin-top">
       <div>
-        <h1>Panel del Carrusel</h1>
-        <p>Agrega, ordena o quita imágenes del carrusel del inicio. Al guardar, los cambios se aplican automáticamente.</p>
+        <h1>Panel del Administrador</h1>
+        <p>Agrega, ordena o quita imagenes al carrusel del inicio. Al guardar, los cambios se aplican automáticamente.</p>
       </div>
       <div class="admin-badge">
         <span id="authStatus">Sesión no iniciada</span>
@@ -314,6 +314,35 @@
       <div id="projectList" class="image-list"></div>
     </div>
 
+
+    <div class="admin-card">
+      <h2 style="margin:0 0 .75rem;">Productos del catálogo</h2>
+      <p style="margin-top:0; color:var(--muted);">Agrega, edita o elimina los productos visibles en la página Productos y sus fichas.</p>
+      <div class="admin-form" style="margin-bottom:1rem;">
+        <input type="hidden" id="productEditingIndex" value="">
+        <label>Nombre<input type="text" id="productName" placeholder="Banda PVC industrial"></label>
+        <label>Categoría<input type="text" id="productCategory" placeholder="Transportadoras Planas"></label>
+        <label>Descripción<input type="text" id="productDescription" placeholder="Descripción breve del producto"></label>
+        <label>Material<input type="text" id="productMaterial" placeholder="PVC"></label>
+        <label>Propiedad<input type="text" id="productProperty" placeholder="Higiene"></label>
+        <label>Tags (separados por coma)<input type="text" id="productTags" placeholder="PVC, higiene, transporte"></label>
+        <label>Imagen<input type="text" id="productImg" placeholder="banda-pvc-industrial.webp, /api/media?id=... o https://..."></label>
+        <label>Texto alt<input type="text" id="productAlt" placeholder="Descripción de la imagen"></label>
+        <label>Título de imagen<input type="text" id="productTitle" placeholder="Título opcional"></label>
+        <div class="admin-row">
+          <input type="file" id="productImgFile" accept="image/*" style="display:none;">
+          <button class="btn btn-secondary" id="pickProductImgBtn" type="button">Seleccionar imagen</button>
+          <button class="btn btn-secondary" id="uploadProductImgBtn" type="button">Subir imagen</button>
+          <span class="upload-meta" id="productUploadMeta">Puedes usar una imagen existente o subir una nueva.</span>
+        </div>
+        <div class="admin-row">
+          <button class="btn btn-success" id="addProductBtn" type="button">Agregar producto</button>
+          <button class="btn btn-secondary" id="cancelProductEditBtn" type="button">Cancelar edición</button>
+        </div>
+      </div>
+      <div id="productList" class="image-list"></div>
+    </div>
+
     <div class="admin-savebar">
       <button class="btn" id="saveBtn" type="button">Guardar cambios</button>
       <a href="/" class="btn btn-secondary">Ver Inicio</a>
@@ -366,9 +395,27 @@
     const clearProjectPosterBtn = document.getElementById('clearProjectPosterBtn');
     const projectPosterPreviewImg = document.getElementById('projectPosterPreviewImg');
 
+    const productList = document.getElementById('productList');
+    const productEditingIndex = document.getElementById('productEditingIndex');
+    const productName = document.getElementById('productName');
+    const productCategory = document.getElementById('productCategory');
+    const productDescription = document.getElementById('productDescription');
+    const productMaterial = document.getElementById('productMaterial');
+    const productProperty = document.getElementById('productProperty');
+    const productTags = document.getElementById('productTags');
+    const productImg = document.getElementById('productImg');
+    const productAlt = document.getElementById('productAlt');
+    const productTitle = document.getElementById('productTitle');
+    const productImgFile = document.getElementById('productImgFile');
+    const pickProductImgBtn = document.getElementById('pickProductImgBtn');
+    const uploadProductImgBtn = document.getElementById('uploadProductImgBtn');
+    const productUploadMeta = document.getElementById('productUploadMeta');
+    const addProductBtn = document.getElementById('addProductBtn');
+    const cancelProductEditBtn = document.getElementById('cancelProductEditBtn');
 
     let currentImages = [];
     let currentProjects = [];
+    let currentProducts = [];
 
     function setStatus(text) {
       authStatus.textContent = text || '';
@@ -568,15 +615,23 @@
       return parts.join(' | ');
     }
 
-    function renderList() {
-      const esc = (v) =>
-        String(v || '')
-          .replace(/&/g, '&amp;')
-          .replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;')
-          .replace(/"/g, '&quot;')
-          .replace(/'/g, '&#39;');
+    function esc(v) {
+      return String(v || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
 
+    function productImageSrc(product) {
+      const img = String((product && product.img) || '').trim();
+      if (!img) return 'Bandasanitaria.png';
+      if (img.startsWith('data:image/') || img.startsWith('/api/media') || /^https?:\/\//i.test(img) || img.startsWith('/')) return img;
+      return `/IMAGENES GOBREE/${img}`;
+    }
+
+    function renderList() {
       const displayUrl = (url) => {
         const u = String(url || '');
         if (u.startsWith('data:image/')) {
@@ -646,6 +701,76 @@
     }
     window.removeProject=(index)=>{ currentProjects.splice(index,1); renderProjectList(); };
     window.editProject=(index)=>{ const p=currentProjects[index]; projectCategory.value=p.category||''; projectTitle.value=p.title||''; projectDescription.value=p.description||''; projectBand.value=p.band||''; projectMediaType.value=p.mediaType||'image'; projectMediaSrc.value=p.mediaSrc||''; projectMediaPoster.value=p.mediaPoster||''; projectMediaAlt.value=p.mediaAlt||''; currentProjects.splice(index,1); renderProjectList(); };
+
+    function renderProductList() {
+      productList.innerHTML = currentProducts.map((p, index) => `
+        <div class="image-item">
+          <img src="${esc(productImageSrc(p))}" alt="${esc(p.alt || p.nombre)}">
+          <div class="image-item-info">
+            <strong>${esc(p.nombre)}</strong><br>
+            <small>${esc(p.categoria)} · ${esc(p.material)} · ${esc(p.propiedad)}</small><br>
+            <small>${esc(p.descripcion)}</small><br>
+            <small>${esc((Array.isArray(p.tags) ? p.tags : []).join(', '))}</small>
+          </div>
+          <div style="display:flex; gap:.5rem; flex-wrap:wrap; justify-content:flex-end;">
+            <button class="btn btn-secondary" onclick="editProduct(${index})">Editar</button>
+            <button class="btn btn-danger" onclick="removeProduct(${index})">Eliminar</button>
+          </div>
+        </div>`).join('');
+    }
+
+    function clearProductForm() {
+      productEditingIndex.value = '';
+      [productName, productCategory, productDescription, productMaterial, productProperty, productTags, productImg, productAlt, productTitle].forEach((el) => { el.value = ''; });
+      productImgFile.value = '';
+      productUploadMeta.textContent = 'Puedes usar una imagen existente o subir una nueva.';
+      addProductBtn.textContent = 'Agregar producto';
+    }
+
+    function getNextProductId() {
+      const ids = currentProducts.map((p) => Number(p.id)).filter((id) => Number.isFinite(id));
+      return ids.length ? Math.max(...ids) + 1 : 1;
+    }
+
+    function readProductForm(existing) {
+      return {
+        id: existing && existing.id ? Number(existing.id) : getNextProductId(),
+        nombre: productName.value.trim(),
+        categoria: productCategory.value.trim() || 'Otros Productos',
+        descripcion: productDescription.value.trim(),
+        material: productMaterial.value.trim(),
+        propiedad: productProperty.value.trim(),
+        tags: productTags.value.split(',').map((tag) => tag.trim()).filter(Boolean),
+        img: productImg.value.trim(),
+        alt: productAlt.value.trim() || productName.value.trim(),
+        title: productTitle.value.trim() || productName.value.trim()
+      };
+    }
+
+    window.removeProduct = (index) => {
+      if (!currentProducts[index]) return;
+      if (!confirm(`¿Eliminar ${currentProducts[index].nombre}?`)) return;
+      currentProducts.splice(index, 1);
+      renderProductList();
+    };
+
+    window.editProduct = (index) => {
+      const p = currentProducts[index];
+      if (!p) return;
+      productEditingIndex.value = String(index);
+      productName.value = p.nombre || '';
+      productCategory.value = p.categoria || '';
+      productDescription.value = p.descripcion || '';
+      productMaterial.value = p.material || '';
+      productProperty.value = p.propiedad || '';
+      productTags.value = Array.isArray(p.tags) ? p.tags.join(', ') : '';
+      productImg.value = p.img || '';
+      productAlt.value = p.alt || '';
+      productTitle.value = p.title || '';
+      productUploadMeta.textContent = 'Editando producto existente.';
+      addProductBtn.textContent = 'Actualizar producto';
+      productName.focus();
+    };
 
     addBtn.addEventListener('click', () => {
       if (!imgUrl.value) return alert('Por favor ingresa la URL de la imagen');
@@ -804,6 +929,43 @@
       renderProjectList();
     });
 
+    pickProductImgBtn.addEventListener('click', () => productImgFile.click());
+
+    productImgFile.addEventListener('change', () => {
+      const file = productImgFile.files && productImgFile.files[0];
+      if (!file) return;
+      productUploadMeta.textContent = `Seleccionado: ${file.name} • ${prettyBytes(file.size)}`;
+      if (!productAlt.value) productAlt.value = filenameToAlt(file.name) || productName.value;
+      if (!productTitle.value) productTitle.value = filenameToAlt(file.name) || productName.value;
+    });
+
+    uploadProductImgBtn.addEventListener('click', async () => {
+      const file = productImgFile.files && productImgFile.files[0];
+      if (!file) return alert('Selecciona primero una imagen.');
+      productUploadMeta.textContent = 'Subiendo imagen...';
+      try {
+        const out = await uploadDeviceFile(file);
+        productImg.value = out.url || '';
+        productUploadMeta.textContent = `Subida: ${out.url}`;
+      } catch (e) {
+        productUploadMeta.textContent = 'No se pudo subir la imagen.';
+        alert(String(e && e.message ? e.message : e));
+      }
+    });
+
+    addProductBtn.addEventListener('click', () => {
+      const index = productEditingIndex.value === '' ? -1 : Number(productEditingIndex.value);
+      const existing = index >= 0 ? currentProducts[index] : null;
+      const product = readProductForm(existing);
+      if (!product.nombre || !product.descripcion) return alert('Nombre y descripción son obligatorios.');
+      if (index >= 0 && currentProducts[index]) currentProducts[index] = product;
+      else currentProducts.push(product);
+      clearProductForm();
+      renderProductList();
+    });
+
+    cancelProductEditBtn.addEventListener('click', () => clearProductForm());
+
     loginBtn.addEventListener('click', async () => {
       setStatus('Iniciando sesión...');
       try {
@@ -861,7 +1023,9 @@
         }
         const pr = await fetch('/api/projects', { method:'POST', headers:{ 'Content-Type':'application/json' }, credentials:'same-origin', body: JSON.stringify({ projects: currentProjects }) });
         if (!pr.ok) { const pp = await readPayload(pr); throw new Error(formatErrorMessage('No se pudo guardar Proyectos', pr, pp)); }
-        alert('Guardado. Se actualizaron carrusel y proyectos.');
+        const prodR = await fetch('/api/products', { method:'POST', headers:{ 'Content-Type':'application/json' }, credentials:'same-origin', body: JSON.stringify({ products: currentProducts }) });
+        if (!prodR.ok) { const prodPayload = await readPayload(prodR); throw new Error(formatErrorMessage('No se pudo guardar Productos', prodR, prodPayload)); }
+        alert('Guardado. Se actualizaron carrusel, proyectos y productos.');
       } catch (e) {
         const msg = `No se pudo guardar | ${String(e && e.message ? e.message : e)}`;
         setStatus(msg);
@@ -890,6 +1054,14 @@
         currentProjects = [];
       }
       renderProjectList();
+      try {
+        const rprod = await fetch('/api/products', { cache: 'no-store' });
+        const dprod = await rprod.json();
+        currentProducts = Array.isArray(dprod.products) ? dprod.products : [];
+      } catch (e) {
+        currentProducts = [];
+      }
+      renderProductList();
     })();
   </script>
 </body>

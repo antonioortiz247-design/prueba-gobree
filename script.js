@@ -328,9 +328,39 @@
     })();
   }
 
+  function escapeHtml(value) {
+    return String(value || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function productImageSrc(product) {
+    const img = String((product && product.img) || '').trim();
+    if (!img) return 'Bandasanitaria.png';
+    if (img.startsWith('data:image/') || img.startsWith('/api/media') || /^https?:\/\//i.test(img) || img.startsWith('/')) {
+      return img;
+    }
+    return `/IMAGENES GOBREE/${img}`;
+  }
+
+  async function loadCatalogProducts() {
+    const fallback = typeof productos !== 'undefined' && Array.isArray(productos) ? productos : [];
+    try {
+      const r = await fetch('/api/products', { cache: 'no-store' });
+      if (!r.ok) throw new Error('products_fetch_failed');
+      const data = await r.json();
+      return Array.isArray(data.products) && data.products.length ? data.products : fallback;
+    } catch (e) {
+      return fallback;
+    }
+  }
+
   function renderCatalog(items) {
     const grid = document.getElementById('catalogGrid');
-    if (!grid || typeof productos === 'undefined') return;
+    if (!grid) return;
 
     if (!items.length) {
       grid.innerHTML = `
@@ -351,26 +381,26 @@
 
     grid.innerHTML = Object.entries(groups).map(([cat, products]) => `
       <div class="category-section">
-        <h2 class="category-title">${cat}</h2>
+        <h2 class="category-title">${escapeHtml(cat)}</h2>
         <div class="cards">
           ${products.map((p) => `
             <article class="card product-card">
-              <img src="${p.img ? '/IMAGENES GOBREE/' + p.img : 'Bandasanitaria.png'}" 
-                   alt="${p.alt || p.nombre}" 
-                   title="${p.title || p.nombre}" 
+              <img src="${escapeHtml(productImageSrc(p))}"
+                   alt="${escapeHtml(p.alt || p.nombre)}"
+                   title="${escapeHtml(p.title || p.nombre)}"
                    width="400" height="300"
                    loading="lazy">
               <div class="product-info">
-                <h3>${p.nombre}</h3>
-                <p class="product-desc">${p.descripcion}</p>
+                <h3>${escapeHtml(p.nombre)}</h3>
+                <p class="product-desc">${escapeHtml(p.descripcion)}</p>
                 <div class="product-meta">
-                  <span><strong>Material:</strong> ${p.material}</span>
-                  <span><strong>Propiedad:</strong> ${p.propiedad}</span>
+                  <span><strong>Material:</strong> ${escapeHtml(p.material)}</span>
+                  <span><strong>Propiedad:</strong> ${escapeHtml(p.propiedad)}</span>
                 </div>
                 <div class="product-tags">
-                  ${p.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                  ${(Array.isArray(p.tags) ? p.tags : []).map(tag => `<span class="tag">${escapeHtml(tag)}</span>`).join('')}
                 </div>
-                <a class="btn btn-secondary" href="producto.html?id=${p.id}">Ver ficha</a>
+                <a class="btn btn-secondary" href="producto.html?id=${encodeURIComponent(p.id)}">Ver ficha</a>
               </div>
             </article>
           `).join('')}
@@ -379,118 +409,126 @@
     `).join('');
   }
 
-  if (document.getElementById('catalogGrid') && typeof productos !== 'undefined') {
-    const searchInput = document.getElementById('productSearch');
-    const activeFilters = {
-      category: 'all',
-      propiedad: 'all',
-      material: 'all'
-    };
+  if (document.getElementById('catalogGrid')) {
+    (async () => {
+      const catalogItems = await loadCatalogProducts();
+      const searchInput = document.getElementById('productSearch');
+      const activeFilters = {
+        category: 'all',
+        propiedad: 'all',
+        material: 'all'
+      };
 
-    const filtrar = () => {
-      const text = (searchInput?.value || '').toLowerCase().trim();
-      const filtered = productos.filter((p) => {
-        const okCat = activeFilters.category === 'all' || p.categoria === activeFilters.category;
-        const okProp = activeFilters.propiedad === 'all' || p.propiedad === activeFilters.propiedad;
-        const okMat = activeFilters.material === 'all' || p.material === activeFilters.material;
-        
-        const okTxt = !text || 
-          p.nombre.toLowerCase().includes(text) || 
-          p.categoria.toLowerCase().includes(text) || 
-          p.tags.some(tag => tag.toLowerCase().includes(text));
+      const filtrar = () => {
+        const text = (searchInput?.value || '').toLowerCase().trim();
+        const filtered = catalogItems.filter((p) => {
+          const okCat = activeFilters.category === 'all' || p.categoria === activeFilters.category;
+          const okProp = activeFilters.propiedad === 'all' || p.propiedad === activeFilters.propiedad;
+          const okMat = activeFilters.material === 'all' || p.material === activeFilters.material;
 
-        return okCat && okProp && okMat && okTxt;
-      });
-      renderCatalog(filtered);
-    };
+          const tags = Array.isArray(p.tags) ? p.tags : [];
+          const okTxt = !text ||
+            String(p.nombre || '').toLowerCase().includes(text) ||
+            String(p.categoria || '').toLowerCase().includes(text) ||
+            tags.some(tag => String(tag || '').toLowerCase().includes(text));
 
-    // Aplicar filtro inicial desde URL si existe
-    const urlParams = new URLSearchParams(window.location.search);
-    const catParam = urlParams.get('categoria');
-    if (catParam) {
-      activeFilters.category = catParam;
-      const btn = document.querySelector(`.filter-btn[data-value="${catParam}"]`);
-      if (btn) {
-        document.querySelectorAll('.filter-btn[data-filter="category"]').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-      }
-    }
+          return okCat && okProp && okMat && okTxt;
+        });
+        renderCatalog(filtered);
+      };
 
-    document.querySelectorAll('.filter-btn').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const filterType = btn.dataset.filter;
-        const filterValue = btn.dataset.value;
-
-        // Toggle active class within the same group
-        const group = btn.closest('.filter-buttons');
-        group.querySelectorAll('.filter-btn').forEach((b) => b.classList.remove('active'));
-        
-        if (activeFilters[filterType] === filterValue && filterValue !== 'all') {
-          activeFilters[filterType] = 'all';
-          group.querySelector('[data-value="all"]')?.classList.add('active');
-        } else {
+      // Aplicar filtro inicial desde URL si existe
+      const urlParams = new URLSearchParams(window.location.search);
+      const catParam = urlParams.get('categoria');
+      if (catParam) {
+        activeFilters.category = catParam;
+        const btn = document.querySelector(`.filter-btn[data-value="${CSS.escape(catParam)}"]`);
+        if (btn) {
+          document.querySelectorAll('.filter-btn[data-filter="category"]').forEach(b => b.classList.remove('active'));
           btn.classList.add('active');
-          activeFilters[filterType] = filterValue;
         }
+      }
 
-        filtrar();
+      document.querySelectorAll('.filter-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const filterType = btn.dataset.filter;
+          const filterValue = btn.dataset.value;
+
+          // Toggle active class within the same group
+          const group = btn.closest('.filter-buttons');
+          group.querySelectorAll('.filter-btn').forEach((b) => b.classList.remove('active'));
+
+          if (activeFilters[filterType] === filterValue && filterValue !== 'all') {
+            activeFilters[filterType] = 'all';
+            group.querySelector('[data-value="all"]')?.classList.add('active');
+          } else {
+            btn.classList.add('active');
+            activeFilters[filterType] = filterValue;
+          }
+
+          filtrar();
+        });
       });
-    });
 
-    searchInput?.addEventListener('input', filtrar);
-    filtrar();
+      searchInput?.addEventListener('input', filtrar);
+      filtrar();
+    })();
   }
 
-  if (document.getElementById('productDetail') && typeof productos !== 'undefined') {
-    const params = new URLSearchParams(window.location.search);
-    const id = Number(params.get('id')) || 1;
-    const p = productos.find((x) => x.id === id) || productos[0];
+  if (document.getElementById('productDetail')) {
+    (async () => {
+      const catalogItems = await loadCatalogProducts();
+      const params = new URLSearchParams(window.location.search);
+      const id = Number(params.get('id')) || 1;
+      const p = catalogItems.find((x) => Number(x.id) === id) || catalogItems[0];
+      const detail = document.getElementById('productDetail');
+      if (!p || !detail) return;
 
-    // Actualizar metadata dinámicamente para SEO
-    document.title = `${p.nombre} | Bandas Industriales | Gobree Belt`;
-    const metaDesc = document.querySelector('meta[name="description"]');
-    if (metaDesc) metaDesc.setAttribute('content', `${p.nombre}: ${p.descripcion} Material: ${p.material}. Soluciones técnicas en México.`);
+      // Actualizar metadata dinámicamente para SEO
+      document.title = `${p.nombre} | Bandas Industriales | Gobree Belt`;
+      const metaDesc = document.querySelector('meta[name="description"]');
+      if (metaDesc) metaDesc.setAttribute('content', `${p.nombre}: ${p.descripcion} Material: ${p.material}. Soluciones técnicas en México.`);
 
-    // Agregar Product Schema dinámico
-    const productSchema = {
-      "@context": "https://schema.org",
-      "@type": "Product",
-      "name": p.nombre,
-      "image": `https://gobreebelt.com/IMAGENES GOBREE/${p.img || 'Bandasanitaria.png'}`,
-      "description": p.descripcion,
-      "brand": {
-        "@type": "Brand",
-        "name": "Gobree Belt"
-      },
-      "category": p.categoria,
-      "material": p.material
-    };
-    const script = document.createElement('script');
-    script.type = 'application/ld+json';
-    script.text = JSON.stringify(productSchema);
-    document.head.appendChild(script);
+      // Agregar Product Schema dinámico
+      const productSchema = {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        "name": p.nombre,
+        "image": `https://gobreebelt.com${productImageSrc(p)}`,
+        "description": p.descripcion,
+        "brand": {
+          "@type": "Brand",
+          "name": "Gobree Belt"
+        },
+        "category": p.categoria,
+        "material": p.material
+      };
+      const script = document.createElement('script');
+      script.type = 'application/ld+json';
+      script.text = JSON.stringify(productSchema);
+      document.head.appendChild(script);
 
-    const detail = document.getElementById('productDetail');
-    detail.innerHTML = `
-      <h1>${p.nombre}</h1>
-      <div class="product-detail">
-        <img src="${p.img ? '/IMAGENES GOBREE/' + p.img : 'Bandasanitaria.png'}" 
-             alt="${p.alt || p.nombre}" 
-             width="600" height="400"
-             loading="eager">             title="${p.title || p.nombre}" 
-             loading="lazy">
-        <div>
-          <p>${p.descripcion}</p>
-          <ul class="spec-list">
-            <li><strong>Categoría:</strong> ${p.categoria}</li>
-            <li><strong>Material:</strong> ${p.material}</li>
-            <li><strong>Propiedad principal:</strong> ${p.propiedad}</li>
-            <li><strong>Tags:</strong> ${p.tags.join(', ')}</li>
-          </ul>
-          <a class="btn" href="contacto.html">Solicitar cotización</a>
+      detail.innerHTML = `
+        <h1>${escapeHtml(p.nombre)}</h1>
+        <div class="product-detail">
+          <img src="${escapeHtml(productImageSrc(p))}"
+               alt="${escapeHtml(p.alt || p.nombre)}"
+               title="${escapeHtml(p.title || p.nombre)}"
+               width="600" height="400"
+               loading="eager">
+          <div>
+            <p>${escapeHtml(p.descripcion)}</p>
+            <ul class="spec-list">
+              <li><strong>Categoría:</strong> ${escapeHtml(p.categoria)}</li>
+              <li><strong>Material:</strong> ${escapeHtml(p.material)}</li>
+              <li><strong>Propiedad principal:</strong> ${escapeHtml(p.propiedad)}</li>
+              <li><strong>Tags:</strong> ${escapeHtml((Array.isArray(p.tags) ? p.tags : []).join(', '))}</li>
+            </ul>
+            <a class="btn" href="contacto.html">Solicitar cotización</a>
+          </div>
         </div>
-      </div>
-    `;
+      `;
+    })();
   }
 
 
