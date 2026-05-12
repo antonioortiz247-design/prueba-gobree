@@ -3,13 +3,42 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Conoce a Gobree Belt, especialistas en soluciones para bandas transportadoras industriales.">
-  <title>Empresa de bandas transportadoras en México | Nosotros | Gobree Belt</title>
+  <meta name="description" content="Conoce la trayectoria de Gobree Belt, líderes en soluciones de transporte y transmisión industrial en México con más de 10 años de experiencia.">
+  <meta name="keywords" content="nosotros Gobree Belt, empresa bandas industriales, experiencia bandas transportadoras, socio técnico industrial">
+  <link rel="canonical" href="https://gobreebelt.com/nosotros">
+  <title>Quiénes Somos | Gobree Belt</title>
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://gobreebelt.com/nosotros">
+  <meta property="og:title" content="Quiénes Somos | Gobree Belt">
+  <meta property="og:description" content="Tu socio técnico en movimiento. Expertos en bandas industriales comprometidos con la eficiencia de tu planta.">
+  <meta property="og:image" content="https://gobreebelt.com/portadagobree.png">
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://gobreebelt.com/nosotros">
+  <meta property="twitter:title" content="Quiénes Somos | Gobree Belt">
+  <meta property="twitter:description" content="Tu socio técnico en movimiento. Expertos en bandas industriales comprometidos con la eficiencia de tu planta.">
+  <meta property="twitter:image" content="https://gobreebelt.com/portadagobree.png">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="icon" type="image/png" href="favicongobree.png">
   <link rel="stylesheet" href="styles.css">
+
+  <!-- Schema Markup -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Inicio", "item": "https://gobreebelt.com/" },
+      { "@type": "ListItem", "position": 2, "name": "Nosotros", "item": "https://gobreebelt.com/nosotros" }
+    ]
+  }
+  </script>
   <script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
   <script>
     window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
@@ -20,7 +49,7 @@
   <header class="site-header">
     <div class="container header-wrap">
       <a class="logo" href="index.html" aria-label="Gobree Belt - Inicio">
-        <img src="logoonlinegobree.png" alt="Logo Gobree Belt" loading="lazy">
+        <img src="logoonlinegobree.png" alt="Logo Gobree Belt" width="180" height="50" loading="lazy">
       </a>
       <button class="menu-toggle" aria-label="Abrir menú">☰</button>
       <nav class="nav" id="mainNav">
@@ -38,7 +67,8 @@
 
   <main class="page-main">
     <section class="hero">
-      <img class="hero-bg" src="portadagobree.png" alt="Equipo Gobree Belt" loading="eager">
+      <link rel="preload" as="image" href="portadagobree.png">
+      <img class="hero-bg" src="portadagobree.png" alt="Equipo técnico de Gobree Belt brindando asesoría" loading="eager" width="1920" height="400">
       <div class="hero-overlay"></div>
       <div class="container hero-content">
         <h1>Tu Socio Técnico en Movimiento</h1>

@@ -284,6 +284,8 @@
       img.src = src;
       img.alt = mediaAlt;
       img.loading = 'lazy';
+      img.width = 400;
+      img.height = 250;
 
       const h3 = document.createElement('h3');
       h3.textContent = title;
@@ -356,6 +358,7 @@
               <img src="${p.img ? '/IMAGENES GOBREE/' + p.img : 'Bandasanitaria.png'}" 
                    alt="${p.alt || p.nombre}" 
                    title="${p.title || p.nombre}" 
+                   width="400" height="300"
                    loading="lazy">
               <div class="product-info">
                 <h3>${p.nombre}</h3>
@@ -442,13 +445,39 @@
     const params = new URLSearchParams(window.location.search);
     const id = Number(params.get('id')) || 1;
     const p = productos.find((x) => x.id === id) || productos[0];
+
+    // Actualizar metadata dinámicamente para SEO
+    document.title = `${p.nombre} | Bandas Industriales | Gobree Belt`;
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) metaDesc.setAttribute('content', `${p.nombre}: ${p.descripcion} Material: ${p.material}. Soluciones técnicas en México.`);
+
+    // Agregar Product Schema dinámico
+    const productSchema = {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      "name": p.nombre,
+      "image": `https://gobreebelt.com/IMAGENES GOBREE/${p.img || 'Bandasanitaria.png'}`,
+      "description": p.descripcion,
+      "brand": {
+        "@type": "Brand",
+        "name": "Gobree Belt"
+      },
+      "category": p.categoria,
+      "material": p.material
+    };
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.text = JSON.stringify(productSchema);
+    document.head.appendChild(script);
+
     const detail = document.getElementById('productDetail');
     detail.innerHTML = `
       <h1>${p.nombre}</h1>
       <div class="product-detail">
         <img src="${p.img ? '/IMAGENES GOBREE/' + p.img : 'Bandasanitaria.png'}" 
              alt="${p.alt || p.nombre}" 
-             title="${p.title || p.nombre}" 
+             width="600" height="400"
+             loading="eager">             title="${p.title || p.nombre}" 
              loading="lazy">
         <div>
           <p>${p.descripcion}</p>

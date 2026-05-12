@@ -3,13 +3,84 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Servicios de thermal fusion y vulcanizado, instalación y asesoría técnica en bandas transportadoras | Gobree Belt.">
-  <title>Thermal Fusion y Vulcanizado de bandas | Gobree Belt</title>
+  <meta name="description" content="Servicios especializados en bandas industriales: Thermal Fusion, Vulcanizado, Instalación en planta y Asesoría Técnica en México. Gobree Belt garantiza tu operación.">
+  <meta name="keywords" content="servicios bandas industriales, thermal fusion bandas, vulcanizado bandas, instalación bandas transportadoras, asesoría técnica industrial">
+  <link rel="canonical" href="https://gobreebelt.com/servicios">
+  <title>Servicios de Thermal Fusion y Vulcanizado | Gobree Belt</title>
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://gobreebelt.com/servicios">
+  <meta property="og:title" content="Servicios de Thermal Fusion y Vulcanizado | Gobree Belt">
+  <meta property="og:description" content="Garantizamos la continuidad de tu operación con soporte técnico en sitio e instalación profesional.">
+  <meta property="og:image" content="https://gobreebelt.com/AsesoriaTecnica.png">
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://gobreebelt.com/servicios">
+  <meta property="twitter:title" content="Servicios de Thermal Fusion y Vulcanizado | Gobree Belt">
+  <meta property="twitter:description" content="Garantizamos la continuidad de tu operación con soporte técnico en sitio e instalación profesional.">
+  <meta property="twitter:image" content="https://gobreebelt.com/AsesoriaTecnica.png">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="icon" type="image/png" href="favicongobree.png">
   <link rel="stylesheet" href="styles.css">
+
+  <!-- Schema Markup -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Inicio", "item": "https://gobreebelt.com/" },
+      { "@type": "ListItem", "position": 2, "name": "Servicios", "item": "https://gobreebelt.com/servicios" }
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "serviceType": "Mantenimiento e Instalación de Bandas Industriales",
+    "provider": {
+      "@type": "LocalBusiness",
+      "name": "Gobree Belt"
+    },
+    "areaServed": {
+      "@type": "Country",
+      "name": "Mexico"
+    },
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "Servicios de Bandas",
+      "itemListElement": [
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Thermal Fusion y Vulcanizado"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Instalación en Planta"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Asesoría Técnica Especializada"
+          }
+        }
+      ]
+    }
+  }
+  </script>
   <script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
   <script>
     window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
@@ -20,7 +91,7 @@
   <header class="site-header">
     <div class="container header-wrap">
       <a class="logo" href="index.html">
-        <img src="logoonlinegobree.png" alt="Logo Gobree Belt" loading="lazy">
+        <img src="logoonlinegobree.png" alt="Logo Gobree Belt" width="180" height="50" loading="lazy">
       </a>
       <button class="menu-toggle" aria-label="Abrir menú">☰</button>
       <nav class="nav" id="mainNav">
@@ -39,7 +110,8 @@
   <main class="page-main">
     <!-- Hero Section para Servicios -->
     <section class="hero">
-      <img class="hero-bg" src="AsesoriaTecnica.png" alt="Servicio técnico Gobree Belt" loading="eager">
+      <link rel="preload" as="image" href="AsesoriaTecnica.png">
+      <img class="hero-bg" src="AsesoriaTecnica.png" alt="Asesoría técnica y servicios especializados de Gobree Belt" loading="eager" width="1920" height="400">
       <div class="hero-overlay"></div>
       <div class="container hero-content">
         <h1>Servicios Especializados en Bandas</h1>
@@ -62,7 +134,7 @@
             <li>Reparaciones y refuerzos</li>
             <li>Verificación de tensión y tracking</li>
           </ul>
-          <img src="Manufactura.png" alt="Thermal Fusion y Vulcanizado">
+          <img src="Manufactura.png" alt="Proceso de vulcanizado de bandas industriales" loading="lazy" width="400" height="250">
           <a href="contacto.html?servicio=thermal-fusion-vulcanizado" class="btn btn-secondary" style="width:100%; margin-top:1rem;">Cotizar Thermal Fusion y Vulcanizado</a>
         </article>
 
@@ -75,7 +147,7 @@
             <li>Ajuste de rodillos y guías</li>
             <li>Pruebas de carga real</li>
           </ul>
-          <img src="Instalacion.png" alt="Instalación de bandas">
+          <img src="Instalacion.png" alt="Instalación profesional de bandas en planta industrial" loading="lazy" width="400" height="250">
           <a href="contacto.html?servicio=instalacion" class="btn btn-secondary" style="width:100%; margin-top:1rem;">Solicitar Instalación</a>
         </article>
 
@@ -88,7 +160,7 @@
             <li>Optimización de transmisiones</li>
             <li>Solución a fallas recurrentes</li>
           </ul>
-          <img src="AsesoriaTecnica.png" alt="Asesoría técnica especializada">
+          <img src="AsesoriaTecnica.png" alt="Asesoría técnica especializada para optimización de bandas" loading="lazy" width="400" height="250">
           <a href="contacto.html?servicio=asesoria" class="btn btn-secondary" style="width:100%; margin-top:1rem;">Agendar Consulta</a>
         </article>
       </div>
@@ -113,6 +185,10 @@
             <h3>Ejecución</h3>
             <p>Implementamos el servicio con personal calificado y herramientas de precisión.</p>
           </div>
+        </div>
+        <div style="text-align:center; margin-top:3rem;">
+          <p class="lead">¿Buscas una banda específica para tu servicio?</p>
+          <a href="productos.html" class="btn">Explorar Catálogo de Bandas</a>
         </div>
       </div>
     </section>

@@ -3,13 +3,49 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Sectores industriales atendidos por Gobree Belt con soluciones en bandas transportadoras.">
-  <title>Bandas transportadoras para alimentos, logística y manufactura | Gobree Belt</title>
+  <meta name="description" content="Explora las soluciones en bandas transportadoras de Gobree Belt para diversos sectores industriales: alimentaria, logística, manufactura y más.">
+  <meta name="keywords" content="sectores industriales bandas, bandas transportadoras alimentos, logística bandas, manufactura bandas, bandas industriales México">
+  <link rel="canonical" href="https://gobreebelt.com/sectores">
+  <title>Soluciones por Sector Industrial | Gobree Belt</title>
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://gobreebelt.com/sectores">
+  <meta property="og:title" content="Soluciones por Sector Industrial | Gobree Belt">
+  <meta property="og:description" content="Bandas transportadoras diseñadas para optimizar los procesos de tu industria. Alimentaria, Logística, Farmacéutica y más.">
+  <meta property="og:image" content="https://gobreebelt.com/IndustriaAlimenticia.png">
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://gobreebelt.com/sectores">
+  <meta property="twitter:title" content="Soluciones por Sector Industrial | Gobree Belt">
+  <meta property="twitter:description" content="Bandas transportadoras diseñadas para optimizar los procesos de tu industria. Alimentaria, Logística, Farmacéutica y más.">
+  <meta property="twitter:image" content="https://gobreebelt.com/IndustriaAlimenticia.png">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="icon" type="image/png" href="favicongobree.png">
   <link rel="stylesheet" href="styles.css">
+
+  <!-- Schema Markup -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [{
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Inicio",
+      "item": "https://gobreebelt.com/"
+    },{
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Sectores",
+      "item": "https://gobreebelt.com/sectores"
+    }]
+  }
+  </script>
   <script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
   <script>
     window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
@@ -19,7 +55,7 @@
 <body>
   <header class="site-header">
     <div class="container header-wrap">
-      <a class="logo" href="index.html"><img src="logoonlinegobree.png" alt="Logo Gobree Belt" loading="lazy"></a>
+      <a class="logo" href="index.html"><img src="logoonlinegobree.png" alt="Logo Gobree Belt" width="180" height="50" loading="lazy"></a>
       <button class="menu-toggle" aria-label="Abrir menú">☰</button>
       <nav class="nav" id="mainNav">
         <a href="index.html">Inicio</a>
@@ -37,7 +73,8 @@
   <main class="page-main">
     <!-- Hero Section para Sectores -->
     <section class="hero">
-      <img class="hero-bg" src="IndustriaAlimenticia.png" alt="Soluciones industriales Gobree Belt" loading="eager">
+      <link rel="preload" as="image" href="IndustriaAlimenticia.png">
+      <img class="hero-bg" src="IndustriaAlimenticia.png" alt="Soluciones industriales Gobree Belt para diversos sectores" loading="eager" width="1920" height="400">
       <div class="hero-overlay"></div>
       <div class="container hero-content">
         <h1>Soluciones por Sector Industrial</h1>
@@ -200,6 +237,7 @@
                alt="${s.alt || s.name}" 
                title="${s.title || s.name}" 
                loading="lazy" 
+               width="400" height="225"
                style="aspect-ratio:16/9;object-fit:cover;">
           <h2>${s.name}</h2>
           <p>${s.desc}</p>

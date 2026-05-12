@@ -3,13 +3,42 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Proyectos industriales realizados por Gobree Belt con bandas transportadoras en distintas industrias.">
-  <title>Proyectos realizados | Gobree Belt</title>
+  <meta name="description" content="Casos de éxito y aplicaciones reales de bandas transportadoras Gobree Belt en diversas industrias: alimentos, logística, empaque y manufactura.">
+  <meta name="keywords" content="proyectos bandas transportadoras, casos de éxito industriales, aplicaciones bandas industriales, portafolio Gobree Belt">
+  <link rel="canonical" href="https://gobreebelt.com/proyectos">
+  <title>Proyectos y Casos de Éxito | Gobree Belt</title>
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://gobreebelt.com/proyectos">
+  <meta property="og:title" content="Proyectos y Casos de Éxito | Gobree Belt">
+  <meta property="og:description" content="Descubre cómo ayudamos a las empresas a optimizar sus procesos con soluciones de transporte de alto desempeño.">
+  <meta property="og:image" content="https://gobreebelt.com/IndustriaAlimenticia.png">
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://gobreebelt.com/proyectos">
+  <meta property="twitter:title" content="Proyectos y Casos de Éxito | Gobree Belt">
+  <meta property="twitter:description" content="Descubre cómo ayudamos a las empresas a optimizar sus procesos con soluciones de transporte de alto desempeño.">
+  <meta property="twitter:image" content="https://gobreebelt.com/IndustriaAlimenticia.png">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="icon" type="image/png" href="favicongobree.png">
   <link rel="stylesheet" href="styles.css">
+
+  <!-- Schema Markup -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Inicio", "item": "https://gobreebelt.com/" },
+      { "@type": "ListItem", "position": 2, "name": "Proyectos", "item": "https://gobreebelt.com/proyectos" }
+    ]
+  }
+  </script>
   <style>
     .project-filters { display:flex; gap:.75rem; flex-wrap:wrap; margin-top:1.5rem; }
     .projects-grid { display:grid; grid-template-columns:1fr; gap:1rem; }
@@ -54,7 +83,7 @@
 <body>
   <header class="site-header">
     <div class="container header-wrap">
-      <a class="logo" href="index.html"><img src="logoonlinegobree.png" alt="Logo Gobree Belt" loading="lazy"></a>
+      <a class="logo" href="index.html"><img src="logoonlinegobree.png" alt="Logo Gobree Belt" width="180" height="50" loading="lazy"></a>
       <button class="menu-toggle" aria-label="Abrir menú">☰</button>
       <nav class="nav" id="mainNav">
         <a href="index.html">Inicio</a>
@@ -71,7 +100,8 @@
 
   <main class="page-main">
     <section class="hero">
-      <img class="hero-bg" src="IndustriaAlimenticia.png" alt="Proyectos industriales Gobree Belt" loading="eager">
+      <link rel="preload" as="image" href="IndustriaAlimenticia.png">
+      <img class="hero-bg" src="IndustriaAlimenticia.png" alt="Casos de éxito y proyectos realizados por Gobree Belt" loading="eager" width="1920" height="400">
       <div class="hero-overlay"></div>
       <div class="container hero-content">
         <h1>Proyectos realizados</h1>
@@ -93,7 +123,7 @@
       <div class="projects-grid" id="projectsGrid">
         <article class="card project-card">
           <span class="tag project-tag">Alimenticio</span>
-          <button class="project-media media-trigger" type="button" data-type="image" data-src="/IMAGENES GOBREE/banda-transportadora-industria-alimentaria.webp" data-alt="Proyecto de línea alimenticia"><img src="/IMAGENES GOBREE/banda-transportadora-industria-alimentaria.webp" alt="Proyecto de línea alimenticia" loading="lazy"></button>
+          <button class="project-media media-trigger" type="button" data-type="image" data-src="/IMAGENES GOBREE/banda-transportadora-industria-alimentaria.webp" data-alt="Proyecto de línea alimenticia"><img src="/IMAGENES GOBREE/banda-transportadora-industria-alimentaria.webp" alt="Proyecto de línea alimenticia" loading="lazy" width="400" height="250"></button>
           <h3>Línea de empaque cárnico</h3>
           <p>Implementación sanitaria para transporte continuo en producción de alimentos perecederos.</p>
           <p class="project-tech"><strong>Banda:</strong> PVC grado alimenticio</p>
@@ -103,7 +133,7 @@
         <article class="card project-card">
           <span class="tag project-tag">Logística</span>
           <button class="project-media project-video media-trigger" type="button" data-type="video" data-src="/videos/proyectos/clasificacion-paqueteria.mp4" data-poster="/IMAGENES GOBREE/banda-transportadora-logistica.webp" data-alt="Video del proyecto de clasificación logística">
-            <img src="/IMAGENES GOBREE/banda-transportadora-logistica.webp" alt="Video del proyecto de clasificación logística" loading="lazy">
+            <img src="/IMAGENES GOBREE/banda-transportadora-logistica.webp" alt="Video del proyecto de clasificación logística" loading="lazy" width="400" height="250">
           </button>
           <h3>Clasificación de paquetería</h3>
           <p>Sistema modular para centro de distribución con alto volumen y ventanas de despacho críticas.</p>
@@ -113,7 +143,7 @@
 
         <article class="card project-card">
           <span class="tag project-tag">Manufactura</span>
-          <button class="project-media media-trigger" type="button" data-type="image" data-src="/IMAGENES GOBREE/banda-transportadora-industria-litografica.webp" data-alt="Proyecto industria litográfica"><img src="/IMAGENES GOBREE/banda-transportadora-industria-litografica.webp" alt="Proyecto industria litográfica" loading="lazy"></button>
+          <button class="project-media media-trigger" type="button" data-type="image" data-src="/IMAGENES GOBREE/banda-transportadora-industria-litografica.webp" data-alt="Proyecto industria litográfica"><img src="/IMAGENES GOBREE/banda-transportadora-industria-litografica.webp" alt="Proyecto industria litográfica" loading="lazy" width="400" height="250"></button>
           <h3>Transporte en impresión offset</h3>
           <p>Integración para manejo estable de sustratos con precisión de sincronía entre estaciones.</p>
           <p class="project-tech"><strong>Banda:</strong> Nylon transmisión</p>
@@ -122,7 +152,7 @@
 
         <article class="card project-card">
           <span class="tag project-tag">Empaque</span>
-          <button class="project-media media-trigger" type="button" data-type="image" data-src="/IMAGENES GOBREE/banda-transportadora-carton-papel.webp" data-alt="Proyecto empaque cartón"><img src="/IMAGENES GOBREE/banda-transportadora-carton-papel.webp" alt="Proyecto empaque cartón" loading="lazy"></button>
+          <button class="project-media media-trigger" type="button" data-type="image" data-src="/IMAGENES GOBREE/banda-transportadora-carton-papel.webp" data-alt="Proyecto empaque cartón"><img src="/IMAGENES GOBREE/banda-transportadora-carton-papel.webp" alt="Proyecto empaque cartón" loading="lazy" width="400" height="250"></button>
           <h3>Empaque de cartón corrugado</h3>
           <p>Automatización de flujo de cajas con reducción de paros por desalineación en banda.</p>
           <p class="project-tech"><strong>Banda:</strong> Dentada con recubrimiento</p>
@@ -131,7 +161,7 @@
 
         <article class="card project-card">
           <span class="tag project-tag">Alimenticio</span>
-          <button class="project-media media-trigger" type="button" data-type="image" data-src="/IMAGENES GOBREE/banda-transportadora-confiteria.webp" data-alt="Proyecto confitería"><img src="/IMAGENES GOBREE/banda-transportadora-confiteria.webp" alt="Proyecto confitería" loading="lazy"></button>
+          <button class="project-media media-trigger" type="button" data-type="image" data-src="/IMAGENES GOBREE/banda-transportadora-confiteria.webp" data-alt="Proyecto confitería"><img src="/IMAGENES GOBREE/banda-transportadora-confiteria.webp" alt="Proyecto confitería" loading="lazy" width="400" height="250"></button>
           <h3>Línea de confitería continua</h3>
           <p>Solución antiadherente para enfriamiento y traslado de producto terminado.</p>
           <p class="project-tech"><strong>Banda:</strong> Teflón malla</p>
@@ -141,7 +171,7 @@
         <article class="card project-card">
           <span class="tag project-tag">Logística</span>
           <button class="project-media project-video media-trigger" type="button" data-type="video" data-src="/videos/proyectos/manejo-equipaje-aeropuerto.mp4" data-poster="/IMAGENES GOBREE/banda-transportadora-aeropuertos.webp" data-alt="Video del proyecto de aeropuerto">
-            <img src="/IMAGENES GOBREE/banda-transportadora-aeropuertos.webp" alt="Video del proyecto de aeropuerto" loading="lazy">
+            <img src="/IMAGENES GOBREE/banda-transportadora-aeropuertos.webp" alt="Video del proyecto de aeropuerto" loading="lazy" width="400" height="250">
           </button>
           <h3>Manejo de equipaje en aeropuerto</h3>
           <p>Actualización de tramo transportador para mejorar continuidad operativa en picos de demanda.</p>
