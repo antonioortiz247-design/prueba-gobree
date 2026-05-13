@@ -569,6 +569,12 @@
     contactForm.addEventListener('submit', (e) => {
       e.preventDefault();
 
+      const privacyCheck = contactForm.querySelector('input[name="privacidad"]');
+      if (privacyCheck && !privacyCheck.checked) {
+        alert('Por favor, acepta el Aviso de Privacidad para continuar.');
+        return;
+      }
+
       const nombre = contactForm.querySelector('input[name="nombre"], input[type="text"]')?.value?.trim() || '';
       const correo = contactForm.querySelector('input[name="email"], input[type="email"]')?.value?.trim() || '';
       const telefono = contactForm.querySelector('input[name="telefono"]')?.value?.trim() || '';
@@ -602,6 +608,13 @@
   document.querySelectorAll('.footer-glass-form').forEach((form) => {
     form.addEventListener('submit', (e) => {
       e.preventDefault();
+      
+      const privacyCheck = form.querySelector('input[name="privacidad"]');
+      if (privacyCheck && !privacyCheck.checked) {
+        alert('Por favor, acepta el Aviso de Privacidad para continuar.');
+        return;
+      }
+
       const nombre = form.querySelector('input[name="nombre"]')?.value?.trim() || '';
       const email = form.querySelector('input[name="email"]')?.value?.trim() || '';
       const telefono = form.querySelector('input[name="telefono"]')?.value?.trim() || '';
