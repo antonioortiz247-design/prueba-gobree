@@ -226,7 +226,7 @@ p { margin: 0 0 1rem; color: var(--muted); }
 
 .hero-carousel-clone-track {
   position: relative;
-  height: clamp(200px, 34vh, 320px);
+  height: clamp(300px, 50vh, 500px);
   background: #0b1220;
 }
 
