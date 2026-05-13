@@ -299,7 +299,7 @@ textarea:focus-visible,
 }
 .btn-secondary:hover { filter: brightness(0.98); }
 .text-link { color: var(--primary); font-weight: 600; }
-.lead { font-size: 1.08rem; max-width: 860px; color: #475569; }
+.lead { font-size: 1.08rem; max-width: 860px; color: #475569; margin: 0 auto 1rem; }
 
 .cards { display: grid; gap: 1rem; }
 .four-col { grid-template-columns: repeat(4, minmax(0,1fr)); }
