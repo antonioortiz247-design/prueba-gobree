@@ -129,10 +129,12 @@ p { margin: 0 0 1rem; color: var(--muted); }
   object-fit: cover;
   opacity: 0;
   transition: opacity 0.8s ease-in-out;
+  pointer-events: none; /* Evita que las imágenes invisibles reciban clics */
 }
 
 .hero-slide.active {
   opacity: 1;
+  pointer-events: auto; /* Solo la imagen visible puede recibir clics */
 }
 
 .carousel-controls {

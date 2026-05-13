@@ -158,26 +158,21 @@
       const createCarousel = (carouselEl, indicators, caption) => {
         let slides = Array.from(carouselEl.querySelectorAll('.hero-slide'));
 
-        // Agregar funcionalidad de lightbox a las imágenes iniciales
+        // Agregar funcionalidad de lightbox de forma robusta
         const setupSlides = (slideList) => {
           slideList.forEach((slide) => {
             slide.style.cursor = 'pointer';
-            // Eliminar listeners previos para evitar duplicados si se llama varias veces
-            const newSlide = slide.cloneNode(true);
-            slide.parentNode.replaceChild(newSlide, slide);
-            
-            newSlide.addEventListener('click', () => {
+            // Simplemente asignamos el evento (sin clonar innecesariamente)
+            slide.onclick = () => {
               if (!lightbox || !lightboxImg) return;
-              lightboxImg.src = newSlide.src;
+              lightboxImg.src = slide.src;
               lightbox.classList.add('open');
               lightbox.setAttribute('aria-hidden', 'false');
-            });
+            };
           });
-          // Actualizar la referencia de slides si es necesario (para el carrusel interno)
-          return Array.from(carouselEl.querySelectorAll('.hero-slide'));
         };
 
-        slides = setupSlides(slides);
+        setupSlides(slides);
 
         let items = slides.map((img) => ({
         alt: img.getAttribute('alt') || 'Gobree Belt',
@@ -256,7 +251,7 @@
             )
             .join('');
           slides = Array.from(carouselEl.querySelectorAll('.hero-slide'));
-           slides = setupSlides(slides);
+           setupSlides(slides);
            buildIndicators();
           setCaption(0);
           startAutoPlay();
