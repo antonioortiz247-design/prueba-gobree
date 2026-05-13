@@ -603,12 +603,12 @@ iframe { width: 100%; min-height: 320px; border: 0; border-radius: 12px; }
 .site-footer p,
 .site-footer a,
 .site-footer li { color: #dbeafe; }
-.footer-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 1rem; padding: 2.2rem 0; }
+.footer-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 1rem; padding: 2.2rem 0 1rem; }
 .footer-grid ul { list-style: none; padding: 0; margin: 0; }
 .footer-grid li { margin-bottom: .5rem; }
 .footer-seo-block {
   border-top: 1px solid rgba(219, 234, 254, 0.24);
-  padding: 0 0 2rem;
+  padding: 1rem 0 2rem;
 }
 .footer-seo-text {
   max-width: 920px;
