@@ -162,16 +162,22 @@
         const setupSlides = (slideList) => {
           slideList.forEach((slide) => {
             slide.style.cursor = 'pointer';
-            slide.addEventListener('click', () => {
+            // Eliminar listeners previos para evitar duplicados si se llama varias veces
+            const newSlide = slide.cloneNode(true);
+            slide.parentNode.replaceChild(newSlide, slide);
+            
+            newSlide.addEventListener('click', () => {
               if (!lightbox || !lightboxImg) return;
-              lightboxImg.src = slide.src;
+              lightboxImg.src = newSlide.src;
               lightbox.classList.add('open');
               lightbox.setAttribute('aria-hidden', 'false');
             });
           });
+          // Actualizar la referencia de slides si es necesario (para el carrusel interno)
+          return Array.from(carouselEl.querySelectorAll('.hero-slide'));
         };
 
-        setupSlides(slides);
+        slides = setupSlides(slides);
 
         let items = slides.map((img) => ({
         alt: img.getAttribute('alt') || 'Gobree Belt',
@@ -250,8 +256,8 @@
             )
             .join('');
           slides = Array.from(carouselEl.querySelectorAll('.hero-slide'));
-          setupSlides(slides);
-          buildIndicators();
+           slides = setupSlides(slides);
+           buildIndicators();
           setCaption(0);
           startAutoPlay();
         };
