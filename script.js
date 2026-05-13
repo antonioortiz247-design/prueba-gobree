@@ -155,9 +155,25 @@
     const indicatorsEl = document.getElementById('homeCarouselIndicators');
     const captionEl = document.getElementById('homeCarouselCaption');
 
-    const createCarousel = (carouselEl, indicators, caption) => {
-      let slides = Array.from(carouselEl.querySelectorAll('.hero-slide'));
-      let items = slides.map((img) => ({
+      const createCarousel = (carouselEl, indicators, caption) => {
+        let slides = Array.from(carouselEl.querySelectorAll('.hero-slide'));
+
+        // Agregar funcionalidad de lightbox a las imágenes iniciales
+        const setupSlides = (slideList) => {
+          slideList.forEach((slide) => {
+            slide.style.cursor = 'pointer';
+            slide.addEventListener('click', () => {
+              if (!lightbox || !lightboxImg) return;
+              lightboxImg.src = slide.src;
+              lightbox.classList.add('open');
+              lightbox.setAttribute('aria-hidden', 'false');
+            });
+          });
+        };
+
+        setupSlides(slides);
+
+        let items = slides.map((img) => ({
         alt: img.getAttribute('alt') || 'Gobree Belt',
         caption: ''
       }));
@@ -216,28 +232,29 @@
       };
 
       const applyImages = (images) => {
-        if (!Array.isArray(images) || !images.length) return;
-        stopAutoPlay();
-        currentSlide = 0;
-        items = images.map((img) => ({
-          alt: img && img.alt ? String(img.alt) : 'Gobree Belt',
-          caption: img && img.caption ? String(img.caption) : ''
-        }));
-        carouselEl.innerHTML = images
-          .map(
-            (img, index) => `
-          <img class="hero-slide ${index === 0 ? 'active' : ''}"
-               src="${img.url}"
-               alt="${img.alt || 'Gobree Belt'}"
-               loading="${index === 0 ? 'eager' : 'lazy'}">
-        `
-          )
-          .join('');
-        slides = Array.from(carouselEl.querySelectorAll('.hero-slide'));
-        buildIndicators();
-        setCaption(0);
-        startAutoPlay();
-      };
+          if (!Array.isArray(images) || !images.length) return;
+          stopAutoPlay();
+          currentSlide = 0;
+          items = images.map((img) => ({
+            alt: img && img.alt ? String(img.alt) : 'Gobree Belt',
+            caption: img && img.caption ? String(img.caption) : ''
+          }));
+          carouselEl.innerHTML = images
+            .map(
+              (img, index) => `
+            <img class="hero-slide ${index === 0 ? 'active' : ''}"
+                 src="${img.url}"
+                 alt="${img.alt || 'Gobree Belt'}"
+                 loading="${index === 0 ? 'eager' : 'lazy'}">
+          `
+            )
+            .join('');
+          slides = Array.from(carouselEl.querySelectorAll('.hero-slide'));
+          setupSlides(slides);
+          buildIndicators();
+          setCaption(0);
+          startAutoPlay();
+        };
 
       buildIndicators();
       setCaption(0);
