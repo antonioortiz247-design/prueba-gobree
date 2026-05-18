@@ -343,6 +343,23 @@
       <div id="productList" class="image-list"></div>
     </div>
 
+    <div class="admin-card">
+      <h2 style="margin:0 0 .75rem;">Limpieza de base de datos</h2>
+      <p style="margin-top:0; color:var(--muted);">Elimina keys y archivos antiguos no utilizados. Conserva carrusel, proyectos, productos y media referenciada.</p>
+      <div class="admin-form" style="margin-bottom:1rem;">
+        <label>
+          Límite de keys a escanear (opcional)
+          <input type="text" id="cleanupMaxKeys" placeholder="50000">
+        </label>
+      </div>
+      <div class="admin-row">
+        <button class="btn btn-secondary" id="cleanupAnalyzeBtn" type="button">Analizar</button>
+        <button class="btn btn-danger" id="cleanupRunBtn" type="button" disabled>Limpiar ahora</button>
+        <span class="upload-meta" id="cleanupStatus"></span>
+      </div>
+      <pre id="cleanupReport" style="margin:1rem 0 0; white-space:pre-wrap; border:1px solid rgba(148,163,184,.35); border-radius:.9rem; padding:.9rem; background:rgba(248,250,252,.9); display:none;"></pre>
+    </div>
+
     <div class="admin-savebar">
       <button class="btn" id="saveBtn" type="button">Guardar cambios</button>
       <a href="/" class="btn btn-secondary">Ver Inicio</a>
@@ -412,6 +429,12 @@
     const productUploadMeta = document.getElementById('productUploadMeta');
     const addProductBtn = document.getElementById('addProductBtn');
     const cancelProductEditBtn = document.getElementById('cancelProductEditBtn');
+
+    const cleanupMaxKeys = document.getElementById('cleanupMaxKeys');
+    const cleanupAnalyzeBtn = document.getElementById('cleanupAnalyzeBtn');
+    const cleanupRunBtn = document.getElementById('cleanupRunBtn');
+    const cleanupStatus = document.getElementById('cleanupStatus');
+    const cleanupReport = document.getElementById('cleanupReport');
 
     let currentImages = [];
     let currentProjects = [];
@@ -965,6 +988,133 @@
     });
 
     cancelProductEditBtn.addEventListener('click', () => clearProductForm());
+
+    let lastCleanupPayload;
+
+    function setCleanupStatus(text) {
+      if (!cleanupStatus) return;
+      cleanupStatus.textContent = text || '';
+    }
+
+    function toCleanupNumber(value) {
+      const n = Number(String(value || '').replace(/[^\d]/g, ''));
+      return Number.isFinite(n) && n > 0 ? n : 0;
+    }
+
+    function buildCleanupUrl(confirm) {
+      const params = new URLSearchParams();
+      const mk = toCleanupNumber(cleanupMaxKeys && cleanupMaxKeys.value);
+      if (mk) params.set('maxKeys', String(mk));
+      if (confirm) params.set('confirm', 'true');
+      const qs = params.toString();
+      return `/api/storage-cleanup${qs ? `?${qs}` : ''}`;
+    }
+
+    function renderCleanupReport(payload) {
+      if (!cleanupReport) return;
+      const p = payload || {};
+
+      const lines = [];
+      lines.push(`Modo: ${String(p.mode || '')}`);
+
+      const kv = p.kv;
+      if (kv && kv.ok) {
+        lines.push('');
+        lines.push('KV');
+        lines.push(`- Keys: ${kv.totalKeys}`);
+        lines.push(`- Por borrar: ${kv.deleteCount}`);
+        if (kv.deletedCount != null) lines.push(`- Borradas: ${kv.deletedCount}`);
+        if (kv.failedCount != null) lines.push(`- Fallidas: ${kv.failedCount}`);
+        if (Array.isArray(kv.deleteSample) && kv.deleteSample.length) {
+          lines.push('- Ejemplos:');
+          kv.deleteSample.slice(0, 20).forEach((k) => lines.push(`  ${k}`));
+        }
+      } else {
+        lines.push('');
+        lines.push('KV');
+        lines.push('- No detectado (o no configurado en este entorno).');
+      }
+
+      const redis = p.redis;
+      if (redis && redis.ok) {
+        lines.push('');
+        lines.push('Redis');
+        lines.push(`- Keys: ${redis.totalKeys}`);
+        lines.push(`- Por borrar: ${redis.deleteCount}`);
+        if (redis.deletedCount != null) lines.push(`- Borradas: ${redis.deletedCount}`);
+        if (redis.failedCount != null) lines.push(`- Fallidas: ${redis.failedCount}`);
+        if (Array.isArray(redis.deleteSample) && redis.deleteSample.length) {
+          lines.push('- Ejemplos:');
+          redis.deleteSample.slice(0, 20).forEach((k) => lines.push(`  ${k}`));
+        }
+      } else {
+        lines.push('');
+        lines.push('Redis');
+        lines.push('- No detectado (o no configurado en este entorno).');
+      }
+
+      const refs = p.referencedMedia;
+      if (refs) {
+        lines.push('');
+        lines.push('Media referenciada');
+        lines.push(`- IDs: ${Number(refs.idsCount || 0)}`);
+      }
+
+      cleanupReport.textContent = lines.join('\n');
+      cleanupReport.style.display = 'block';
+
+      const kvDel = kv && kv.ok ? Number(kv.deleteCount || 0) : 0;
+      const rDel = redis && redis.ok ? Number(redis.deleteCount || 0) : 0;
+      if (cleanupRunBtn) cleanupRunBtn.disabled = kvDel + rDel <= 0;
+    }
+
+    async function runCleanup(confirm) {
+      if (!cleanupAnalyzeBtn || !cleanupRunBtn) return;
+      cleanupAnalyzeBtn.disabled = true;
+      cleanupRunBtn.disabled = true;
+      setCleanupStatus(confirm ? 'Limpiando…' : 'Analizando…');
+      if (cleanupReport) cleanupReport.style.display = 'none';
+
+      try {
+        const url = buildCleanupUrl(confirm);
+        const r = await fetch(url, { cache: 'no-store', credentials: 'same-origin' });
+        const payload = await readPayload(r);
+        if (!r.ok) {
+          const msg = formatErrorMessage('No se pudo ejecutar la limpieza', r, payload);
+          setCleanupStatus(msg);
+          alert(msg);
+          return;
+        }
+        lastCleanupPayload = payload;
+        renderCleanupReport(payload);
+        setCleanupStatus(confirm ? 'Limpieza completada.' : 'Análisis listo.');
+      } catch (e) {
+        const msg = `No se pudo ejecutar la limpieza | ${String(e && e.message ? e.message : e)}`;
+        setCleanupStatus(msg);
+        alert(msg);
+      } finally {
+        cleanupAnalyzeBtn.disabled = false;
+        if (cleanupRunBtn && lastCleanupPayload) {
+          const kvDel = lastCleanupPayload.kv && lastCleanupPayload.kv.ok ? Number(lastCleanupPayload.kv.deleteCount || 0) : 0;
+          const rDel = lastCleanupPayload.redis && lastCleanupPayload.redis.ok ? Number(lastCleanupPayload.redis.deleteCount || 0) : 0;
+          cleanupRunBtn.disabled = kvDel + rDel <= 0;
+        }
+      }
+    }
+
+    if (cleanupAnalyzeBtn) cleanupAnalyzeBtn.addEventListener('click', async () => runCleanup(false));
+
+    if (cleanupRunBtn) {
+      cleanupRunBtn.addEventListener('click', async () => {
+        const p = lastCleanupPayload || {};
+        const kvDel = p.kv && p.kv.ok ? Number(p.kv.deleteCount || 0) : 0;
+        const rDel = p.redis && p.redis.ok ? Number(p.redis.deleteCount || 0) : 0;
+        const total = kvDel + rDel;
+        const ok = confirm(`Se eliminarán ${total} keys (KV: ${kvDel} | Redis: ${rDel}). ¿Deseas continuar?`);
+        if (!ok) return;
+        await runCleanup(true);
+      });
+    }
 
     loginBtn.addEventListener('click', async () => {
       setStatus('Iniciando sesión...');
