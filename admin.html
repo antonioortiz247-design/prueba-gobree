@@ -221,6 +221,10 @@
           Contraseña del panel
           <input type="password" id="adminPassword" placeholder="Contraseña">
         </label>
+        <label style="display:flex; align-items:center; gap:.6rem; font-weight:600; color:#334155;">
+          <input type="checkbox" id="togglePassword" style="width:18px; height:18px;">
+          Ver contraseña
+        </label>
         <div class="admin-row">
           <button class="btn" id="loginBtn" type="button">Iniciar sesión</button>
           <button class="btn btn-secondary" id="logoutBtn" type="button">Cerrar sesión</button>
@@ -374,6 +378,7 @@
     const addBtn = document.getElementById('addBtn');
     const saveBtn = document.getElementById('saveBtn');
     const adminPassword = document.getElementById('adminPassword');
+    const togglePassword = document.getElementById('togglePassword');
     const loginBtn = document.getElementById('loginBtn');
     const logoutBtn = document.getElementById('logoutBtn');
     const authStatus = document.getElementById('authStatus');
@@ -442,6 +447,12 @@
 
     function setStatus(text) {
       authStatus.textContent = text || '';
+    }
+
+    if (togglePassword && adminPassword) {
+      togglePassword.addEventListener('change', () => {
+        adminPassword.setAttribute('type', togglePassword.checked ? 'text' : 'password');
+      });
     }
 
     function setUploadMeta(text) {
