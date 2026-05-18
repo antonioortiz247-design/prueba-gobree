@@ -86,7 +86,7 @@
       border-bottom: 1px solid rgba(148, 163, 184, 0.25);
     }
     .admin-section-content { padding: 1.15rem; }
-    .admin-authed { display: none !important; }
+    .admin-authed[hidden] { display: none; }
     body.admin-is-authed .admin-authed { display: block; }
     .image-list {
       display: grid;
@@ -281,7 +281,7 @@
       </div>
     </details>
 
-    <div id="adminAuthed" class="admin-authed" style="display:none;">
+    <div id="adminAuthed" class="admin-authed" hidden>
       <details class="admin-card admin-section" data-section="hero-add">
         <summary>Agregar imagen</summary>
         <div class="admin-section-content">
@@ -514,7 +514,10 @@
     function setAuthedUi(next) {
       isAuthed = !!next;
       document.body.classList.toggle('admin-is-authed', isAuthed);
-      if (adminAuthed) adminAuthed.style.display = isAuthed ? 'block' : 'none';
+      if (adminAuthed) {
+        if (isAuthed) adminAuthed.removeAttribute('hidden');
+        else adminAuthed.setAttribute('hidden', '');
+      }
       if (!isAuthed) {
         currentImages = [];
         currentProjects = [];
