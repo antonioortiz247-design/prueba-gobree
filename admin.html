@@ -173,6 +173,7 @@
       flex-wrap: wrap;
     }
     @media (max-width: 680px) {
+      :root { --admin-savebar-h: 92px; }
       .admin-container { margin: 1.25rem auto; padding: 1.05rem; border-radius: 1rem; }
       .admin-top { flex-direction: column; align-items: stretch; }
       .admin-badge { justify-content: space-between; }
@@ -191,7 +192,8 @@
         backdrop-filter: blur(12px);
         justify-content: center;
       }
-      body { padding-bottom: 92px; }
+      body { padding-bottom: calc(var(--admin-savebar-h) + 24px + env(safe-area-inset-bottom)); }
+      .admin-card:last-of-type { margin-bottom: calc(var(--admin-savebar-h) + 16px); }
       .admin-savebar .btn, .admin-savebar a.btn { flex: 1; }
     }
   </style>
