@@ -59,6 +59,35 @@
       box-shadow: var(--shadow-sm);
     }
     .admin-card + .admin-card { margin-top: 1rem; }
+    .admin-section { padding: 0; overflow: hidden; }
+    .admin-section > summary {
+      list-style: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1.05rem 1.15rem;
+      font-weight: 800;
+      color: var(--text);
+      user-select: none;
+    }
+    .admin-section > summary::-webkit-details-marker { display: none; }
+    .admin-section > summary::after {
+      content: '▾';
+      font-size: .9rem;
+      opacity: .7;
+      transform: rotate(-90deg);
+      transition: transform .18s ease;
+    }
+    .admin-section[open] > summary::after { transform: rotate(0deg); }
+    .admin-section[open] > summary {
+      background: linear-gradient(180deg, rgba(248, 250, 252, 0.9), rgba(255, 255, 255, 1));
+      border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+    }
+    .admin-section-content { padding: 1.15rem; }
+    .admin-authed { display: none; }
+    body.admin-is-authed .admin-authed { display: block; }
     .image-list {
       display: grid;
       gap: 1rem;
@@ -220,9 +249,9 @@
       </div>
     </div>
 
-    <div class="admin-card">
-      <h2 style="margin:0 0 .75rem;">Acceso</h2>
-      <div class="admin-form" style="margin:0;">
+    <details class="admin-card admin-section" open>
+      <summary>Acceso</summary>
+      <div class="admin-section-content">
         <label>
           Contraseña del panel
           <input type="password" id="adminPassword" placeholder="Contraseña">
@@ -237,11 +266,13 @@
         </div>
         <small>Si no has iniciado sesión, no podrás guardar cambios.</small>
       </div>
-    </div>
+    </details>
 
-    <div class="admin-card">
-      <h2 style="margin:0 0 .75rem;">Agregar imagen</h2>
-      <div class="admin-add-grid">
+    <div id="adminAuthed" class="admin-authed">
+      <details class="admin-card admin-section" data-section="hero-add" data-default-open="true">
+        <summary>Agregar imagen</summary>
+        <div class="admin-section-content">
+          <div class="admin-add-grid">
         <div class="upload-box" id="uploadBox" tabindex="0" role="button" aria-label="Seleccionar imagen">
           <strong>Subir desde tu dispositivo</strong>
           <div class="upload-meta" id="uploadMeta">Toca aquí o arrastra una imagen (JPG/PNG). Se optimiza automáticamente.</div>
@@ -271,18 +302,22 @@
             <button class="btn btn-success" id="addBtn" type="button">Agregar al carrusel</button>
           </div>
         </div>
-      </div>
-    </div>
+          </div>
+        </div>
+      </details>
 
-    <div class="admin-card">
-      <h2 style="margin:0 0 .75rem;">Imágenes actuales</h2>
-      <div id="imageList" class="image-list"></div>
-    </div>
+      <details class="admin-card admin-section" data-section="hero-list">
+        <summary>Imágenes actuales</summary>
+        <div class="admin-section-content">
+          <div id="imageList" class="image-list"></div>
+        </div>
+      </details>
 
 
-    <div class="admin-card">
-      <h2 style="margin:0 0 .75rem;">Tarjetas de Proyectos</h2>
-      <div class="admin-add-grid" style="margin-bottom:1rem;">
+      <details class="admin-card admin-section" data-section="projects">
+        <summary>Tarjetas de Proyectos</summary>
+        <div class="admin-section-content">
+          <div class="admin-add-grid" style="margin-bottom:1rem;">
         <div class="upload-box" id="projectUploadBox" tabindex="0" role="button" aria-label="Seleccionar media de proyecto">
           <strong>Subir media del proyecto</strong>
           <div class="upload-meta" id="projectUploadMeta">Toca aquí o arrastra una imagen o video. Se sube al servidor y genera una URL.</div>
@@ -307,8 +342,8 @@
           <input type="file" id="projectPosterFile" accept="image/*" style="display:none;">
           <img id="projectPosterPreviewImg" class="upload-preview" alt="">
         </div>
-      </div>
-      <div class="admin-form" style="margin-bottom:1rem;">
+          </div>
+          <div class="admin-form" style="margin-bottom:1rem;">
         <label>Categoría<input type="text" id="projectCategory" placeholder="Alimenticio"></label>
         <label>Título<input type="text" id="projectTitle" placeholder="Nombre del proyecto"></label>
         <label>Descripción<input type="text" id="projectDescription" placeholder="Descripción breve"></label>
@@ -320,15 +355,17 @@
         <label>URL miniatura video (opcional)<input type="text" id="projectMediaPoster" placeholder="Solo para video"></label>
         <label>Alt media<input type="text" id="projectMediaAlt" placeholder="Texto descriptivo"></label>
         <div class="admin-row"><button class="btn btn-success" id="addProjectBtn" type="button">Agregar tarjeta</button></div>
-      </div>
-      <div id="projectList" class="image-list"></div>
-    </div>
+          </div>
+          <div id="projectList" class="image-list"></div>
+        </div>
+      </details>
 
 
-    <div class="admin-card">
-      <h2 style="margin:0 0 .75rem;">Productos del catálogo</h2>
-      <p style="margin-top:0; color:var(--muted);">Agrega, edita o elimina los productos visibles en la página Productos y sus fichas.</p>
-      <div class="admin-form" style="margin-bottom:1rem;">
+      <details class="admin-card admin-section" data-section="products">
+        <summary>Productos del catálogo</summary>
+        <div class="admin-section-content">
+          <p style="margin-top:0; color:var(--muted);">Agrega, edita o elimina los productos visibles en la página Productos y sus fichas.</p>
+          <div class="admin-form" style="margin-bottom:1rem;">
         <input type="hidden" id="productEditingIndex" value="">
         <label>Nombre<input type="text" id="productName" placeholder="Banda PVC industrial"></label>
         <label>Categoría<input type="text" id="productCategory" placeholder="Transportadoras Planas"></label>
@@ -349,30 +386,34 @@
           <button class="btn btn-success" id="addProductBtn" type="button">Agregar producto</button>
           <button class="btn btn-secondary" id="cancelProductEditBtn" type="button">Cancelar edición</button>
         </div>
-      </div>
-      <div id="productList" class="image-list"></div>
-    </div>
+          </div>
+          <div id="productList" class="image-list"></div>
+        </div>
+      </details>
 
-    <div class="admin-card">
-      <h2 style="margin:0 0 .75rem;">Limpieza de base de datos</h2>
-      <p style="margin-top:0; color:var(--muted);">Elimina keys y archivos antiguos no utilizados. Conserva carrusel, proyectos, productos y media referenciada.</p>
-      <div class="admin-form" style="margin-bottom:1rem;">
+      <details class="admin-card admin-section" data-section="cleanup">
+        <summary>Limpieza de base de datos</summary>
+        <div class="admin-section-content">
+          <p style="margin-top:0; color:var(--muted);">Elimina keys y archivos antiguos no utilizados. Conserva carrusel, proyectos, productos y media referenciada.</p>
+          <div class="admin-form" style="margin-bottom:1rem;">
         <label>
           Límite de keys a escanear (opcional)
           <input type="text" id="cleanupMaxKeys" placeholder="50000">
         </label>
-      </div>
-      <div class="admin-row">
+          </div>
+          <div class="admin-row">
         <button class="btn btn-secondary" id="cleanupAnalyzeBtn" type="button">Analizar</button>
         <button class="btn btn-danger" id="cleanupRunBtn" type="button" disabled>Limpiar ahora</button>
         <span class="upload-meta" id="cleanupStatus"></span>
-      </div>
-      <pre id="cleanupReport" style="margin:1rem 0 0; white-space:pre-wrap; border:1px solid rgba(148,163,184,.35); border-radius:.9rem; padding:.9rem; background:rgba(248,250,252,.9); display:none;"></pre>
-    </div>
+          </div>
+          <pre id="cleanupReport" style="margin:1rem 0 0; white-space:pre-wrap; border:1px solid rgba(148,163,184,.35); border-radius:.9rem; padding:.9rem; background:rgba(248,250,252,.9); display:none;"></pre>
+        </div>
+      </details>
 
-    <div class="admin-savebar">
-      <button class="btn" id="saveBtn" type="button">Guardar cambios</button>
-      <a href="/" class="btn btn-secondary">Ver Inicio</a>
+      <div class="admin-savebar">
+        <button class="btn" id="saveBtn" type="button">Guardar cambios</button>
+        <a href="/" class="btn btn-secondary">Ver Inicio</a>
+      </div>
     </div>
   </div>
 
@@ -388,6 +429,7 @@
     const loginBtn = document.getElementById('loginBtn');
     const logoutBtn = document.getElementById('logoutBtn');
     const authStatus = document.getElementById('authStatus');
+    const adminAuthed = document.getElementById('adminAuthed');
     const imgFile = document.getElementById('imgFile');
     const uploadBox = document.getElementById('uploadBox');
     const pickFileBtn = document.getElementById('pickFileBtn');
@@ -450,9 +492,58 @@
     let currentImages = [];
     let currentProjects = [];
     let currentProducts = [];
+    let isAuthed = false;
 
     function setStatus(text) {
       authStatus.textContent = text || '';
+    }
+
+    function setAuthedUi(next) {
+      isAuthed = !!next;
+      document.body.classList.toggle('admin-is-authed', isAuthed);
+      if (!isAuthed) {
+        currentImages = [];
+        currentProjects = [];
+        currentProducts = [];
+        if (imageList) imageList.innerHTML = '';
+        if (projectList) projectList.innerHTML = '';
+        if (productList) productList.innerHTML = '';
+      }
+    }
+
+    async function checkAuth() {
+      try {
+        const r = await fetch('/api/admin-check', { cache: 'no-store', credentials: 'same-origin' });
+        return r.ok;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    function initAccordionState() {
+      if (!adminAuthed) return;
+      const details = Array.from(adminAuthed.querySelectorAll('details.admin-section'));
+      if (!details.length) return;
+
+      const key = 'gobree_admin_panel_open_section';
+      const saved = localStorage.getItem(key) || '';
+      const target = saved
+        ? details.find((d) => String(d.getAttribute('data-section') || '') === saved)
+        : details.find((d) => d.getAttribute('data-default-open') === 'true');
+
+      if (target) {
+        details.forEach((d) => d.removeAttribute('open'));
+        target.setAttribute('open', '');
+      }
+
+      details.forEach((d) => {
+        d.addEventListener('toggle', () => {
+          if (d.open) {
+            const id = String(d.getAttribute('data-section') || '');
+            if (id) localStorage.setItem(key, id);
+          }
+        });
+      });
     }
 
     if (togglePassword && adminPassword) {
@@ -1149,7 +1240,15 @@
           alert(msg);
           return;
         }
-        setStatus('Sesión iniciada.');
+        const ok = await checkAuth();
+        setAuthedUi(ok);
+        if (ok) {
+          initAccordionState();
+          await loadAllData();
+          setStatus('Sesión iniciada.');
+        } else {
+          setStatus('Sesión no iniciada');
+        }
       } catch (e) {
         const msg = `No se pudo iniciar sesión | ${String(e && e.message ? e.message : e)}`;
         setStatus(msg);
@@ -1161,8 +1260,10 @@
       setStatus('Cerrando sesión...');
       try {
         await fetch('/api/admin-logout', { method: 'POST', credentials: 'same-origin' });
+        setAuthedUi(false);
         setStatus('Sesión cerrada.');
       } catch (e) {
+        setAuthedUi(false);
         setStatus('Sesión cerrada.');
       }
     });
@@ -1200,7 +1301,8 @@
       }
     });
 
-    (async () => {
+    async function loadAllData() {
+      if (!isAuthed) return;
       try {
         const r = await fetch('/api/hero', { cache: 'no-store' });
         const data = await r.json();
@@ -1229,6 +1331,15 @@
         currentProducts = [];
       }
       renderProductList();
+    }
+
+    (async () => {
+      initAccordionState();
+      setStatus('Verificando sesión...');
+      const ok = await checkAuth();
+      setAuthedUi(ok);
+      setStatus(ok ? 'Sesión iniciada.' : 'Sesión no iniciada');
+      await loadAllData();
     })();
   </script>
 </body>
