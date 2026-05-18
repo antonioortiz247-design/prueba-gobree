@@ -86,7 +86,7 @@
       border-bottom: 1px solid rgba(148, 163, 184, 0.25);
     }
     .admin-section-content { padding: 1.15rem; }
-    .admin-authed { display: none; }
+    .admin-authed { display: none !important; }
     body.admin-is-authed .admin-authed { display: block; }
     .image-list {
       display: grid;
@@ -132,6 +132,19 @@
       background: rgba(255, 255, 255, 0.92);
       box-shadow: 0 1px 0 rgba(15, 23, 42, 0.03);
       font-size: 1rem;
+    }
+    .admin-container input[type="text"],
+    .admin-container input[type="password"],
+    .admin-container select {
+      width: 100%;
+      padding: .8rem .9rem;
+      border-radius: .8rem;
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      background: rgba(255, 255, 255, 0.92);
+      box-shadow: 0 1px 0 rgba(15, 23, 42, 0.03);
+      font-size: 1rem;
+      font-family: inherit;
+      color: var(--text);
     }
     .admin-form small {
       color: var(--muted);
@@ -268,8 +281,8 @@
       </div>
     </details>
 
-    <div id="adminAuthed" class="admin-authed">
-      <details class="admin-card admin-section" data-section="hero-add" data-default-open="true">
+    <div id="adminAuthed" class="admin-authed" style="display:none;">
+      <details class="admin-card admin-section" data-section="hero-add">
         <summary>Agregar imagen</summary>
         <div class="admin-section-content">
           <div class="admin-add-grid">
@@ -501,6 +514,7 @@
     function setAuthedUi(next) {
       isAuthed = !!next;
       document.body.classList.toggle('admin-is-authed', isAuthed);
+      if (adminAuthed) adminAuthed.style.display = isAuthed ? 'block' : 'none';
       if (!isAuthed) {
         currentImages = [];
         currentProjects = [];
@@ -529,7 +543,7 @@
       const saved = localStorage.getItem(key) || '';
       const target = saved
         ? details.find((d) => String(d.getAttribute('data-section') || '') === saved)
-        : details.find((d) => d.getAttribute('data-default-open') === 'true');
+        : (details.find((d) => String(d.getAttribute('data-section') || '') === 'projects') || details[0]);
 
       if (target) {
         details.forEach((d) => d.removeAttribute('open'));
@@ -539,6 +553,7 @@
       details.forEach((d) => {
         d.addEventListener('toggle', () => {
           if (d.open) {
+            details.forEach((other) => { if (other !== d) other.removeAttribute('open'); });
             const id = String(d.getAttribute('data-section') || '');
             if (id) localStorage.setItem(key, id);
           }
@@ -1269,6 +1284,12 @@
     });
 
     saveBtn.addEventListener('click', async () => {
+      const prevText = saveBtn ? saveBtn.textContent : '';
+      if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'Guardando...';
+      }
+      setStatus('Guardando...');
       try {
         const r = await fetch('/api/hero', {
           method: 'POST',
@@ -1294,10 +1315,16 @@
         const prodR = await fetch('/api/products', { method:'POST', headers:{ 'Content-Type':'application/json' }, credentials:'same-origin', body: JSON.stringify({ products: currentProducts }) });
         if (!prodR.ok) { const prodPayload = await readPayload(prodR); throw new Error(formatErrorMessage('No se pudo guardar Productos', prodR, prodPayload)); }
         alert('Guardado. Se actualizaron carrusel, proyectos y productos.');
+        setStatus('Cambios guardados.');
       } catch (e) {
         const msg = `No se pudo guardar | ${String(e && e.message ? e.message : e)}`;
         setStatus(msg);
         alert(msg);
+      } finally {
+        if (saveBtn) {
+          saveBtn.disabled = false;
+          saveBtn.textContent = prevText || 'Guardar cambios';
+        }
       }
     });
 
