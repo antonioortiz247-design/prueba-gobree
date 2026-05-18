@@ -174,7 +174,12 @@
     }
     @media (max-width: 680px) {
       :root { --admin-savebar-h: 92px; }
-      .admin-container { margin: 1.25rem auto; padding: 1.05rem; border-radius: 1rem; }
+      .admin-container {
+        margin: 1.25rem auto;
+        padding: 1.05rem;
+        padding-bottom: calc(var(--admin-savebar-h) + 24px + env(safe-area-inset-bottom));
+        border-radius: 1rem;
+      }
       .admin-top { flex-direction: column; align-items: stretch; }
       .admin-badge { justify-content: space-between; }
       .admin-add-grid { grid-template-columns: 1fr; }
@@ -191,10 +196,9 @@
         border-top: 1px solid rgba(148, 163, 184, 0.25);
         backdrop-filter: blur(12px);
         justify-content: center;
+        pointer-events: none;
       }
-      body { padding-bottom: calc(var(--admin-savebar-h) + 24px + env(safe-area-inset-bottom)); }
-      .admin-card:last-of-type { margin-bottom: calc(var(--admin-savebar-h) + 16px); }
-      .admin-savebar .btn, .admin-savebar a.btn { flex: 1; }
+      .admin-savebar .btn, .admin-savebar a.btn { flex: 1; pointer-events: auto; }
     }
   </style>
   <script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
