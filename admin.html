@@ -298,6 +298,7 @@
         </div>
 
         <div class="admin-form" style="margin:0;">
+          <input type="hidden" id="heroEditingIndex" value="">
           <label>
             URL de la imagen
             <input type="text" id="imgUrl" placeholder="portadagobree.png o https://... o (se llena al subir)">
@@ -313,6 +314,7 @@
           <small>Tip: para mejor desempeño, usa 2–4 imágenes.</small>
           <div class="admin-row">
             <button class="btn btn-success" id="addBtn" type="button">Agregar al carrusel</button>
+            <button class="btn btn-secondary" id="cancelHeroEditBtn" type="button" style="display:none;">Cancelar edición</button>
           </div>
         </div>
           </div>
@@ -432,10 +434,12 @@
 
   <script>
     const imageList = document.getElementById('imageList');
+    const heroEditingIndex = document.getElementById('heroEditingIndex');
     const imgUrl = document.getElementById('imgUrl');
     const imgAlt = document.getElementById('imgAlt');
     const imgCaption = document.getElementById('imgCaption');
     const addBtn = document.getElementById('addBtn');
+    const cancelHeroEditBtn = document.getElementById('cancelHeroEditBtn');
     const saveBtn = document.getElementById('saveBtn');
     const adminPassword = document.getElementById('adminPassword');
     const togglePassword = document.getElementById('togglePassword');
@@ -807,6 +811,7 @@
             </div>
           </div>
           <div style="display:flex; gap:.5rem; flex-wrap:wrap; justify-content:flex-end;">
+            <button class="btn btn-secondary" onclick="editImage(${index})">Editar</button>
             <button class="btn btn-secondary" onclick="moveImage(${index}, -1)">↑</button>
             <button class="btn btn-secondary" onclick="moveImage(${index}, 1)">↓</button>
             <button class="btn btn-danger" onclick="removeImage(${index})">Eliminar</button>
@@ -829,6 +834,34 @@
       if (!currentImages[index]) return;
       currentImages[index].caption = String(value || '').slice(0, 240);
     };
+
+    function setHeroEditMode(index) {
+      const img = currentImages[index];
+      if (!img) return;
+      if (heroEditingIndex) heroEditingIndex.value = String(index);
+      imgUrl.value = img.url || '';
+      imgAlt.value = img.alt || '';
+      imgCaption.value = img.caption || '';
+      addBtn.textContent = 'Actualizar imagen';
+      if (cancelHeroEditBtn) cancelHeroEditBtn.style.display = 'inline-flex';
+
+      const heroAdd = document.querySelector('details[data-section="hero-add"]');
+      if (heroAdd) {
+        const all = document.querySelectorAll('#adminAuthed details.admin-section');
+        all.forEach((d) => { if (d !== heroAdd) d.removeAttribute('open'); });
+        heroAdd.setAttribute('open', '');
+      }
+
+      imgUrl.focus();
+    }
+
+    function clearHeroEditMode() {
+      if (heroEditingIndex) heroEditingIndex.value = '';
+      addBtn.textContent = 'Agregar al carrusel';
+      if (cancelHeroEditBtn) cancelHeroEditBtn.style.display = 'none';
+    }
+
+    window.editImage = (index) => setHeroEditMode(index);
 
     window.moveImage = (index, dir) => {
       const next = index + dir;
@@ -923,17 +956,31 @@
 
     addBtn.addEventListener('click', () => {
       if (!imgUrl.value) return alert('Por favor ingresa la URL de la imagen');
-      currentImages.push({
+      const editing = heroEditingIndex && heroEditingIndex.value !== '' ? Number(heroEditingIndex.value) : -1;
+      const payload = {
         url: imgUrl.value,
         alt: imgAlt.value || 'Gobree Belt',
         caption: imgCaption.value || ''
-      });
+      };
+      if (editing >= 0 && currentImages[editing]) currentImages[editing] = payload;
+      else currentImages.push(payload);
       imgUrl.value = '';
       imgAlt.value = '';
       imgCaption.value = '';
       clearSelectedFile();
+      clearHeroEditMode();
       renderList();
     });
+
+    if (cancelHeroEditBtn) {
+      cancelHeroEditBtn.addEventListener('click', () => {
+        imgUrl.value = '';
+        imgAlt.value = '';
+        imgCaption.value = '';
+        clearSelectedFile();
+        clearHeroEditMode();
+      });
+    }
 
     pickProjectMediaBtn.addEventListener('click', () => projectMediaFile.click());
     pickProjectPosterBtn.addEventListener('click', () => projectPosterFile.click());
