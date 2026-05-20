@@ -124,13 +124,19 @@
     const toggleSubmenu = (show) => submenu.classList.toggle('open', !!show);
     wrapper.addEventListener('mouseenter', () => toggleSubmenu(true));
     wrapper.addEventListener('mouseleave', () => toggleSubmenu(false));
-    link.addEventListener('click', (e) => {
-      if (window.innerWidth <= 980) {
-        e.preventDefault();
-        const open = !submenu.classList.contains('open');
-        nav.querySelectorAll('.nav-submenu.open').forEach((el) => { if (el !== submenu) el.classList.remove('open'); });
-        toggleSubmenu(open);
-      }
-    });
+    const handleParentToggle = (e) => {
+      if (window.innerWidth > 980) return;
+      e.preventDefault();
+      e.stopPropagation();
+      const open = !submenu.classList.contains('open');
+      nav.querySelectorAll('.nav-submenu.open').forEach((el) => { if (el !== submenu) el.classList.remove('open'); });
+      toggleSubmenu(open);
+      link.setAttribute('aria-expanded', open ? 'true' : 'false');
+    };
+
+    link.setAttribute('aria-haspopup', 'true');
+    link.setAttribute('aria-expanded', 'false');
+    link.addEventListener('click', handleParentToggle);
+    link.addEventListener('touchend', handleParentToggle, { passive: false });
   });
 })();
