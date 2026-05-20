@@ -1,94 +1,64 @@
 (() => {
-  const nav = document.getElementById('mainNav');
-  const toggle = document.querySelector('.menu-toggle');
-  if (toggle && nav) {
-    toggle.addEventListener('click', () => nav.classList.toggle('open'));
-    nav.querySelectorAll('a').forEach((link) => {
-      link.addEventListener('click', () => {
-        if (window.innerWidth <= 900 && link.parentElement?.classList.contains('nav-item-dropdown')) {
-          return;
-        }
-        nav.classList.remove('open');
-      });
-    });
-  }
-
-
-  const ensureNavDropdowns = () => {
+  if (!window.__GOBREE_NAV_BOUND__) {
     const nav = document.getElementById('mainNav');
-    if (!nav) return;
+    const toggle = document.querySelector('.menu-toggle');
+    const isMobileNav = () => window.matchMedia && window.matchMedia('(max-width: 980px)').matches;
 
-    if (!document.getElementById('navDropdownStyles')) {
-      const style = document.createElement('style');
-      style.id = 'navDropdownStyles';
-      style.textContent = `
-        .nav-item-dropdown { position: relative; }
-        .nav-item-dropdown > a { display: inline-flex; align-items: center; gap: .35rem; }
-        .nav-item-dropdown > a::after { content: '▾'; font-size: .72em; opacity: .75; }
-        .nav-submenu {
-          position: absolute; top: calc(100% + .45rem); left: 0; min-width: 240px;
-          background: #fff; border-radius: 10px; box-shadow: 0 10px 28px rgba(0,0,0,.14);
-          padding: .45rem; display: none; z-index: 1000;
-        }
-        .nav-submenu.open { display: block; }
-        .nav-submenu a { display:block; padding:.55rem .65rem; border-radius:8px; white-space:nowrap; }
-        .nav-submenu a:hover { background: rgba(17, 133, 120, .08); }
-        @media (max-width: 900px) {
-          .nav-submenu { position: static; box-shadow: none; border-radius: 0; padding: .25rem 0 0 .6rem; }
-        }
-      `;
-      document.head.appendChild(style);
-    }
+    const ensureBackdrop = () => {
+      let el = document.querySelector('.nav-backdrop');
+      if (el) return el;
+      el = document.createElement('div');
+      el.className = 'nav-backdrop';
+      document.body.appendChild(el);
+      return el;
+    };
 
-    const menus = [
-      {
-        href: 'sectores.html',
-        items: [
-          { label: 'Alimentaria', url: '/sectores/alimentaria' },
-          { label: 'Logística y Puertos', url: '/sectores/logistica-y-puertos' },
-          { label: 'Industria Textil', url: '/sectores/industria-textil' },
-          { label: 'Ver todos los sectores', url: '/sectores' }
-        ]
-      },
-      {
-        href: 'productos.html',
-        items: [
-          { label: 'Bandas transportadoras', url: '/productos?categoria=Transportadoras%20Planas' },
-          { label: 'Bandas dentadas', url: '/productos?categoria=Bandas%20Dentadas' },
-          { label: 'Bandas modulares', url: '/productos?categoria=Bandas%20Modulares' },
-          { label: 'Ver catálogo completo', url: '/productos' }
-        ]
-      }
-    ];
+    if (toggle && nav) {
+      const backdrop = ensureBackdrop();
+      toggle.setAttribute('aria-controls', 'mainNav');
+      toggle.setAttribute('aria-expanded', 'false');
 
-    menus.forEach((menu) => {
-      const link = nav.querySelector(`a[href$="${menu.href}"]`);
-      if (!link || link.parentElement?.classList.contains('nav-item-dropdown')) return;
+      const closeSubmenus = () => {
+        nav.querySelectorAll('.nav-submenu.open').forEach((el) => el.classList.remove('open'));
+      };
 
-      const wrapper = document.createElement('div');
-      wrapper.className = 'nav-item-dropdown';
-      link.replaceWith(wrapper);
-      wrapper.appendChild(link);
+      const setOpen = (open) => {
+        const next = !!open;
+        nav.classList.toggle('open', next);
+        document.body.classList.toggle('nav-open', next);
+        backdrop.classList.toggle('open', next);
+        toggle.setAttribute('aria-expanded', next ? 'true' : 'false');
+        toggle.setAttribute('aria-label', next ? 'Cerrar menú' : 'Abrir menú');
+        if (!next) closeSubmenus();
+      };
 
-      const submenu = document.createElement('div');
-      submenu.className = 'nav-submenu';
-      submenu.setAttribute('aria-label', `Submenú ${link.textContent?.trim() || ''}`);
-      submenu.innerHTML = menu.items.map((item) => `<a href="${item.url}">${item.label}</a>`).join('');
-      wrapper.appendChild(submenu);
+      toggle.addEventListener('click', () => setOpen(!nav.classList.contains('open')));
+      backdrop.addEventListener('click', () => setOpen(false));
 
-      const toggle = (show) => submenu.classList.toggle('open', !!show);
-      wrapper.addEventListener('mouseenter', () => toggle(true));
-      wrapper.addEventListener('mouseleave', () => toggle(false));
-      link.addEventListener('click', (e) => {
-        if (window.innerWidth <= 900) {
-          e.preventDefault();
-          toggle(!submenu.classList.contains('open'));
-        }
+      nav.addEventListener('click', (e) => {
+        const link = e.target && e.target.closest ? e.target.closest('a') : null;
+        if (!link) return;
+        if (isMobileNav() && link.parentElement?.classList.contains('nav-item-dropdown')) return;
+        setOpen(false);
       });
-    });
-  };
 
-  ensureNavDropdowns();
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') setOpen(false);
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!isMobileNav()) return;
+        if (!nav.classList.contains('open')) return;
+        const t = e.target;
+        if (nav.contains(t) || toggle.contains(t) || backdrop.contains(t)) return;
+        setOpen(false);
+      });
+
+      window.addEventListener('resize', () => {
+        if (!isMobileNav()) setOpen(false);
+      });
+    }
+  }
 
   document.querySelectorAll('a[href="index.html"], a[href="../index.html"], a[href="../../index.html"]').forEach((a) => {
     a.setAttribute('href', '/');
@@ -559,7 +529,7 @@
     
     if (servicio && mensajeArea) {
       const serviciosMap = {
-        'thermal-fusion-vulcanizado': 'Hola, me interesa solicitar el servicio de Thermal Fusion y Vulcanizado.',
+        'thermal-fusion-vulcanizado': 'Hola, me interesa solicitar el servicio de termofusión y vulcanizado.',
         'instalacion': 'Hola, me interesa solicitar el servicio de Instalación de bandas transportadoras.',
         'asesoria': 'Hola, me interesa agendar una Asesoría Técnica especializada.'
       };
@@ -606,6 +576,40 @@
   }
 
   document.querySelectorAll('.footer-glass-form').forEach((form) => {
+    if (!form.querySelector('input[name="privacidad"]')) {
+      const wrapper = document.createElement('div');
+      wrapper.style.marginTop = '1rem';
+      wrapper.style.display = 'flex';
+      wrapper.style.alignItems = 'flex-start';
+      wrapper.style.gap = '0.5rem';
+      wrapper.style.fontSize = '0.9rem';
+
+      const id = `privacy-check-footer-${Math.random().toString(36).slice(2, 9)}`;
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.id = id;
+      checkbox.name = 'privacidad';
+      checkbox.required = true;
+      checkbox.style.width = 'auto';
+      checkbox.style.marginTop = '0.2rem';
+
+      const label = document.createElement('label');
+      label.setAttribute('for', id);
+      label.style.marginTop = '0';
+      label.innerHTML =
+        'Acepto el <a href="/aviso-privacidad" target="_blank" style="color:inherit; text-decoration:underline;">Aviso de Privacidad</a>';
+
+      wrapper.appendChild(checkbox);
+      wrapper.appendChild(label);
+
+      const submit = form.querySelector('button[type="submit"], button');
+      if (submit && submit.parentNode === form) {
+        form.insertBefore(wrapper, submit);
+      } else {
+        form.appendChild(wrapper);
+      }
+    }
+
     form.addEventListener('submit', (e) => {
       e.preventDefault();
       
