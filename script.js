@@ -529,7 +529,7 @@
     
     if (servicio && mensajeArea) {
       const serviciosMap = {
-        'thermal-fusion-vulcanizado': 'Hola, me interesa solicitar el servicio de Thermal Fusion y Vulcanizado.',
+        'thermal-fusion-vulcanizado': 'Hola, me interesa solicitar el servicio de termofusión y vulcanizado.',
         'instalacion': 'Hola, me interesa solicitar el servicio de Instalación de bandas transportadoras.',
         'asesoria': 'Hola, me interesa agendar una Asesoría Técnica especializada.'
       };
