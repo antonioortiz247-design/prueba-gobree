@@ -95,18 +95,18 @@
 <body>
   <header class="site-header">
     <div class="container header-wrap">
-      <a class="logo" href="index.html"><img src="logoonlinegobree.png" alt="Logo Gobree Belt" width="180" height="50" loading="lazy"></a>
+      <a class="logo" href="/"><img src="logoonlinegobree.png" alt="Logo Gobree Belt" width="180" height="50" loading="lazy"></a>
       <button class="menu-toggle" aria-label="Abrir menú">☰</button>
       <nav class="nav" id="mainNav">
-        <a href="index.html">Inicio</a>
-        <a href="nosotros.html">Nosotros</a>
-        <a href="sectores.html" class="active">Sectores</a>
-        <a href="productos.html">Productos</a>
-        <a href="servicios.html">Servicios</a>
-        <a href="proyectos.html">Proyectos</a>
-        <a href="contacto.html">Contacto</a>
+        <a href="/">Inicio</a>
+        <a href="nosotros">Nosotros</a>
+        <a href="sectores" class="active">Sectores</a>
+        <a href="productos">Productos</a>
+        <a href="servicios">Servicios</a>
+        <a href="proyectos">Proyectos</a>
+        <a href="contacto">Contacto</a>
       </nav>
-      <a class="phone-btn" href="contacto.html#formulario-contacto">Cotiza Ahora</a>
+      <a class="phone-btn" href="contacto#formulario-contacto">Cotiza Ahora</a>
     </div>
   </header>
 
@@ -121,7 +121,7 @@
         <p>Diseñamos bandas para cada sector con enfoque en problema/solución: inocuidad, tracción, temperatura, abrasión y continuidad operativa.</p>
         <div class="hero-actions">
           <a href="#sector-explorer" class="btn">Explorar Industrias</a>
-          <a href="contacto.html" class="btn btn-secondary">Asesoría Especializada</a>
+          <a href="contacto" class="btn btn-secondary">Asesoría Especializada</a>
         </div>
       </div>
     </section>
@@ -218,10 +218,10 @@
       <div>
         <h4>Enlaces rápidos</h4>
         <ul>
-          <li><a href="nosotros.html">Nosotros</a></li>
-          <li><a href="sectores.html">Sectores</a></li>
-          <li><a href="contacto.html">Contacto</a></li>
-          <li><a href="aviso-privacidad.html">Aviso de Privacidad</a></li>
+          <li><a href="nosotros">Nosotros</a></li>
+          <li><a href="sectores">Sectores</a></li>
+          <li><a href="contacto">Contacto</a></li>
+          <li><a href="aviso-privacidad">Aviso de Privacidad</a></li>
         </ul>
       </div>
       <div>
@@ -264,12 +264,14 @@
         </label>
         <div style="margin-top:0.5rem; display:flex; align-items:flex-start; gap:0.5rem; font-size:0.85rem; color:#fff;">
           <input type="checkbox" id="privacy-check-footer" name="privacidad" required style="width:auto; margin-top:0.2rem;">
-          <label for="privacy-check-footer" style="margin-top:0;">Acepto el <a href="aviso-privacidad.html" target="_blank" style="color:inherit; text-decoration:underline;">Aviso de Privacidad</a></label>
+          <label for="privacy-check-footer" style="margin-top:0;">Acepto el <a href="aviso-privacidad" target="_blank" style="color:inherit; text-decoration:underline;">Aviso de Privacidad</a></label>
         </div>
         <button type="submit">Encuentra tu banda adecuada</button>
       </form>
     </div>
   </footer>
+  <script src="js/nav.js"></script>
+  <script src="js/links-normalize.js"></script>
   <script src="script.js"></script>
   <script>
     const sectors = [
