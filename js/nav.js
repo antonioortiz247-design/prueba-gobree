@@ -99,15 +99,26 @@
     ]}
   ];
 
+  const normalizeHref = (href) => {
+    const raw = (href || '').trim();
+    if (!raw) return '';
+    if (raw.startsWith('#')) return '';
+    try {
+      const parsed = new URL(raw, window.location.origin);
+      return parsed.pathname.replace(/\/$/, '');
+    } catch {
+      return raw.split('#')[0].split('?')[0].replace(/^https?:\/\/[^/]+/i, '').replace(/\/$/, '');
+    }
+  };
+
   const resolveNavLink = (menu) => {
     const links = Array.from(nav.querySelectorAll('a[href]'));
     return links.find((a) => {
       if (a.parentElement?.classList.contains('nav-item-dropdown')) return false;
-      const href = (a.getAttribute('href') || '').trim();
-      if (!href) return false;
-      const clean = href.replace(/^https?:\/\/[^/]+/i, '').replace(/\/$/, '');
+      const clean = normalizeHref(a.getAttribute('href'));
+      if (!clean) return false;
       return menu.hrefs.some((candidate) => {
-        const c = candidate.replace(/\/$/, '');
+        const c = normalizeHref(candidate);
         return clean === c || clean.endsWith(`/${c.replace(/^\//, '')}`);
       });
     }) || null;
