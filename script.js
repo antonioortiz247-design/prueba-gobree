@@ -576,6 +576,40 @@
   }
 
   document.querySelectorAll('.footer-glass-form').forEach((form) => {
+    if (!form.querySelector('input[name="privacidad"]')) {
+      const wrapper = document.createElement('div');
+      wrapper.style.marginTop = '1rem';
+      wrapper.style.display = 'flex';
+      wrapper.style.alignItems = 'flex-start';
+      wrapper.style.gap = '0.5rem';
+      wrapper.style.fontSize = '0.9rem';
+
+      const id = `privacy-check-footer-${Math.random().toString(36).slice(2, 9)}`;
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.id = id;
+      checkbox.name = 'privacidad';
+      checkbox.required = true;
+      checkbox.style.width = 'auto';
+      checkbox.style.marginTop = '0.2rem';
+
+      const label = document.createElement('label');
+      label.setAttribute('for', id);
+      label.style.marginTop = '0';
+      label.innerHTML =
+        'Acepto el <a href="/aviso-privacidad" target="_blank" style="color:inherit; text-decoration:underline;">Aviso de Privacidad</a>';
+
+      wrapper.appendChild(checkbox);
+      wrapper.appendChild(label);
+
+      const submit = form.querySelector('button[type="submit"], button');
+      if (submit && submit.parentNode === form) {
+        form.insertBefore(wrapper, submit);
+      } else {
+        form.appendChild(wrapper);
+      }
+    }
+
     form.addEventListener('submit', (e) => {
       e.preventDefault();
       
