@@ -63,6 +63,7 @@ p { margin: 0 0 1rem; color: var(--muted); }
   max-width: min(220px, 32vw);
   object-fit: contain;
   border-radius: 0;
+  border: 0;
 }
 .nav {
   display: flex;
@@ -169,7 +170,7 @@ p { margin: 0 0 1rem; color: var(--muted); }
 
 .hero { position: relative; min-height: 72vh; display: grid; place-items: center; }
 .hero-bg, .hero-overlay { position: absolute; inset: 0; width: 100%; height: 100%; }
-.hero-bg { object-fit: cover; border-radius: 0; }
+.hero-bg { object-fit: cover; border-radius: 0; border: 0; }
 
 .hero#inicio { margin-bottom: clamp(1.1rem, 2.8vw, 2rem); }
 /* Hero Carousel */
@@ -189,6 +190,7 @@ p { margin: 0 0 1rem; color: var(--muted); }
   width: 100%;
   height: 100%;
   object-fit: cover;
+  border: 0;
   opacity: 0;
   transition: opacity 0.8s ease-in-out;
   pointer-events: none; /* Evita que las imágenes invisibles reciban clics */
@@ -539,7 +541,13 @@ input[type="checkbox"]:focus-visible {
   border-radius: 999px;
   border: 1px solid var(--border);
 }
-img { border: 1px solid rgba(148, 163, 184, 0.14); }
+.card img,
+.gallery-img,
+.product-detail img,
+.project-media img,
+.home-projects-grid img {
+  border: 1px solid rgba(148, 163, 184, 0.14);
+}
 
 .home-projects-grid img {
   width: 100%;
