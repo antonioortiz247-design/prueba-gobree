@@ -224,7 +224,6 @@
       const closeBtn = document.getElementById('mediaModalClose');
       const projectsGrid = document.getElementById('projectsGrid');
       const filtersWrap = document.querySelector('.project-filters');
-      const filterButtons = filtersWrap ? Array.from(filtersWrap.querySelectorAll('button')) : [];
       let allProjects = null;
       let activeFilter = 'Todos';
 
@@ -235,9 +234,59 @@
           .normalize('NFD')
           .replace(/[\u0300-\u036f]/g, '');
 
+      const canonicalByNorm = (() => {
+        const map = new Map();
+        const buttons = filtersWrap ? Array.from(filtersWrap.querySelectorAll('button')) : [];
+        buttons.forEach((btn) => {
+          const label = String(btn.textContent || '').trim();
+          if (!label) return;
+          map.set(norm(label), label);
+        });
+        map.set('empaques', map.get('empaque') || 'Empaque');
+        map.set('logistica', map.get('logistica') || 'Logística');
+        map.set('alimentaria', map.get('alimenticio') || 'Alimenticio');
+        map.set('alimentos', map.get('alimenticio') || 'Alimenticio');
+        return map;
+      })();
+
+      const canonicalLabel = (label) => {
+        const n = norm(label);
+        return canonicalByNorm.get(n) || String(label || '').trim();
+      };
+
+      const ensureFilterButtonsFromProjects = (projects) => {
+        if (!filtersWrap) return;
+        const currentButtons = Array.from(filtersWrap.querySelectorAll('button'));
+        const currentByNorm = new Set(currentButtons.map((b) => norm(b.textContent)));
+
+        const seen = new Set();
+        const categories = [];
+        (Array.isArray(projects) ? projects : []).forEach((p) => {
+          const raw = String((p && p.category) || '').trim();
+          if (!raw) return;
+          const label = canonicalLabel(raw);
+          const n = norm(label);
+          if (!n || n === 'todos' || seen.has(n)) return;
+          seen.add(n);
+          categories.push(label);
+        });
+
+        const newLabels = categories.filter((label) => !currentByNorm.has(norm(label)));
+        newLabels
+          .sort((a, b) => String(a).localeCompare(String(b), 'es', { sensitivity: 'base' }))
+          .forEach((label) => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'btn btn-secondary';
+            btn.textContent = label;
+            filtersWrap.appendChild(btn);
+          });
+      };
+
       const setFilterUi = (label) => {
         activeFilter = label || 'Todos';
-        filterButtons.forEach((btn) => {
+        const buttons = filtersWrap ? Array.from(filtersWrap.querySelectorAll('button')) : [];
+        buttons.forEach((btn) => {
           const isActive = norm(btn.textContent) === norm(activeFilter);
           btn.classList.toggle('active', isActive);
           btn.classList.toggle('btn-secondary', !isActive);
@@ -246,9 +295,15 @@
       };
 
       const filterProjects = (label) => {
-        const wanted = norm(label);
+        const wanted = norm(canonicalLabel(label));
         if (!wanted || wanted === 'todos') return allProjects || [];
-        return (Array.isArray(allProjects) ? allProjects : []).filter((p) => norm(p && p.category) === wanted);
+        return (Array.isArray(allProjects) ? allProjects : []).filter((p) => {
+          const raw = String((p && p.category) || '').trim();
+          if (!raw) return false;
+          const direct = norm(raw);
+          const canon = norm(canonicalLabel(raw));
+          return direct === wanted || canon === wanted;
+        });
       };
       const projectCardHtml = (item) => {
         const media = item.mediaType === 'video'
@@ -276,7 +331,7 @@
 
       const applyFilter = (label) => {
         if (!projectsGrid) return;
-        setFilterUi(label);
+        setFilterUi(canonicalLabel(label));
 
         if (Array.isArray(allProjects) && allProjects.length) {
           const list = filterProjects(activeFilter);
@@ -285,7 +340,7 @@
           return;
         }
 
-        const wanted = norm(activeFilter);
+        const wanted = norm(canonicalLabel(activeFilter));
         const cards = Array.from(projectsGrid.querySelectorAll('.project-card'));
         cards.forEach((card) => {
           const tag = card.querySelector('.project-tag');
@@ -295,13 +350,13 @@
         });
       };
 
-      if (filterButtons.length) {
-        filterButtons.forEach((btn) => {
-          btn.addEventListener('click', () => {
-            applyFilter(btn.textContent || 'Todos');
-          });
+      if (filtersWrap) {
+        filtersWrap.addEventListener('click', (e) => {
+          const btn = e.target && e.target.closest ? e.target.closest('button') : null;
+          if (!btn || !filtersWrap.contains(btn)) return;
+          applyFilter(btn.textContent || 'Todos');
         });
-        const initiallyActive = filterButtons.find((b) => b.classList.contains('active'));
+        const initiallyActive = Array.from(filtersWrap.querySelectorAll('button')).find((b) => b.classList.contains('active'));
         applyFilter((initiallyActive && initiallyActive.textContent) || 'Todos');
       }
       const loadProjects = async () => {
@@ -312,6 +367,7 @@
           const data = await r.json();
           if (!Array.isArray(data.projects) || !data.projects.length) return bindMediaTriggers();
           allProjects = data.projects;
+          ensureFilterButtonsFromProjects(allProjects);
           applyFilter(activeFilter);
         } catch (_) {
           bindMediaTriggers();
