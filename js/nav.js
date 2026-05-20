@@ -1,4 +1,5 @@
 (() => {
+  window.__GOBREE_NAV_BOUND__ = true;
   const nav = document.getElementById('mainNav');
   const toggle = document.querySelector('.menu-toggle');
   if (!nav) return;
