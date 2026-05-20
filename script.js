@@ -63,31 +63,6 @@
     const nav = document.getElementById('mainNav');
     if (!nav) return;
 
-    if (!document.getElementById('navDropdownStyles')) {
-      const style = document.createElement('style');
-      style.id = 'navDropdownStyles';
-      style.textContent = `
-        .nav-item-dropdown { position: relative; }
-        .nav-item-dropdown > a { display: inline-flex; align-items: center; gap: .35rem; }
-        .nav-item-dropdown > a::after { content: '▾'; font-size: .72em; opacity: .75; }
-        .nav-submenu {
-          position: absolute; top: calc(100% + .45rem); left: 0; min-width: 240px;
-          background: #fff; border-radius: 10px; box-shadow: 0 10px 28px rgba(0,0,0,.14);
-          padding: .45rem; display: none; z-index: 1000;
-        }
-        .nav-submenu.open { display: block; }
-        .nav-submenu a { display:block; padding:.55rem .65rem; border-radius:8px; white-space:nowrap; }
-        .nav-submenu a:hover { background: rgba(37, 99, 235, .10); }
-        @media (max-width: 980px) {
-          .nav-item-dropdown { width: 100%; }
-          .nav-item-dropdown > a { width: 100%; justify-content: space-between; }
-          .nav-submenu { position: static; box-shadow: none; border-radius: 0; padding: .1rem 0 .35rem .85rem; }
-          .nav-submenu a { padding: .62rem .65rem; }
-        }
-      `;
-      document.head.appendChild(style);
-    }
-
     const menus = [
       {
         href: 'sectores.html',
