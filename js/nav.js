@@ -85,13 +85,13 @@
   }
 
   const menus = [
-    { href: 'sectores.html', items: [
+    { hrefs: ['sectores', '/sectores', 'sectores.html', '/sectores.html'], items: [
       { label: 'Alimentaria', url: '/sectores/alimentaria' },
       { label: 'Logística y Puertos', url: '/sectores/logistica-y-puertos' },
       { label: 'Industria Textil', url: '/sectores/industria-textil' },
       { label: 'Ver todos los sectores', url: '/sectores' }
     ]},
-    { href: 'productos.html', items: [
+    { hrefs: ['productos', '/productos', 'productos.html', '/productos.html'], items: [
       { label: 'Bandas transportadoras', url: '/productos?categoria=Transportadoras%20Planas' },
       { label: 'Bandas dentadas', url: '/productos?categoria=Bandas%20Dentadas' },
       { label: 'Bandas modulares', url: '/productos?categoria=Bandas%20Modulares' },
@@ -99,9 +99,18 @@
     ]}
   ];
 
+  const findByHrefVariants = (variants) => {
+    const links = Array.from(nav.querySelectorAll('a[href]'));
+    return links.find((link) => {
+      if (link.parentElement?.classList.contains('nav-item-dropdown')) return false;
+      const href = (link.getAttribute('href') || '').trim();
+      return variants.includes(href);
+    }) || null;
+  };
+
   menus.forEach((menu) => {
-    const link = nav.querySelector(`a[href$="${menu.href}"]`);
-    if (!link || link.parentElement?.classList.contains('nav-item-dropdown')) return;
+    const link = findByHrefVariants(menu.hrefs);
+    if (!link) return;
     const wrapper = document.createElement('div');
     wrapper.className = 'nav-item-dropdown';
     link.replaceWith(wrapper);
@@ -115,13 +124,19 @@
     const toggleSubmenu = (show) => submenu.classList.toggle('open', !!show);
     wrapper.addEventListener('mouseenter', () => toggleSubmenu(true));
     wrapper.addEventListener('mouseleave', () => toggleSubmenu(false));
-    link.addEventListener('click', (e) => {
-      if (window.innerWidth <= 980) {
-        e.preventDefault();
-        const open = !submenu.classList.contains('open');
-        nav.querySelectorAll('.nav-submenu.open').forEach((el) => { if (el !== submenu) el.classList.remove('open'); });
-        toggleSubmenu(open);
-      }
-    });
+    const handleParentToggle = (e) => {
+      if (window.innerWidth > 980) return;
+      e.preventDefault();
+      e.stopPropagation();
+      const open = !submenu.classList.contains('open');
+      nav.querySelectorAll('.nav-submenu.open').forEach((el) => { if (el !== submenu) el.classList.remove('open'); });
+      toggleSubmenu(open);
+      link.setAttribute('aria-expanded', open ? 'true' : 'false');
+    };
+
+    link.setAttribute('aria-haspopup', 'true');
+    link.setAttribute('aria-expanded', 'false');
+    link.addEventListener('click', handleParentToggle);
+    link.addEventListener('touchend', handleParentToggle, { passive: false });
   });
 })();
