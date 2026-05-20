@@ -243,6 +243,8 @@
         return n;
       };
 
+      const isBaseIndustryKey = (key) => key === 'alimenticio' || key === 'logistica' || key === 'manufactura' || key === 'empaque';
+
       const labelByKey = (() => {
         const map = new Map();
         const buttons = filtersWrap ? Array.from(filtersWrap.querySelectorAll('button')) : [];
@@ -259,6 +261,25 @@
         return labelByKey.get(key) || cleaned || key;
       };
 
+      const getIndustryRaw = (p) => {
+        const categoryRaw = String((p && p.category) || '').trim();
+        const bandRaw = String((p && p.band) || '').trim();
+
+        const catKey = aliasKey(categoryRaw);
+        const bandKey = aliasKey(bandRaw);
+
+        if (categoryRaw && isBaseIndustryKey(catKey)) return categoryRaw;
+        if (bandRaw && isBaseIndustryKey(bandKey)) return bandRaw;
+
+        const catHasBand = !!(categoryRaw && norm(categoryRaw).includes('banda'));
+        const bandHasBand = !!(bandRaw && norm(bandRaw).includes('banda'));
+
+        if (catHasBand && bandRaw) return bandRaw;
+        if (bandHasBand && categoryRaw) return categoryRaw;
+
+        return bandRaw || categoryRaw;
+      };
+
       const ensureFilterButtonsFromProjects = (projects) => {
         if (!filtersWrap) return;
         const currentButtons = Array.from(filtersWrap.querySelectorAll('button'));
@@ -267,7 +288,7 @@
         const seen = new Set();
         const categories = [];
         (Array.isArray(projects) ? projects : []).forEach((p) => {
-          const raw = String((p && p.category) || '').trim();
+          const raw = getIndustryRaw(p);
           if (!raw) return;
           const key = aliasKey(raw);
           if (!key || key === 'todos' || seen.has(key)) return;
@@ -303,13 +324,21 @@
 
       const filterProjects = () => {
         if (!activeFilterKey || activeFilterKey === 'todos') return allProjects || [];
-        return (Array.isArray(allProjects) ? allProjects : []).filter((p) => aliasKey(p && p.category) === activeFilterKey);
+        return (Array.isArray(allProjects) ? allProjects : []).filter((p) => aliasKey(getIndustryRaw(p)) === activeFilterKey);
       };
       const projectCardHtml = (item) => {
+        const industryRaw = getIndustryRaw(item);
+        const industryKey = aliasKey(industryRaw);
+        const tagLabel = labelForKey(industryKey, industryRaw);
+
+        const categoryRaw = String((item && item.category) || '').trim();
+        const bandRaw = String((item && item.band) || '').trim();
+        const bandText = aliasKey(industryRaw) === aliasKey(bandRaw) ? categoryRaw : bandRaw;
+
         const media = item.mediaType === 'video'
           ? `<button class="project-media project-video media-trigger" type="button" data-type="video" data-src="${item.mediaSrc}" data-poster="${item.mediaPoster || ''}" data-alt="${item.mediaAlt || ''}"><img src="${item.mediaPoster || item.mediaSrc}" alt="${item.mediaAlt || ''}" loading="lazy"></button>`
           : `<button class="project-media media-trigger" type="button" data-type="image" data-src="${item.mediaSrc}" data-alt="${item.mediaAlt || ''}"><img src="${item.mediaSrc}" alt="${item.mediaAlt || ''}" loading="lazy"></button>`;
-        return `<article class="card project-card"><span class="tag project-tag">${item.category || ''}</span>${media}<h3>${item.title || ''}</h3><p>${item.description || ''}</p><p class="project-tech"><strong>Banda:</strong> ${item.band || ''}</p><a class="btn btn-secondary" href="contacto.html#formulario-contacto">Solicitar proyecto similar</a></article>`;
+        return `<article class="card project-card"><span class="tag project-tag">${tagLabel}</span>${media}<h3>${item.title || ''}</h3><p>${item.description || ''}</p><p class="project-tech"><strong>Banda:</strong> ${bandText || ''}</p><a class="btn btn-secondary" href="contacto.html#formulario-contacto">Solicitar proyecto similar</a></article>`;
       };
       const bindMediaTriggers = () => {
         const triggers = document.querySelectorAll('.media-trigger');
