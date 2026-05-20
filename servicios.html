@@ -32,6 +32,26 @@
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": "https://gobreebelt.com/#organization",
+    "name": "Gobree Belt",
+    "url": "https://gobreebelt.com/",
+    "logo": "https://gobreebelt.com/logoonlinegobree.png",
+    "telephone": "+52-55-5835-1555",
+    "contactPoint": [{
+      "@type": "ContactPoint",
+      "contactType": "sales",
+      "name": "Ismael Núñez",
+      "telephone": "+52-55-5835-1555",
+      "areaServed": "MX",
+      "availableLanguage": ["es"]
+    }],
+    "sameAs": []
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     "itemListElement": [
       { "@type": "ListItem", "position": 1, "name": "Inicio", "item": "https://gobreebelt.com/" },
@@ -43,14 +63,19 @@
   {
     "@context": "https://schema.org",
     "@type": "Service",
+    "name": "Servicios especializados en bandas industriales",
     "serviceType": "Mantenimiento e Instalación de Bandas Industriales",
+    "url": "https://gobreebelt.com/servicios",
     "provider": {
-      "@type": "LocalBusiness",
-      "name": "Gobree Belt"
+      "@id": "https://gobreebelt.com/#organization"
     },
     "areaServed": {
       "@type": "Country",
-      "name": "Mexico"
+      "name": "México"
+    },
+    "audience": {
+      "@type": "BusinessAudience",
+      "audienceType": "Industria alimentaria, logística y manufactura"
     },
     "hasOfferCatalog": {
       "@type": "OfferCatalog",
