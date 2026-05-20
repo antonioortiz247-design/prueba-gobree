@@ -124,10 +124,13 @@
     const toggleSubmenu = (show) => submenu.classList.toggle('open', !!show);
     wrapper.addEventListener('mouseenter', () => toggleSubmenu(true));
     wrapper.addEventListener('mouseleave', () => toggleSubmenu(false));
+    let lastTouchToggleAt = 0;
     const handleParentToggle = (e) => {
       if (window.innerWidth > 980) return;
+      if (e.type === 'click' && Date.now() - lastTouchToggleAt < 500) return;
       e.preventDefault();
       e.stopPropagation();
+      if (e.type === 'touchend') lastTouchToggleAt = Date.now();
       const open = !submenu.classList.contains('open');
       nav.querySelectorAll('.nav-submenu.open').forEach((el) => { if (el !== submenu) el.classList.remove('open'); });
       toggleSubmenu(open);
