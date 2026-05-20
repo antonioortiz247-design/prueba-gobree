@@ -129,12 +129,14 @@
       wrapper.addEventListener('mouseleave', () => toggle(false));
       link.addEventListener('click', (e) => {
         if (window.innerWidth <= 980) {
-          e.preventDefault();
-          const open = !submenu.classList.contains('open');
-          nav.querySelectorAll('.nav-submenu.open').forEach((el) => {
-            if (el !== submenu) el.classList.remove('open');
-          });
-          toggle(open);
+          if (!submenu.classList.contains('open')) {
+            e.preventDefault();
+            nav.querySelectorAll('.nav-submenu.open').forEach((el) => {
+              if (el !== submenu) el.classList.remove('open');
+            });
+            toggle(true);
+            return;
+          }
         }
       });
     });
