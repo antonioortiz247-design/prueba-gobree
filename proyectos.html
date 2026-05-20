@@ -226,6 +226,7 @@
       const filtersWrap = document.querySelector('.project-filters');
       let allProjects = null;
       let activeFilter = 'Todos';
+      let activeFilterKey = 'todos';
 
       const norm = (value) =>
         String(value || '')
@@ -234,44 +235,48 @@
           .normalize('NFD')
           .replace(/[\u0300-\u036f]/g, '');
 
-      const canonicalByNorm = (() => {
+      const aliasKey = (value) => {
+        const n = norm(value);
+        if (!n) return '';
+        if (n === 'empaques') return 'empaque';
+        if (n === 'alimenticia' || n === 'alimentaria' || n === 'alimentos' || n === 'alimento') return 'alimenticio';
+        return n;
+      };
+
+      const labelByKey = (() => {
         const map = new Map();
         const buttons = filtersWrap ? Array.from(filtersWrap.querySelectorAll('button')) : [];
         buttons.forEach((btn) => {
           const label = String(btn.textContent || '').trim();
           if (!label) return;
-          map.set(norm(label), label);
+          map.set(aliasKey(label), label);
         });
-        map.set('empaques', map.get('empaque') || 'Empaque');
-        map.set('logistica', map.get('logistica') || 'Logística');
-        map.set('alimentaria', map.get('alimenticio') || 'Alimenticio');
-        map.set('alimentos', map.get('alimenticio') || 'Alimenticio');
         return map;
       })();
 
-      const canonicalLabel = (label) => {
-        const n = norm(label);
-        return canonicalByNorm.get(n) || String(label || '').trim();
+      const labelForKey = (key, fallbackLabel) => {
+        const cleaned = String(fallbackLabel || '').trim();
+        return labelByKey.get(key) || cleaned || key;
       };
 
       const ensureFilterButtonsFromProjects = (projects) => {
         if (!filtersWrap) return;
         const currentButtons = Array.from(filtersWrap.querySelectorAll('button'));
-        const currentByNorm = new Set(currentButtons.map((b) => norm(b.textContent)));
+        const currentKeys = new Set(currentButtons.map((b) => aliasKey(b.textContent)));
 
         const seen = new Set();
         const categories = [];
         (Array.isArray(projects) ? projects : []).forEach((p) => {
           const raw = String((p && p.category) || '').trim();
           if (!raw) return;
-          const label = canonicalLabel(raw);
-          const n = norm(label);
-          if (!n || n === 'todos' || seen.has(n)) return;
-          seen.add(n);
-          categories.push(label);
+          const key = aliasKey(raw);
+          if (!key || key === 'todos' || seen.has(key)) return;
+          seen.add(key);
+          if (!labelByKey.has(key)) labelByKey.set(key, raw);
+          categories.push(labelForKey(key, raw));
         });
 
-        const newLabels = categories.filter((label) => !currentByNorm.has(norm(label)));
+        const newLabels = categories.filter((label) => !currentKeys.has(aliasKey(label)));
         newLabels
           .sort((a, b) => String(a).localeCompare(String(b), 'es', { sensitivity: 'base' }))
           .forEach((label) => {
@@ -284,26 +289,21 @@
       };
 
       const setFilterUi = (label) => {
-        activeFilter = label || 'Todos';
+        const key = aliasKey(label) || 'todos';
+        activeFilterKey = key;
+        activeFilter = labelForKey(key, key === 'todos' ? 'Todos' : label);
         const buttons = filtersWrap ? Array.from(filtersWrap.querySelectorAll('button')) : [];
         buttons.forEach((btn) => {
-          const isActive = norm(btn.textContent) === norm(activeFilter);
+          const isActive = aliasKey(btn.textContent) === activeFilterKey;
           btn.classList.toggle('active', isActive);
           btn.classList.toggle('btn-secondary', !isActive);
           btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
         });
       };
 
-      const filterProjects = (label) => {
-        const wanted = norm(canonicalLabel(label));
-        if (!wanted || wanted === 'todos') return allProjects || [];
-        return (Array.isArray(allProjects) ? allProjects : []).filter((p) => {
-          const raw = String((p && p.category) || '').trim();
-          if (!raw) return false;
-          const direct = norm(raw);
-          const canon = norm(canonicalLabel(raw));
-          return direct === wanted || canon === wanted;
-        });
+      const filterProjects = () => {
+        if (!activeFilterKey || activeFilterKey === 'todos') return allProjects || [];
+        return (Array.isArray(allProjects) ? allProjects : []).filter((p) => aliasKey(p && p.category) === activeFilterKey);
       };
       const projectCardHtml = (item) => {
         const media = item.mediaType === 'video'
@@ -331,20 +331,20 @@
 
       const applyFilter = (label) => {
         if (!projectsGrid) return;
-        setFilterUi(canonicalLabel(label));
+        setFilterUi(label);
 
         if (Array.isArray(allProjects) && allProjects.length) {
-          const list = filterProjects(activeFilter);
+          const list = filterProjects();
           projectsGrid.innerHTML = list.map(projectCardHtml).join('');
           bindMediaTriggers();
           return;
         }
 
-        const wanted = norm(canonicalLabel(activeFilter));
+        const wanted = activeFilterKey;
         const cards = Array.from(projectsGrid.querySelectorAll('.project-card'));
         cards.forEach((card) => {
           const tag = card.querySelector('.project-tag');
-          const category = norm(tag && tag.textContent);
+          const category = aliasKey(tag && tag.textContent);
           const show = !wanted || wanted === 'todos' || category === wanted;
           card.style.display = show ? '' : 'none';
         });
