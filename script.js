@@ -1,4 +1,308 @@
 (() => {
+  const nav = document.getElementById('mainNav');
+  const toggle = document.querySelector('.menu-toggle');
+  const isMobileNav = () => window.matchMedia && window.matchMedia('(max-width: 980px)').matches;
+
+  const ensureBackdrop = () => {
+    let el = document.querySelector('.nav-backdrop');
+    if (el) return el;
+    el = document.createElement('div');
+    el.className = 'nav-backdrop';
+    document.body.appendChild(el);
+    return el;
+  };
+
+  if (toggle && nav) {
+    const backdrop = ensureBackdrop();
+    toggle.setAttribute('aria-controls', 'mainNav');
+    toggle.setAttribute('aria-expanded', 'false');
+
+    const closeSubmenus = () => {
+      nav.querySelectorAll('.nav-submenu.open').forEach((el) => el.classList.remove('open'));
+    };
+
+    const setOpen = (open) => {
+      const next = !!open;
+      nav.classList.toggle('open', next);
+      document.body.classList.toggle('nav-open', next);
+      backdrop.classList.toggle('open', next);
+      toggle.setAttribute('aria-expanded', next ? 'true' : 'false');
+      toggle.setAttribute('aria-label', next ? 'Cerrar menú' : 'Abrir menú');
+      if (!next) closeSubmenus();
+    };
+
+    toggle.addEventListener('click', () => setOpen(!nav.classList.contains('open')));
+    backdrop.addEventListener('click', () => setOpen(false));
+
+    nav.addEventListener('click', (e) => {
+      const link = e.target && e.target.closest ? e.target.closest('a') : null;
+      if (!link) return;
+      if (isMobileNav() && link.parentElement?.classList.contains('nav-item-dropdown')) return;
+      setOpen(false);
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') setOpen(false);
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!isMobileNav()) return;
+      if (!nav.classList.contains('open')) return;
+      const t = e.target;
+      if (nav.contains(t) || toggle.contains(t) || backdrop.contains(t)) return;
+      setOpen(false);
+    });
+
+    window.addEventListener('resize', () => {
+      if (!isMobileNav()) setOpen(false);
+    });
+  }
+
+
+  const ensureNavDropdowns = () => {
+    const nav = document.getElementById('mainNav');
+    if (!nav) return;
+
+    const menus = [
+      {
+        href: 'sectores.html',
+        items: [
+          { label: 'Alimentaria', url: '/sectores/alimentaria' },
+          { label: 'Logística y Puertos', url: '/sectores/logistica-y-puertos' },
+          { label: 'Industria Textil', url: '/sectores/industria-textil' },
+          { label: 'Ver todos los sectores', url: '/sectores' }
+        ]
+      },
+      {
+        href: 'productos.html',
+        items: [
+          { label: 'Bandas transportadoras', url: '/productos?categoria=Transportadoras%20Planas' },
+          { label: 'Bandas dentadas', url: '/productos?categoria=Bandas%20Dentadas' },
+          { label: 'Bandas modulares', url: '/productos?categoria=Bandas%20Modulares' },
+          { label: 'Ver catálogo completo', url: '/productos' }
+        ]
+      }
+    ];
+
+    menus.forEach((menu) => {
+      const link = nav.querySelector(`a[href$="${menu.href}"]`);
+      if (!link || link.parentElement?.classList.contains('nav-item-dropdown')) return;
+
+      const wrapper = document.createElement('div');
+      wrapper.className = 'nav-item-dropdown';
+      link.replaceWith(wrapper);
+      wrapper.appendChild(link);
+
+      const submenu = document.createElement('div');
+      submenu.className = 'nav-submenu';
+      submenu.setAttribute('aria-label', `Submenú ${link.textContent?.trim() || ''}`);
+      submenu.innerHTML = menu.items.map((item) => `<a href="${item.url}">${item.label}</a>`).join('');
+      wrapper.appendChild(submenu);
+
+      const toggle = (show) => submenu.classList.toggle('open', !!show);
+      wrapper.addEventListener('mouseenter', () => toggle(true));
+      wrapper.addEventListener('mouseleave', () => toggle(false));
+      link.addEventListener('click', (e) => {
+        if (window.innerWidth <= 980) {
+          e.preventDefault();
+          const open = !submenu.classList.contains('open');
+          nav.querySelectorAll('.nav-submenu.open').forEach((el) => {
+            if (el !== submenu) el.classList.remove('open');
+          });
+          toggle(open);
+        }
+      });
+    });
+  };
+
+  ensureNavDropdowns();
+
+  document.querySelectorAll('a[href="index.html"], a[href="../index.html"], a[href="../../index.html"]').forEach((a) => {
+    a.setAttribute('href', '/');
+  });
+
+  document.querySelectorAll('a[href]').forEach((a) => {
+    const href = a.getAttribute('href');
+    if (!href) return;
+    if (href.startsWith('#')) return;
+    if (/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(href)) return;
+    if (href.startsWith('mailto:') || href.startsWith('tel:')) return;
+
+    const hashIndex = href.indexOf('#');
+    const queryIndex = href.indexOf('?');
+    const cut = Math.min(
+      hashIndex === -1 ? href.length : hashIndex,
+      queryIndex === -1 ? href.length : queryIndex
+    );
+    const path = href.slice(0, cut);
+    const rest = href.slice(cut);
+
+    if (path.endsWith('index.html')) {
+      a.setAttribute('href', '/' + rest.replace(/^\/+/, ''));
+      return;
+    }
+
+    if (path.endsWith('.html')) {
+      a.setAttribute('href', path.slice(0, -5) + rest);
+    }
+  });
+
+  document.querySelectorAll('a[href^="#"]').forEach((a) => {
+    a.addEventListener('click', (e) => {
+      const targetId = a.getAttribute('href');
+      const target = document.querySelector(targetId);
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImg = document.getElementById('lightboxImg');
+  document.querySelectorAll('.gallery-img').forEach((img) => {
+    img.addEventListener('click', () => {
+      if (!lightbox || !lightboxImg) return;
+      lightboxImg.src = img.src;
+      lightbox.classList.add('open');
+      lightbox.setAttribute('aria-hidden', 'false');
+    });
+  });
+  document.querySelectorAll('.close, #lightbox').forEach((el) => {
+    el.addEventListener('click', (e) => {
+      if (e.target === el || el.classList.contains('close')) {
+        lightbox?.classList.remove('open');
+        lightbox?.setAttribute('aria-hidden', 'true');
+      }
+    });
+  });
+
+  const homeCarousel = document.getElementById('homeCarousel');
+  if (homeCarousel) {
+    const indicatorsEl = document.getElementById('homeCarouselIndicators');
+    const captionEl = document.getElementById('homeCarouselCaption');
+
+      const createCarousel = (carouselEl, indicators, caption) => {
+        let slides = Array.from(carouselEl.querySelectorAll('.hero-slide'));
+
+        // Agregar funcionalidad de lightbox de forma robusta
+        const setupSlides = (slideList) => {
+          slideList.forEach((slide) => {
+            slide.style.cursor = 'pointer';
+            // Simplemente asignamos el evento (sin clonar innecesariamente)
+            slide.onclick = () => {
+              if (!lightbox || !lightboxImg) return;
+              lightboxImg.src = slide.src;
+              lightbox.classList.add('open');
+              lightbox.setAttribute('aria-hidden', 'false');
+            };
+          });
+        };
+
+        setupSlides(slides);
+
+        let items = slides.map((img) => ({
+        alt: img.getAttribute('alt') || 'Gobree Belt',
+        caption: ''
+      }));
+      let currentSlide = 0;
+      let autoPlayInterval;
+
+      const setCaption = (i) => {
+        if (!caption) return;
+        const text = (items[i] && items[i].caption) || '';
+        caption.textContent = text;
+      };
+
+      const buildIndicators = () => {
+        if (!indicators) return;
+        indicators.innerHTML = slides
+          .map((_, i) => `<div class="indicator ${i === 0 ? 'active' : ''}" data-index="${i}"></div>`)
+          .join('');
+        indicators.querySelectorAll('.indicator').forEach((ind) => {
+          ind.addEventListener('click', () => {
+            setSlide(parseInt(ind.dataset.index), { restart: true });
+          });
+        });
+      };
+
+      const setSlide = (index, action) => {
+        const a = action || {};
+        if (!slides.length) return;
+
+        slides[currentSlide].classList.remove('active');
+        if (indicators) {
+          const inds = Array.from(indicators.querySelectorAll('.indicator'));
+          if (inds[currentSlide]) inds[currentSlide].classList.remove('active');
+        }
+
+        currentSlide = (index + slides.length) % slides.length;
+
+        slides[currentSlide].classList.add('active');
+        if (indicators) {
+          const inds = Array.from(indicators.querySelectorAll('.indicator'));
+          if (inds[currentSlide]) inds[currentSlide].classList.add('active');
+        }
+
+        setCaption(currentSlide);
+        if (a.restart) startAutoPlay();
+      };
+
+      const nextSlide = () => setSlide(currentSlide + 1);
+
+      const startAutoPlay = () => {
+        stopAutoPlay();
+        autoPlayInterval = setInterval(nextSlide, 5000);
+      };
+
+      const stopAutoPlay = () => {
+        if (autoPlayInterval) clearInterval(autoPlayInterval);
+      };
+
+      const applyImages = (images) => {
+          if (!Array.isArray(images) || !images.length) return;
+          stopAutoPlay();
+          currentSlide = 0;
+          items = images.map((img) => ({
+            alt: img && img.alt ? String(img.alt) : 'Gobree Belt',
+            caption: img && img.caption ? String(img.caption) : ''
+          }));
+          carouselEl.innerHTML = images
+            .map(
+              (img, index) => `
+            <img class="hero-slide ${index === 0 ? 'active' : ''}"
+                 src="${img.url}"
+                 alt="${img.alt || 'Gobree Belt'}"
+                 loading="${index === 0 ? 'eager' : 'lazy'}">
+          `
+            )
+            .join('');
+          slides = Array.from(carouselEl.querySelectorAll('.hero-slide'));
+           setupSlides(slides);
+           buildIndicators();
+          setCaption(0);
+          startAutoPlay();
+        };
+
+      buildIndicators();
+      setCaption(0);
+      startAutoPlay();
+
+      return { applyImages };
+    };
+
+    const c = createCarousel(homeCarousel, indicatorsEl, captionEl);
+
+    (async () => {
+      try {
+        const r = await fetch('/api/hero', { cache: 'no-store' });
+        if (!r.ok) return;
+        const data = await r.json();
+        if (data?.images?.length) c.applyImages(data.images);
+      } catch (e) {}
+    })();
+  }
+
   const homeProjectsGrid = document.getElementById('homeProjectsGrid');
   if (homeProjectsGrid) {
     const toText = (v, max) => String(v || '').trim().slice(0, max || 500);
