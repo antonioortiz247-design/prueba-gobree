@@ -223,6 +223,33 @@
       const content = document.getElementById('mediaModalContent');
       const closeBtn = document.getElementById('mediaModalClose');
       const projectsGrid = document.getElementById('projectsGrid');
+      const filtersWrap = document.querySelector('.project-filters');
+      const filterButtons = filtersWrap ? Array.from(filtersWrap.querySelectorAll('button')) : [];
+      let allProjects = null;
+      let activeFilter = 'Todos';
+
+      const norm = (value) =>
+        String(value || '')
+          .trim()
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '');
+
+      const setFilterUi = (label) => {
+        activeFilter = label || 'Todos';
+        filterButtons.forEach((btn) => {
+          const isActive = norm(btn.textContent) === norm(activeFilter);
+          btn.classList.toggle('active', isActive);
+          btn.classList.toggle('btn-secondary', !isActive);
+          btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+        });
+      };
+
+      const filterProjects = (label) => {
+        const wanted = norm(label);
+        if (!wanted || wanted === 'todos') return allProjects || [];
+        return (Array.isArray(allProjects) ? allProjects : []).filter((p) => norm(p && p.category) === wanted);
+      };
       const projectCardHtml = (item) => {
         const media = item.mediaType === 'video'
           ? `<button class="project-media project-video media-trigger" type="button" data-type="video" data-src="${item.mediaSrc}" data-poster="${item.mediaPoster || ''}" data-alt="${item.mediaAlt || ''}"><img src="${item.mediaPoster || item.mediaSrc}" alt="${item.mediaAlt || ''}" loading="lazy"></button>`
@@ -246,6 +273,37 @@
           });
         });
       };
+
+      const applyFilter = (label) => {
+        if (!projectsGrid) return;
+        setFilterUi(label);
+
+        if (Array.isArray(allProjects) && allProjects.length) {
+          const list = filterProjects(activeFilter);
+          projectsGrid.innerHTML = list.map(projectCardHtml).join('');
+          bindMediaTriggers();
+          return;
+        }
+
+        const wanted = norm(activeFilter);
+        const cards = Array.from(projectsGrid.querySelectorAll('.project-card'));
+        cards.forEach((card) => {
+          const tag = card.querySelector('.project-tag');
+          const category = norm(tag && tag.textContent);
+          const show = !wanted || wanted === 'todos' || category === wanted;
+          card.style.display = show ? '' : 'none';
+        });
+      };
+
+      if (filterButtons.length) {
+        filterButtons.forEach((btn) => {
+          btn.addEventListener('click', () => {
+            applyFilter(btn.textContent || 'Todos');
+          });
+        });
+        const initiallyActive = filterButtons.find((b) => b.classList.contains('active'));
+        applyFilter((initiallyActive && initiallyActive.textContent) || 'Todos');
+      }
       const loadProjects = async () => {
         if (!projectsGrid) return;
         try {
@@ -253,8 +311,8 @@
           if (!r.ok) return bindMediaTriggers();
           const data = await r.json();
           if (!Array.isArray(data.projects) || !data.projects.length) return bindMediaTriggers();
-          projectsGrid.innerHTML = data.projects.map(projectCardHtml).join('');
-          bindMediaTriggers();
+          allProjects = data.projects;
+          applyFilter(activeFilter);
         } catch (_) {
           bindMediaTriggers();
         }
