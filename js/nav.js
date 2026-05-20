@@ -85,13 +85,13 @@
   }
 
   const menus = [
-    { href: 'sectores.html', items: [
+    { hrefs: ['sectores', 'sectores.html', '/sectores', '/sectores.html'], items: [
       { label: 'Alimentaria', url: '/sectores/alimentaria' },
       { label: 'Logística y Puertos', url: '/sectores/logistica-y-puertos' },
       { label: 'Industria Textil', url: '/sectores/industria-textil' },
       { label: 'Ver todos los sectores', url: '/sectores' }
     ]},
-    { href: 'productos.html', items: [
+    { hrefs: ['productos', 'productos.html', '/productos', '/productos.html'], items: [
       { label: 'Bandas transportadoras', url: '/productos?categoria=Transportadoras%20Planas' },
       { label: 'Bandas dentadas', url: '/productos?categoria=Bandas%20Dentadas' },
       { label: 'Bandas modulares', url: '/productos?categoria=Bandas%20Modulares' },
@@ -99,9 +99,34 @@
     ]}
   ];
 
+  const normalizeHref = (href) => {
+    const raw = (href || '').trim();
+    if (!raw) return '';
+    if (raw.startsWith('#')) return '';
+    try {
+      const parsed = new URL(raw, window.location.origin);
+      return parsed.pathname.replace(/\/$/, '');
+    } catch {
+      return raw.split('#')[0].split('?')[0].replace(/^https?:\/\/[^/]+/i, '').replace(/\/$/, '');
+    }
+  };
+
+  const resolveNavLink = (menu) => {
+    const links = Array.from(nav.querySelectorAll('a[href]'));
+    return links.find((a) => {
+      if (a.parentElement?.classList.contains('nav-item-dropdown')) return false;
+      const clean = normalizeHref(a.getAttribute('href'));
+      if (!clean) return false;
+      return menu.hrefs.some((candidate) => {
+        const c = normalizeHref(candidate);
+        return clean === c || clean.endsWith(`/${c.replace(/^\//, '')}`);
+      });
+    }) || null;
+  };
+
   menus.forEach((menu) => {
-    const link = nav.querySelector(`a[href$="${menu.href}"]`);
-    if (!link || link.parentElement?.classList.contains('nav-item-dropdown')) return;
+    const link = resolveNavLink(menu);
+    if (!link) return;
     const wrapper = document.createElement('div');
     wrapper.className = 'nav-item-dropdown';
     link.replaceWith(wrapper);
