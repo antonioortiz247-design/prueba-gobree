@@ -739,6 +739,11 @@ iframe { width: 100%; min-height: 320px; border: 0; border-radius: 12px; }
   color: #f1f5f9;
   font-weight: 600;
 }
+.footer-glass-form input[type="checkbox"][name="privacidad"] + label {
+  display: inline-block;
+  white-space: nowrap;
+  font-weight: 500;
+}
 .footer-glass-form input {
   width: 100%;
   background: rgba(255, 255, 255, 0.9);
