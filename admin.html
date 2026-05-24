@@ -962,8 +962,12 @@
         alt: imgAlt.value || 'Gobree Belt',
         caption: imgCaption.value || ''
       };
-      if (editing >= 0 && currentImages[editing]) currentImages[editing] = payload;
-      else currentImages.push(payload);
+      if (editing >= 0 && currentImages[editing]) {
+        currentImages.splice(editing, 1);
+        currentImages.unshift(payload);
+      } else {
+        currentImages.unshift(payload);
+      }
       imgUrl.value = '';
       imgAlt.value = '';
       imgCaption.value = '';
@@ -1110,7 +1114,7 @@
 
     addProjectBtn.addEventListener('click', () => {
       if (!projectTitle.value || !projectMediaSrc.value) return alert('Título y URL media son obligatorios');
-      currentProjects.push({
+      currentProjects.unshift({
         category: projectCategory.value || 'General',
         title: projectTitle.value,
         description: projectDescription.value,
@@ -1154,8 +1158,12 @@
       const existing = index >= 0 ? currentProducts[index] : null;
       const product = readProductForm(existing);
       if (!product.nombre || !product.descripcion) return alert('Nombre y descripción son obligatorios.');
-      if (index >= 0 && currentProducts[index]) currentProducts[index] = product;
-      else currentProducts.push(product);
+      if (index >= 0 && currentProducts[index]) {
+        currentProducts.splice(index, 1);
+        currentProducts.unshift(product);
+      } else {
+        currentProducts.unshift(product);
+      }
       clearProductForm();
       renderProductList();
     });
