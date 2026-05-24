@@ -398,7 +398,6 @@
           const data = await r.json();
           if (!Array.isArray(data.projects) || !data.projects.length) return bindMediaTriggers();
           allProjects = data.projects;
-          allProjects.reverse();
           ensureFilterButtonsFromProjects(allProjects);
           applyFilter(activeFilter);
         } catch (_) {
