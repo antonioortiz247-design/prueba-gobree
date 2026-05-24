@@ -431,7 +431,6 @@
 
       <div class="admin-savebar">
         <button class="btn" id="saveBtn" type="button">Guardar cambios</button>
-        <button class="btn btn-secondary" id="reverseOrderBtn" type="button" title="Invierte el orden de la lista actual">Invertir Orden (P/P)</button>
         <a href="/" class="btn btn-secondary">Ver Inicio</a>
       </div>
     </div>
@@ -446,7 +445,6 @@
     const addBtn = document.getElementById('addBtn');
     const cancelHeroEditBtn = document.getElementById('cancelHeroEditBtn');
     const saveBtn = document.getElementById('saveBtn');
-    const reverseOrderBtn = document.getElementById('reverseOrderBtn');
     const adminPassword = document.getElementById('adminPassword');
     const togglePassword = document.getElementById('togglePassword');
     const loginBtn = document.getElementById('loginBtn');
@@ -1456,17 +1454,6 @@
       } catch (e) {
         setAuthedUi(false);
         setStatus('Sesión cerrada.');
-      }
-    });
-
-    reverseOrderBtn.addEventListener('click', () => {
-      const ok = confirm("Esto invertirá el orden de Proyectos y Productos en el panel. ¿Deseas continuar?");
-      if (ok) {
-        currentProjects.reverse();
-        currentProducts.reverse();
-        renderProjectList();
-        renderProductList();
-        showAdminToast("Orden invertido. Haz clic en 'Guardar cambios' para aplicar permanentemente.", "success");
       }
     });
 
