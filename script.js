@@ -241,7 +241,10 @@
         const r = await fetch('/api/hero', { cache: 'no-store' });
         if (!r.ok) return;
         const data = await r.json();
-        if (data?.images?.length) c.applyImages(data.images);
+        if (data?.images?.length) {
+          const imgs = [...data.images].reverse();
+          c.applyImages(imgs);
+        }
       } catch (e) {}
     })();
   }
@@ -303,6 +306,7 @@
         const list = Array.isArray(data && data.projects) ? data.projects : [];
         if (!list.length) return;
 
+        list.reverse();
         const top = list.slice(0, 3);
         const frag = document.createDocumentFragment();
         top.forEach((item) => {
@@ -340,7 +344,9 @@
       const r = await fetch('/api/products', { cache: 'no-store' });
       if (!r.ok) throw new Error('products_fetch_failed');
       const data = await r.json();
-      return Array.isArray(data.products) && data.products.length ? data.products : fallback;
+      const list = Array.isArray(data.products) && data.products.length ? data.products : fallback;
+      list.reverse();
+      return list;
     } catch (e) {
       return fallback;
     }
