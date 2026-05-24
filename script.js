@@ -270,12 +270,23 @@
       tag.className = 'tag';
       tag.textContent = category;
 
+      // Botón trigger para el modal (como en proyectos.html)
+      const trigger = document.createElement('button');
+      trigger.className = `project-media media-trigger ${mediaType === 'video' ? 'project-video' : ''}`;
+      trigger.type = 'button';
+      trigger.dataset.type = mediaType;
+      trigger.dataset.src = mediaSrc;
+      trigger.dataset.poster = mediaPoster || '';
+      trigger.dataset.alt = mediaAlt;
+
       const img = document.createElement('img');
       img.src = src;
       img.alt = mediaAlt;
       img.loading = 'lazy';
       img.width = 400;
       img.height = 250;
+
+      trigger.appendChild(img);
 
       const h3 = document.createElement('h3');
       h3.textContent = title;
@@ -289,12 +300,44 @@
       a.textContent = 'Ver proyectos →';
 
       card.appendChild(tag);
-      card.appendChild(img);
+      card.appendChild(trigger);
       card.appendChild(h3);
       if (description) card.appendChild(p);
       card.appendChild(a);
 
       return card;
+    };
+
+    const bindHomeMediaTriggers = () => {
+      const modal = document.getElementById('mediaModal');
+      const content = document.getElementById('mediaModalContent');
+      const triggers = document.querySelectorAll('#homeProjectsGrid .media-trigger');
+      if (!modal || !content) return;
+
+      triggers.forEach((el) => {
+        el.onclick = () => {
+          const type = el.dataset.type;
+          const src = el.dataset.src;
+          if (!src) return;
+          if (type === 'video') {
+            content.innerHTML = `<video controls autoplay playsinline poster="${el.dataset.poster || ''}"><source src="${src}" type="video/mp4">Tu navegador no soporta video HTML5.</video>`;
+          } else {
+            content.innerHTML = `<img src="${src}" alt="${el.dataset.alt || 'Proyecto'}">`;
+          }
+          modal.classList.add('open');
+          modal.setAttribute('aria-hidden', 'false');
+        };
+      });
+
+      const closeBtn = document.getElementById('mediaModalClose');
+      const closeModal = () => {
+        modal.classList.remove('open');
+        modal.setAttribute('aria-hidden', 'true');
+        content.innerHTML = '';
+      };
+      if (closeBtn) closeBtn.onclick = closeModal;
+      modal.onclick = (e) => { if (e.target === modal) closeModal(); };
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
     };
 
     (async () => {
@@ -314,6 +357,7 @@
         if (!frag.childNodes.length) return;
         homeProjectsGrid.innerHTML = '';
         homeProjectsGrid.appendChild(frag);
+        bindHomeMediaTriggers();
       } catch (e) {}
     })();
   }

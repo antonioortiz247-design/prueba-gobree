@@ -99,6 +99,15 @@
   <script>
     window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
   </script>
+  <style>
+    .media-modal { position:fixed; inset:0; background:rgba(0,0,0,.85); display:none; align-items:center; justify-content:center; z-index:9999; padding:1rem; }
+    .media-modal.open { display:flex; }
+    .media-modal-content { width:min(980px,100%); }
+    .media-modal-content img, .media-modal-content video { width:100%; max-height:85vh; object-fit:contain; border-radius:12px; background:#000; }
+    .media-modal-close { position:absolute; top:1rem; right:1rem; border:0; background:#fff; color:#111; width:2.2rem; height:2.2rem; border-radius:999px; font-size:1.25rem; cursor:pointer; }
+    .project-media { border:0; background:none; padding:0; cursor:pointer; width:100%; display:block; overflow:hidden; border-radius:8px; margin-bottom:1rem; position:relative; }
+    .project-video::after { content:'▶'; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:3rem; height:3rem; background:rgba(255,255,255,.9); color:#111; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.2rem; box-shadow:0 4px 12px rgba(0,0,0,.2); }
+  </style>
   <script defer src="/_vercel/speed-insights/script.js"></script>
 </head>
 <body>
@@ -291,6 +300,11 @@
     <div class="lightbox" id="lightbox" aria-hidden="true">
       <button class="close" aria-label="Cerrar imagen">×</button>
       <img id="lightboxImg" alt="Vista ampliada de galería">
+    </div>
+
+    <div id="mediaModal" class="media-modal" aria-hidden="true">
+      <button class="media-modal-close" id="mediaModalClose" aria-label="Cerrar">×</button>
+      <div class="media-modal-content" id="mediaModalContent"></div>
     </div>
   </main>
 
