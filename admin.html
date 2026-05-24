@@ -369,7 +369,11 @@
         <label>URL media<input type="text" id="projectMediaSrc" placeholder="/IMAGENES... o /videos..."></label>
         <label>URL miniatura video (opcional)<input type="text" id="projectMediaPoster" placeholder="Solo para video"></label>
         <label>Alt media<input type="text" id="projectMediaAlt" placeholder="Texto descriptivo"></label>
-        <div class="admin-row"><button class="btn btn-success" id="addProjectBtn" type="button">Agregar tarjeta</button></div>
+        <div class="admin-row">
+            <input type="hidden" id="projectEditingIndex" value="">
+            <button class="btn btn-success" id="addProjectBtn" type="button">Agregar tarjeta</button>
+            <button class="btn btn-secondary" id="cancelProjectEditBtn" type="button" style="display:none;">Cancelar</button>
+          </div>
           </div>
           <div id="projectList" class="image-list"></div>
         </div>
@@ -455,7 +459,9 @@
     const uploadMeta = document.getElementById('uploadMeta');
 
     const projectList = document.getElementById('projectList');
+    const projectEditingIndex = document.getElementById('projectEditingIndex');
     const addProjectBtn = document.getElementById('addProjectBtn');
+    const cancelProjectEditBtn = document.getElementById('cancelProjectEditBtn');
     const projectCategory = document.getElementById('projectCategory');
     const projectTitle = document.getElementById('projectTitle');
     const projectDescription = document.getElementById('projectDescription');
@@ -1112,9 +1118,21 @@
     });
 
 
+    function clearProjectForm() {
+      projectEditingIndex.value = '';
+      [projectCategory,projectTitle,projectDescription,projectBand,projectMediaSrc,projectMediaPoster,projectMediaAlt].forEach(el=>el.value='');
+      projectMediaType.value='image';
+      addProjectBtn.textContent = 'Agregar tarjeta';
+      if (cancelProjectEditBtn) cancelProjectEditBtn.style.display = 'none';
+      clearProjectMediaSelection();
+      clearProjectPosterSelection();
+    }
+
     addProjectBtn.addEventListener('click', () => {
       if (!projectTitle.value || !projectMediaSrc.value) return alert('Título y URL media son obligatorios');
-      currentProjects.unshift({
+      const index = projectEditingIndex.value === '' ? -1 : Number(projectEditingIndex.value);
+      
+      const payload = {
         category: projectCategory.value || 'General',
         title: projectTitle.value,
         description: projectDescription.value,
@@ -1123,11 +1141,53 @@
         mediaSrc: projectMediaSrc.value,
         mediaPoster: projectMediaPoster.value,
         mediaAlt: projectMediaAlt.value || projectTitle.value
-      });
-      [projectCategory,projectTitle,projectDescription,projectBand,projectMediaSrc,projectMediaPoster,projectMediaAlt].forEach(el=>el.value='');
-      projectMediaType.value='image';
+      };
+
+      if (index >= 0 && currentProjects[index]) {
+        currentProjects.splice(index, 1);
+        currentProjects.unshift(payload);
+      } else {
+        currentProjects.unshift(payload);
+      }
+      
+      clearProjectForm();
       renderProjectList();
     });
+
+    if (cancelProjectEditBtn) {
+      cancelProjectEditBtn.addEventListener('click', clearProjectForm);
+    }
+
+    window.removeProject=(index)=>{
+      if (!confirm(`¿Eliminar ${currentProjects[index].title}?`)) return;
+      currentProjects.splice(index,1);
+      renderProjectList();
+    };
+
+    window.editProject=(index)=>{
+       const p=currentProjects[index];
+       if (!p) return;
+       projectEditingIndex.value = String(index);
+       projectCategory.value=p.category||'';
+       projectTitle.value=p.title||'';
+       projectDescription.value=p.description||'';
+       projectBand.value=p.band||'';
+       projectMediaType.value=p.mediaType||'image';
+       projectMediaSrc.value=p.mediaSrc||'';
+       projectMediaPoster.value=p.mediaPoster||'';
+       projectMediaAlt.value=p.mediaAlt||'';
+       
+       addProjectBtn.textContent = 'Actualizar tarjeta';
+       if (cancelProjectEditBtn) cancelProjectEditBtn.style.display = 'inline-flex';
+       
+       const projectAdd = document.querySelector('details[data-section="project-add"]');
+       if (projectAdd) {
+         const all = document.querySelectorAll('#adminAuthed details.admin-section');
+         all.forEach((d) => { if (d !== projectAdd) d.removeAttribute('open'); });
+         projectAdd.setAttribute('open', '');
+       }
+       projectTitle.focus();
+     };
 
     pickProductImgBtn.addEventListener('click', () => productImgFile.click());
 
