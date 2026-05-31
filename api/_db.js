@@ -71,26 +71,49 @@ async function getRedisClient() {
 }
 
 async function storageGet(key) {
+  let res = null;
   const client = await getRedisClient();
-  if (client) return await client.get(key);
+  if (client) {
+    try {
+      res = await client.get(key);
+      if (res !== null) return res;
+    } catch (e) {
+      console.error(`Redis Get Error (${key}):`, e);
+    }
+  }
 
   const kvUrl = process.env.KV_REST_API_URL;
   if (kvUrl && process.env.KV_REST_API_TOKEN) {
-    const res = await kv(['GET', key]);
-    return typeof res === 'string' ? res : (res ? JSON.stringify(res) : null);
+    try {
+      const kvRes = await kv(['GET', key]);
+      return typeof kvRes === 'string' ? kvRes : (kvRes ? JSON.stringify(kvRes) : null);
+    } catch (e) {
+      console.error(`KV Get Error (${key}):`, e);
+    }
   }
   return null;
 }
 
 async function storageGetBuffer(key) {
+  let res = null;
   const client = await getRedisClient();
-  if (client) return await client.get(commandOptions({ returnBuffers: true }), key);
+  if (client) {
+    try {
+      res = await client.get(commandOptions({ returnBuffers: true }), key);
+      if (res !== null) return res;
+    } catch (e) {
+      console.error(`Redis GetBuffer Error (${key}):`, e);
+    }
+  }
 
   const kvUrl = process.env.KV_REST_API_URL;
   if (kvUrl && process.env.KV_REST_API_TOKEN) {
-    const res = await kv(['GET', key]);
-    if (!res) return null;
-    return Buffer.from(res, 'base64');
+    try {
+      const kvRes = await kv(['GET', key]);
+      if (kvRes) return Buffer.from(kvRes, 'base64');
+    } catch (e) {
+      console.error(`KV GetBuffer Error (${key}):`, e);
+    }
   }
   return null;
 }
