@@ -542,7 +542,7 @@
 
     async function checkAuth() {
       try {
-        const r = await fetch('/api/admin-check', { cache: 'no-store', credentials: 'same-origin' });
+        const r = await fetch('/api/admin-panel?type=check', { cache: 'no-store', credentials: 'same-origin' });
         return r.ok;
       } catch (e) {
         return false;
@@ -729,7 +729,7 @@
       if (!file) throw new Error('missing_file');
       if (file.size > 12_000_000) throw new Error('file_too_large');
       const buf = await file.arrayBuffer();
-      const r = await fetch('/api/upload-media', {
+      const r = await fetch('/api/uploads?type=media', {
         method: 'POST',
         credentials: 'same-origin',
         headers: {
@@ -1301,11 +1301,12 @@
 
     function buildCleanupUrl(confirm) {
       const params = new URLSearchParams();
+      params.set('type', 'cleanup');
       const mk = toCleanupNumber(cleanupMaxKeys && cleanupMaxKeys.value);
       if (mk) params.set('maxKeys', String(mk));
-      if (confirm) params.set('confirm', 'true');
+      if (confirm) params.set('run', 'true');
       const qs = params.toString();
-      return `/api/storage-cleanup${qs ? `?${qs}` : ''}`;
+      return `/api/content${qs ? `?${qs}` : ''}`;
     }
 
     function renderCleanupReport(payload) {
@@ -1418,7 +1419,7 @@
     loginBtn.addEventListener('click', async () => {
       setStatus('Iniciando sesión...');
       try {
-        const r = await fetch('/api/admin-login', {
+        const r = await fetch('/api/admin-panel?type=login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'same-origin',
@@ -1450,7 +1451,7 @@
     logoutBtn.addEventListener('click', async () => {
       setStatus('Cerrando sesión...');
       try {
-        await fetch('/api/admin-logout', { method: 'POST', credentials: 'same-origin' });
+        await fetch('/api/admin-panel?type=logout', { method: 'POST', credentials: 'same-origin' });
         setAuthedUi(false);
         setStatus('Sesión cerrada.');
       } catch (e) {
@@ -1467,7 +1468,7 @@
       }
       setStatus('Guardando...');
       try {
-        const r = await fetch('/api/hero', {
+        const r = await fetch('/api/content?type=hero', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'same-origin',
@@ -1486,9 +1487,9 @@
           alert(msg);
           return;
         }
-        const pr = await fetch('/api/projects', { method:'POST', headers:{ 'Content-Type':'application/json' }, credentials:'same-origin', body: JSON.stringify({ projects: currentProjects }) });
+        const pr = await fetch('/api/content?type=projects', { method:'POST', headers:{ 'Content-Type':'application/json' }, credentials:'same-origin', body: JSON.stringify({ projects: currentProjects }) });
         if (!pr.ok) { const pp = await readPayload(pr); throw new Error(formatErrorMessage('No se pudo guardar Proyectos', pr, pp)); }
-        const prodR = await fetch('/api/products', { method:'POST', headers:{ 'Content-Type':'application/json' }, credentials:'same-origin', body: JSON.stringify({ products: currentProducts }) });
+        const prodR = await fetch('/api/content?type=products', { method:'POST', headers:{ 'Content-Type':'application/json' }, credentials:'same-origin', body: JSON.stringify({ products: currentProducts }) });
         if (!prodR.ok) { const prodPayload = await readPayload(prodR); throw new Error(formatErrorMessage('No se pudo guardar Productos', prodR, prodPayload)); }
         alert('Guardado. Se actualizaron carrusel, proyectos y productos.');
         setStatus('Cambios guardados.');
@@ -1507,7 +1508,7 @@
     async function loadAllData() {
       if (!isAuthed) return;
       try {
-        const r = await fetch('/api/hero', { cache: 'no-store' });
+        const r = await fetch('/api/content?type=hero', { cache: 'no-store' });
         const data = await r.json();
         currentImages = Array.isArray(data.images) ? data.images : [];
       } catch (e) {
@@ -1519,7 +1520,7 @@
       }
       renderList();
       try {
-        const rp = await fetch('/api/projects', { cache: 'no-store' });
+        const rp = await fetch('/api/content?type=projects', { cache: 'no-store' });
         const dp = await rp.json();
         currentProjects = Array.isArray(dp.projects) ? dp.projects : [];
       } catch (e) {
@@ -1527,7 +1528,7 @@
       }
       renderProjectList();
       try {
-        const rprod = await fetch('/api/products', { cache: 'no-store' });
+        const rprod = await fetch('/api/content?type=products', { cache: 'no-store' });
         const dprod = await rprod.json();
         currentProducts = Array.isArray(dprod.products) ? dprod.products : [];
       } catch (e) {

@@ -393,7 +393,7 @@
       const loadProjects = async () => {
         if (!projectsGrid) return;
         try {
-          const r = await fetch('/api/projects', { cache: 'no-store' });
+          const r = await fetch('/api/content?type=projects', { cache: 'no-store' });
           if (!r.ok) return bindMediaTriggers();
           const data = await r.json();
           if (!Array.isArray(data.projects) || !data.projects.length) return bindMediaTriggers();

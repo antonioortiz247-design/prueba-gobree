@@ -238,7 +238,7 @@
 
     (async () => {
       try {
-        const r = await fetch('/api/hero', { cache: 'no-store' });
+        const r = await fetch('/api/content?type=hero', { cache: 'no-store' });
         if (!r.ok) return;
         const data = await r.json();
         if (data?.images?.length) {
@@ -342,7 +342,7 @@
 
     (async () => {
       try {
-        const r = await fetch('/api/projects', { cache: 'no-store' });
+        const r = await fetch('/api/content?type=projects', { cache: 'no-store' });
         if (!r.ok) return;
         const data = await r.json();
         const list = Array.isArray(data && data.projects) ? data.projects : [];
@@ -383,7 +383,7 @@
   async function loadCatalogProducts() {
     const fallback = typeof productos !== 'undefined' && Array.isArray(productos) ? productos : [];
     try {
-      const r = await fetch('/api/products', { cache: 'no-store' });
+      const r = await fetch('/api/content?type=products', { cache: 'no-store' });
       if (!r.ok) throw new Error('products_fetch_failed');
       const data = await r.json();
       return Array.isArray(data.products) && data.products.length ? data.products : fallback;
