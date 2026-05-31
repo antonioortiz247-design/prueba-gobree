@@ -64,7 +64,13 @@
 
     <section id="facturas" class="panel">
       <article class="card">
-        <div class="section-title"><h2>Búsqueda global</h2><button class="btn" id="newInvoiceBtn">Nueva Factura</button></div>
+        <div class="section-title">
+          <h2>Búsqueda global</h2>
+          <div class="actions">
+            <button class="btn btn-secondary" id="importXmlBtn">Importar XML</button>
+            <button class="btn" id="newInvoiceBtn">Nueva Factura</button>
+          </div>
+        </div>
         <label>Buscar cualquier dato...<input id="globalSearch" placeholder="Cliente, RFC, folio, OC, código, descripción, observaciones, ancho, longitud, banda o guía"></label>
       </article>
       <article class="card">
@@ -75,7 +81,7 @@
           <label>Medidas Internas<input id="fMedidas"></label><label>Tipo Banda<input id="fBanda"></label><label>Guía<input id="fGuia"></label><label>Observaciones<input id="fObs"></label>
           <label>Monto Mínimo<input id="fMin" type="number"></label><label>Monto Máximo<input id="fMax" type="number"></label><label>Estatus<select id="fEstatus"><option value="">Todos</option><option>Pendiente</option><option>Validada</option><option>Archivada</option></select></label>
         </div>
-        <div class="actions" style="margin-top:1rem"><button class="btn" id="searchBtn">Buscar</button><button class="btn btn-secondary" id="clearBtn">Limpiar</button><button class="btn btn-secondary" id="importXmlBtn">Importar XML</button><input id="xmlImportFile" type="file" accept=".xml,text/xml" class="hidden"></div>
+        <div class="actions" style="margin-top:1rem"><button class="btn" id="searchBtn">Buscar</button><button class="btn btn-secondary" id="clearBtn">Limpiar</button><input id="xmlImportFile" type="file" accept=".xml,text/xml" class="hidden"></div>
       </article>
       <article class="card hidden" id="invoiceFormCard">
         <h2 id="invoiceFormTitle">Nueva Factura</h2>
