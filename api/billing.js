@@ -103,7 +103,11 @@ module.exports = async (req, res) => {
       }
       if (req.method === 'POST') {
         const body = await getBody(req);
-        const { partidas, ...facturaData } = body;
+        const { id, partidas, ...facturaData } = body;
+        
+        // Limpiar facturaData para evitar errores de ID vacío
+        if (facturaData.id === "") delete facturaData.id;
+
         const { data: factura, error: fError } = await supabase
           .from('facturas')
           .insert([facturaData])

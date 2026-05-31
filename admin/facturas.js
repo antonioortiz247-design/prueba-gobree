@@ -216,49 +216,64 @@ $('captureMode').onchange = () => document.querySelectorAll('.complete-field').f
 
 $('invoiceForm').onsubmit = async (e) => {
   e.preventDefault();
-  const id = $('facturaId').value;
-  const payload = { 
-    id, 
-    cliente_id: $('clienteSelect').value, 
-    fecha: $('fecha').value, 
-    folio: $('folio').value, 
-    oc: $('oc').value, 
-    codigo_interno: $('codigoInterno').value, 
-    subtotal: $('subtotal').value, 
-    iva: $('iva').value, 
-    total: $('total').value, 
-    estatus: $('estatus').value, 
-    observaciones: $('observaciones').value, 
-    partidas: [{ 
-      descripcion: $('descripcion').value, 
-      tipo_banda: $('tipoBanda').value, 
-      ancho_mm: $('ancho').value, 
-      longitud_mm: $('longitud').value, 
-      medidas_internas: $('medidas').value, 
-      guia: $('guia').value, 
-      tipo_union: $('tipoUnion').value, 
-      cantidad: $('cantidad').value, 
-      precio_unitario: $('precio').value, 
-      importe: $('importe').value 
-    }] 
-  };
-  
-  const saved = await api('/api/billing?type=facturas', { method: id ? 'PATCH' : 'POST', body: JSON.stringify(payload) });
-  const facturaId = id || saved.data?.id;
+  try {
+    const id = $('facturaId').value;
+    const num = (v) => (v === '' || v === null || v === undefined) ? null : parseFloat(v);
+    
+    const payload = { 
+      id: id || undefined, 
+      cliente_id: $('clienteSelect').value, 
+      fecha: $('fecha').value, 
+      folio: $('folio').value, 
+      oc: $('oc').value || null, 
+      codigo_interno: $('codigoInterno').value || null, 
+      subtotal: num($('subtotal').value), 
+      iva: num($('iva').value), 
+      total: num($('total').value), 
+      estatus: $('estatus').value, 
+      observaciones: $('observaciones').value || null, 
+      partidas: [{ 
+        descripcion: $('descripcion').value || null, 
+        tipo_banda: $('tipoBanda').value || null, 
+        ancho_mm: num($('ancho').value), 
+        longitud_mm: num($('longitud').value), 
+        medidas_internas: $('medidas').value || null, 
+        guia: $('guia').value || null, 
+        tipo_union: $('tipoUnion').value || null, 
+        cantidad: num($('cantidad').value) || 1, 
+        precio_unitario: num($('precio').value), 
+        importe: num($('importe').value) 
+      }] 
+    };
 
-  for (const [inputId, bucket] of [['pdfFile','facturas-pdf'], ['xmlFile','facturas-xml']]) {
-    const input = $(inputId);
-    if (input.files && input.files[0]) {
-      const fd = new FormData();
-      fd.append('file', input.files[0]);
-      fd.append('bucket', bucket);
-      fd.append('folder', new Date().getFullYear().toString());
-      await fetch(`/api/uploads?type=factura`, { method: 'POST', body: fd, credentials: 'include' });
+    if (!payload.id) delete payload.id;
+    
+    const saved = await api('/api/billing?type=facturas', { 
+      method: id ? 'PATCH' : 'POST', 
+      body: JSON.stringify(payload) 
+    });
+    
+    const facturaId = id || saved.data?.id;
+
+    // Manejo de archivos
+    for (const [inputId, bucket] of [['pdfFile','facturas-pdf'], ['xmlFile','facturas-xml']]) {
+      const input = $(inputId);
+      if (input.files && input.files[0]) {
+        const fd = new FormData();
+        fd.append('file', input.files[0]);
+        fd.append('bucket', bucket);
+        fd.append('folder', new Date().getFullYear().toString());
+        await fetch(`/api/uploads?type=factura`, { method: 'POST', body: fd, credentials: 'include' });
+      }
     }
+    
+    $('invoiceFormCard').classList.add('hidden'); 
+    await Promise.all([loadFacturas(), loadDashboard()]);
+    alert('Factura guardada con éxito');
+  } catch (err) {
+    console.error('Error al guardar factura:', err);
+    alert('Error al guardar factura: ' + err.message);
   }
-  
-  $('invoiceFormCard').classList.add('hidden'); 
-  await Promise.all([loadFacturas(), loadDashboard()]);
 };
 
 window.showInvoice = async (id) => {
