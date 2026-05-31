@@ -194,7 +194,11 @@ function parseCookies(header) {
     if (parts.length >= 2) {
       const k = parts[0].trim();
       const v = parts.slice(1).join('=').trim();
-      out[k] = decodeURIComponent(v);
+      try {
+        out[k] = decodeURIComponent(v);
+      } catch (e) {
+        out[k] = v;
+      }
     }
   });
   return out;
@@ -212,15 +216,22 @@ function isAdmin(req) {
   const pass = process.env.ADMIN_PASSWORD;
   const secret = process.env.ADMIN_SECRET || pass;
   if (!pass || !secret) return false;
+  
   const cookies = parseCookies(req.headers.cookie);
   const token = cookies.gobree_admin;
   if (!token) return false;
+  
   const [ts, sig] = token.split('.');
   if (!ts || !sig) return false;
+  
   const age = Date.now() - Number(ts);
-  if (age < 0 || age > 7 * 24 * 60 * 60 * 1000) return false;
-  const expected = signTs(ts, secret);
-  return sig === expected;
+  // Permitir sesiones de hasta 30 días
+  if (age < 0 || age > 30 * 24 * 60 * 60 * 1000) return false;
+  
+  if (sig === signTs(ts, secret)) return true;
+  if (sig === signTs(ts, pass)) return true;
+  
+  return false;
 }
 
 module.exports = { 

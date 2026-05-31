@@ -8,12 +8,17 @@ const KEYS = {
 };
 
 module.exports = async (req, res) => {
-  const isAuthorized = isAdmin(req) || req.query.secret === 'gobree_debug_2026';
+  const isAuthed = isAdmin(req);
+  const isAuthorized = isAuthed || req.query.secret === 'gobree_debug_2026';
   
   if (!isAuthorized) {
     res.statusCode = 401;
     res.setHeader('Content-Type', 'application/json');
-    return res.end(JSON.stringify({ error: 'unauthorized' }));
+    return res.end(JSON.stringify({ 
+      error: 'unauthorized',
+      cookies_present: !!req.headers.cookie,
+      hint: 'Asegúrate de haber iniciado sesión en /admin'
+    }));
   }
 
   try {
@@ -26,23 +31,20 @@ module.exports = async (req, res) => {
       values[name] = {
         key: key,
         exists: val !== null,
-        length: val ? val.length : 0,
-        preview: val ? (val.substring(0, 100) + '...') : null
+        length: val ? val.length : 0
       };
     }
-
-    // Buscar llaves similares por si acaso cambiaron de nombre
-    const suggestions = allKeys.filter(k => 
-      k.includes('hero') || k.includes('product') || k.includes('project') || k.includes('media')
-    );
 
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
     res.end(JSON.stringify({
       ok: true,
+      auth: {
+        isAdmin: isAuthed,
+        cookieHeader: req.headers.cookie ? (req.headers.cookie.substring(0, 20) + '...') : 'none'
+      },
       total_keys: allKeys.length,
       main_keys_status: values,
-      suggested_keys: suggestions,
       all_keys: allKeys.sort()
     }, null, 2));
   } catch (e) {

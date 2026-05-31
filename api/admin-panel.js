@@ -23,16 +23,17 @@ module.exports = async (req, res) => {
       const data = await getBody(req);
       const password = String(data.password || '');
       if (!safeEqual(password, adminPassword)) {
-        return sendJSON(res, { ok: false }, 401);
+        return sendJSON(res, { ok: false, error: 'invalid_password' }, 401);
       }
       
       const ts = String(Date.now());
       const sig = signTs(ts, adminSecret);
       const token = `${ts}.${sig}`;
       
-      // Cookie: Path=/ para que sea accesible en /admin y /admin/facturas
-      // Forzamos Secure y SameSite=None para Vercel (HTTPS obligatorio)
-      res.setHeader('Set-Cookie', [`gobree_admin=${token}; Path=/; Max-Age=604800; HttpOnly; Secure; SameSite=None`]);
+      // Cookie: Path=/ para que sea accesible en todo el dominio
+      // Usamos SameSite=Lax y Secure para máxima compatibilidad en Vercel (HTTPS)
+      // Extendemos a 30 días para evitar cierres de sesión frecuentes
+      res.setHeader('Set-Cookie', [`gobree_admin=${token}; Path=/; Max-Age=2592000; HttpOnly; Secure; SameSite=Lax`]);
       return sendJSON(res, { ok: true });
     } catch (e) {
       return sendJSON(res, { ok: false, error: e.message }, 400);
@@ -48,7 +49,10 @@ module.exports = async (req, res) => {
   // --- CHECK ---
   if (type === 'check') {
     const ok = isAdmin(req);
-    return sendJSON(res, { ok }, ok ? 200 : 401);
+    return sendJSON(res, { 
+      ok, 
+      has_cookie: !!(req.headers.cookie && req.headers.cookie.includes('gobree_admin'))
+    }, ok ? 200 : 401);
   }
 
   return sendJSON(res, { error: 'Method Not Allowed' }, 405);

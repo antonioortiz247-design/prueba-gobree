@@ -5,7 +5,7 @@ let state = { page: 1, pageSize: 25, clientes: [], facturas: [], session: null }
 async function api(url, options = {}) {
   const res = await fetch(url, Object.assign({ 
     headers: { 'Content-Type': 'application/json' },
-    credentials: 'same-origin'
+    credentials: 'include'
   }, options));
   const data = await res.json().catch(() => ({}));
   if (!res.ok || data.ok === false) throw new Error(data.error || 'request_failed');
@@ -15,18 +15,26 @@ function can(permission) { return state.session?.role === 'administrador' || sta
 function setMessage(el, text) { el.innerHTML = `<p class="muted">${esc(text)}</p>`; }
 async function init() {
   try {
-    // Primero verificamos con admin-panel que es el endpoint consolidado
-    const r = await fetch('/api/admin-panel?type=check', { cache: 'no-store', credentials: 'same-origin' });
-    if (!r.ok) throw new Error('unauthorized');
-    const data = await r.json();
-    if (!data.ok) throw new Error('unauthorized');
+    // Primero verificamos la sesión de administrador
+    const r = await fetch('/api/admin-panel?type=check', { 
+      cache: 'no-store', 
+      credentials: 'include' 
+    });
+    
+    const data = await r.json().catch(() => ({ ok: false }));
+    
+    if (!r.ok || !data.ok) {
+      console.error('Session check failed:', r.status, data);
+      throw new Error('unauthorized');
+    }
 
     state.session = { role: 'administrador' };
     $('rolePill').textContent = 'Admin';
     await Promise.all([loadDashboard(), loadClientes(), loadFacturas()]);
   } catch (e) {
+    console.error('Init error:', e);
     $('rolePill').textContent = 'Sin sesión';
-    alert('Inicia sesión en /admin antes de abrir facturación.');
+    alert('Sesión no válida o expirada. Por favor, inicia sesión nuevamente en el Panel de Administración.');
     location.href = '/admin';
   }
 }
@@ -116,7 +124,7 @@ $('invoiceForm').onsubmit = async (e) => {
       await fetch(`/api/uploads?type=factura`, { 
         method: 'POST', 
         body: fd,
-        credentials: 'same-origin'
+        credentials: 'include'
       });
     }
   }
