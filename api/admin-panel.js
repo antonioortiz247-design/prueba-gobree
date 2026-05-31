@@ -1,4 +1,4 @@
-const { isAdmin, signTs } = require('./_db');
+const { isAdmin, signTs, sendJSON, getBody } = require('./_db');
 const crypto = require('crypto');
 
 function safeEqual(a, b) {
@@ -16,50 +16,40 @@ module.exports = async (req, res) => {
     const adminPassword = process.env.ADMIN_PASSWORD;
     const adminSecret = process.env.ADMIN_SECRET || adminPassword;
     if (!adminPassword || !adminSecret) {
-      res.statusCode = 500;
-      return res.end(JSON.stringify({ ok: false, error: 'missing_admin_env' }));
+      return sendJSON(res, { ok: false, error: 'missing_admin_env' }, 500);
     }
 
-    let body = '';
-    req.on('data', chunk => { body += chunk; });
-    req.on('end', () => {
-      try {
-        const data = JSON.parse(body);
-        const password = String(data.password || '');
-        if (!safeEqual(password, adminPassword)) {
-          res.statusCode = 401;
-          return res.end(JSON.stringify({ ok: false }));
-        }
-        const ts = String(Date.now());
-        const sig = signTs(ts, adminSecret);
-        const token = `${ts}.${sig}`;
-        // Cookie: Path=/ para que sea accesible en /admin y /admin/facturas
-        // Forzamos Secure y SameSite=None para Vercel (HTTPS obligatorio)
-        res.setHeader('Set-Cookie', [`gobree_admin=${token}; Path=/; Max-Age=604800; HttpOnly; Secure; SameSite=None`]);
-        res.statusCode = 200;
-        return res.end(JSON.stringify({ ok: true }));
-      } catch (e) {
-        res.statusCode = 400;
-        return res.end(JSON.stringify({ ok: false }));
+    try {
+      const data = await getBody(req);
+      const password = String(data.password || '');
+      if (!safeEqual(password, adminPassword)) {
+        return sendJSON(res, { ok: false }, 401);
       }
-    });
-    return;
+      
+      const ts = String(Date.now());
+      const sig = signTs(ts, adminSecret);
+      const token = `${ts}.${sig}`;
+      
+      // Cookie: Path=/ para que sea accesible en /admin y /admin/facturas
+      // Forzamos Secure y SameSite=None para Vercel (HTTPS obligatorio)
+      res.setHeader('Set-Cookie', [`gobree_admin=${token}; Path=/; Max-Age=604800; HttpOnly; Secure; SameSite=None`]);
+      return sendJSON(res, { ok: true });
+    } catch (e) {
+      return sendJSON(res, { ok: false, error: e.message }, 400);
+    }
   }
 
   // --- LOGOUT ---
   if (type === 'logout') {
     res.setHeader('Set-Cookie', ['gobree_admin=; Path=/; Max-Age=0; HttpOnly; SameSite=Lax']);
-    res.statusCode = 200;
-    return res.end(JSON.stringify({ ok: true }));
+    return sendJSON(res, { ok: true });
   }
 
   // --- CHECK ---
   if (type === 'check') {
     const ok = isAdmin(req);
-    res.statusCode = ok ? 200 : 401;
-    return res.end(JSON.stringify({ ok }));
+    return sendJSON(res, { ok }, ok ? 200 : 401);
   }
 
-  res.statusCode = 405;
-  res.end('Method Not Allowed');
+  return sendJSON(res, { error: 'Method Not Allowed' }, 405);
 };

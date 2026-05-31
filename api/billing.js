@@ -1,17 +1,13 @@
-const { supabase, isAdmin } = require('./_db');
+const { supabase, isAdmin, getBody, sendJSON } = require('./_db');
 
 module.exports = async (req, res) => {
   // Solo administradores pueden acceder a las funciones de facturación
   if (!isAdmin(req)) {
-    res.statusCode = 401;
-    res.setHeader('Content-Type', 'application/json');
-    return res.end(JSON.stringify({ ok: false, error: 'unauthorized' }));
+    return sendJSON(res, { ok: false, error: 'unauthorized' }, 401);
   }
 
   if (!supabase) {
-    res.statusCode = 500;
-    res.setHeader('Content-Type', 'application/json');
-    return res.end(JSON.stringify({ ok: false, error: 'Supabase no configurado' }));
+    return sendJSON(res, { ok: false, error: 'Supabase no configurado' }, 500);
   }
 
   const { type } = req.query;
@@ -33,9 +29,8 @@ module.exports = async (req, res) => {
         supabase.from('facturas').select('*', { count: 'exact', head: true }).eq('estatus', 'pendiente')
       ]);
       const sumVentasMes = (ventasMes || []).reduce((acc, f) => acc + (f.total || 0), 0);
-      res.statusCode = 200;
-      res.setHeader('Content-Type', 'application/json');
-      return res.end(JSON.stringify({
+      
+      return sendJSON(res, {
         ok: true,
         stats: {
           totalFacturas: totalFacturas || 0,
@@ -43,7 +38,7 @@ module.exports = async (req, res) => {
           ventasMes: sumVentasMes,
           pendientes: pendientes || 0
         }
-      }));
+      });
     }
 
     // --- CLIENTES ---
@@ -54,26 +49,20 @@ module.exports = async (req, res) => {
         if (search) query = query.ilike('nombre', `%${search}%`);
         const { data, error } = await query;
         if (error) throw error;
-        res.statusCode = 200;
-        res.setHeader('Content-Type', 'application/json');
-        return res.end(JSON.stringify({ ok: true, data }));
+        return sendJSON(res, { ok: true, data });
       }
       if (req.method === 'POST') {
         const body = await getBody(req);
         const { data, error } = await supabase.from('clientes').insert([body]).select();
         if (error) throw error;
-        res.statusCode = 201;
-        res.setHeader('Content-Type', 'application/json');
-        return res.end(JSON.stringify({ ok: true, data }));
+        return sendJSON(res, { ok: true, data }, 201);
       }
       if (req.method === 'PATCH') {
         const body = await getBody(req);
         const { id, ...updateData } = body;
         const { data, error } = await supabase.from('clientes').update(updateData).eq('id', id).select();
         if (error) throw error;
-        res.statusCode = 200;
-        res.setHeader('Content-Type', 'application/json');
-        return res.end(JSON.stringify({ ok: true, data }));
+        return sendJSON(res, { ok: true, data });
       }
     }
 
@@ -88,9 +77,7 @@ module.exports = async (req, res) => {
             .select('*, clientes(*), partidas(*)')
             .eq('id', id);
           if (error) throw error;
-          res.statusCode = 200;
-          res.setHeader('Content-Type', 'application/json');
-          return res.end(JSON.stringify({ ok: true, data }));
+          return sendJSON(res, { ok: true, data });
         }
 
         const from = (page - 1) * limit;
@@ -110,9 +97,7 @@ module.exports = async (req, res) => {
         if (estatus) query = query.eq('estatus', estatus);
         const { data, count, error } = await query;
         if (error) throw error;
-        res.statusCode = 200;
-        res.setHeader('Content-Type', 'application/json');
-        return res.end(JSON.stringify({ ok: true, data, count }));
+        return sendJSON(res, { ok: true, data, count });
       }
       if (req.method === 'POST') {
         const body = await getBody(req);
@@ -135,9 +120,7 @@ module.exports = async (req, res) => {
           registro_id: factura.id,
           cambios_json: { factura, partidas }
         }]);
-        res.statusCode = 201;
-        res.setHeader('Content-Type', 'application/json');
-        return res.end(JSON.stringify({ ok: true, data: factura }));
+        return sendJSON(res, { ok: true, data: factura }, 201);
       }
       if (req.method === 'PATCH') {
         const body = await getBody(req);
@@ -164,9 +147,7 @@ module.exports = async (req, res) => {
           registro_id: id,
           cambios_json: { factura, partidas }
         }]);
-        res.statusCode = 200;
-        res.setHeader('Content-Type', 'application/json');
-        return res.end(JSON.stringify({ ok: true, data: factura }));
+        return sendJSON(res, { ok: true, data: factura });
       }
     }
 
@@ -178,40 +159,12 @@ module.exports = async (req, res) => {
         .order('fecha', { ascending: false })
         .limit(100);
       if (error) throw error;
-      res.statusCode = 200;
-      res.setHeader('Content-Type', 'application/json');
-      return res.end(JSON.stringify({ ok: true, data }));
+      return sendJSON(res, { ok: true, data });
     }
 
-    res.statusCode = 400;
-    res.end(JSON.stringify({ ok: false, error: 'Invalid type or method' }));
+    return sendJSON(res, { ok: false, error: 'Invalid type or method' }, 400);
 
   } catch (e) {
-    res.statusCode = 500;
-    res.setHeader('Content-Type', 'application/json');
-    return res.end(JSON.stringify({ ok: false, error: e.message }));
+    return sendJSON(res, { ok: false, error: e.message }, 500);
   }
 };
-
-// Helper for res.json
-if (!module.exports.json) {
-  Object.defineProperty(Object.prototype, 'json', {
-    value: function(data) {
-      this.setHeader('Content-Type', 'application/json');
-      this.end(JSON.stringify(data));
-    },
-    configurable: true,
-    writable: true
-  });
-}
-
-async function getBody(req) {
-  return new Promise((resolve, reject) => {
-    let body = '';
-    req.on('data', chunk => { body += chunk; });
-    req.on('end', () => {
-      try { resolve(JSON.parse(body)); }
-      catch (e) { reject(e); }
-    });
-  });
-}

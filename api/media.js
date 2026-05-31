@@ -1,47 +1,4 @@
-const { createClient, commandOptions } = require('redis');
-
-let redisClient;
-let redisConnecting;
-
-async function getRedisClient() {
-  if (redisClient) return redisClient;
-  if (redisConnecting) return redisConnecting;
-
-  redisConnecting = (async () => {
-    const redisUrl = process.env.REDIS_URL;
-    const host = process.env.REDIS_HOST;
-    const port = Number(process.env.REDIS_PORT || '');
-    const username = process.env.REDIS_USERNAME || process.env.REDIS_USER;
-    const password = process.env.REDIS_PASSWORD || process.env.REDIS_PASS;
-
-    if (!redisUrl && !host) throw new Error('missing_redis_env');
-
-    const useTlsEnv = String(process.env.REDIS_TLS || '').toLowerCase();
-    const inferredTls =
-      (Number.isFinite(port) && port !== 6379) || String(host || '').includes('cloud.redislabs.com');
-    const useTls = useTlsEnv ? useTlsEnv === 'true' : inferredTls;
-
-    const client = redisUrl
-      ? createClient({ url: redisUrl })
-      : createClient({
-          username: username || undefined,
-          password: password || undefined,
-          socket: {
-            host,
-            port: Number.isFinite(port) ? port : 6379,
-            tls: useTls,
-            servername: useTls ? host : undefined
-          }
-        });
-
-    client.on('error', () => {});
-    await client.connect();
-    redisClient = client;
-    return redisClient;
-  })();
-
-  return redisConnecting;
-}
+const { storageGet, storageGetBuffer, sendJSON } = require('./_db');
 
 function getQueryParam(url, key) {
   const u = String(url || '');
@@ -64,58 +21,42 @@ function getQueryParam(url, key) {
 
 module.exports = async (req, res) => {
   if (req.method !== 'GET') {
-    res.statusCode = 405;
-    res.end('Method Not Allowed');
-    return;
+    return sendJSON(res, { error: 'Method Not Allowed' }, 405);
   }
 
   const id = getQueryParam(req.url, 'id');
   if (!id) {
-    res.statusCode = 400;
-    res.end('Missing id');
-    return;
-  }
-
-  let client;
-  try {
-    client = await getRedisClient();
-  } catch (e) {
-    res.statusCode = 502;
-    res.end('Storage not configured');
-    return;
+    return sendJSON(res, { error: 'Missing id' }, 400);
   }
 
   const dataKey = `media:${id}`;
   const metaKey = `mediaMeta:${id}`;
 
-  let metaRaw;
-  let buf;
   try {
-    metaRaw = await client.get(metaKey);
-    buf = await client.get(commandOptions({ returnBuffers: true }), dataKey);
+    const metaRaw = await storageGet(metaKey);
+    const buf = await storageGetBuffer(dataKey);
+
+    if (!buf) {
+      return sendJSON(res, { error: 'Not found' }, 404);
+    }
+
+    let meta = {};
+    if (metaRaw) {
+      try {
+        meta = JSON.parse(metaRaw);
+      } catch (e) {}
+    }
+
+    const contentType = meta.contentType || 'application/octet-stream';
+    const filename = meta.filename || 'download';
+
+    res.statusCode = 200;
+    res.setHeader('Content-Type', contentType);
+    res.setHeader('Content-Disposition', `inline; filename="${filename}"`);
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    res.end(buf);
   } catch (e) {
-    res.statusCode = 500;
-    res.end('Storage error');
-    return;
+    console.error('Media Error:', e);
+    return sendJSON(res, { error: 'Internal Server Error' }, 500);
   }
-
-  if (!buf || !buf.length) {
-    res.statusCode = 404;
-    res.end('Not found');
-    return;
-  }
-
-  let contentType = 'application/octet-stream';
-  if (metaRaw) {
-    try {
-      const meta = JSON.parse(metaRaw);
-      if (meta && meta.contentType) contentType = String(meta.contentType);
-    } catch (e) {}
-  }
-
-  res.statusCode = 200;
-  res.setHeader('Content-Type', contentType);
-  res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
-  res.end(buf);
 };
-
