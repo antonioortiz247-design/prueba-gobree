@@ -146,6 +146,87 @@ from public.facturas f
 join public.clientes c on c.id = f.cliente_id
 left join public.partidas p on p.factura_id = f.id;
 
+
+-- RPC usada por /api/facturas para que la búsqueda global y los filtros técnicos
+-- se ejecuten en PostgreSQL con paginación antes de cargar el detalle anidado.
+create or replace function public.buscar_facturas_ids(
+  p_q text default null,
+  p_cliente text default null,
+  p_rfc text default null,
+  p_folio text default null,
+  p_oc text default null,
+  p_codigo_interno text default null,
+  p_fecha_inicial date default null,
+  p_fecha_final date default null,
+  p_ancho_mm numeric default null,
+  p_longitud_mm numeric default null,
+  p_medidas_internas text default null,
+  p_tipo_banda text default null,
+  p_guia text default null,
+  p_observaciones text default null,
+  p_monto_minimo numeric default null,
+  p_monto_maximo numeric default null,
+  p_estatus text default null,
+  p_limit integer default 25,
+  p_offset integer default 0
+)
+returns table(id uuid, fecha date, total_count bigint)
+language sql
+stable
+as $$
+with query_values as (
+  select
+    nullif(trim(p_q), '') as q,
+    case when nullif(trim(p_q), '') is null then null else plainto_tsquery('spanish', nullif(trim(p_q), '')) end as tsq
+), matched as (
+  select f.id, f.fecha
+  from public.facturas f
+  join public.clientes c on c.id = f.cliente_id
+  cross join query_values qv
+  where
+    (p_folio is null or f.folio ilike '%' || p_folio || '%') and
+    (p_oc is null or f.oc ilike '%' || p_oc || '%') and
+    (p_codigo_interno is null or f.codigo_interno ilike '%' || p_codigo_interno || '%') and
+    (p_estatus is null or f.estatus ilike '%' || p_estatus || '%') and
+    (p_cliente is null or c.nombre ilike '%' || p_cliente || '%' or c.rfc ilike '%' || p_cliente || '%') and
+    (p_rfc is null or c.rfc ilike '%' || p_rfc || '%') and
+    (p_fecha_inicial is null or f.fecha >= p_fecha_inicial) and
+    (p_fecha_final is null or f.fecha <= p_fecha_final) and
+    (p_monto_minimo is null or f.total >= p_monto_minimo) and
+    (p_monto_maximo is null or f.total <= p_monto_maximo) and
+    (p_observaciones is null or f.observaciones ilike '%' || p_observaciones || '%') and
+    (
+      qv.q is null or
+      f.fts @@ qv.tsq or
+      c.nombre ilike '%' || qv.q || '%' or
+      c.rfc ilike '%' || qv.q || '%' or
+      exists (select 1 from public.partidas p where p.factura_id = f.id and p.fts @@ qv.tsq) or
+      exists (
+        select 1 from public.partidas p
+        where p.factura_id = f.id and (
+          p.descripcion ilike '%' || qv.q || '%' or
+          p.tipo_banda ilike '%' || qv.q || '%' or
+          p.medidas_internas ilike '%' || qv.q || '%' or
+          p.guia ilike '%' || qv.q || '%'
+        )
+      )
+    ) and
+    (p_ancho_mm is null or exists (select 1 from public.partidas p where p.factura_id = f.id and p.ancho_mm = p_ancho_mm)) and
+    (p_longitud_mm is null or exists (select 1 from public.partidas p where p.factura_id = f.id and p.longitud_mm = p_longitud_mm)) and
+    (p_medidas_internas is null or exists (select 1 from public.partidas p where p.factura_id = f.id and p.medidas_internas ilike '%' || p_medidas_internas || '%')) and
+    (p_tipo_banda is null or exists (select 1 from public.partidas p where p.factura_id = f.id and p.tipo_banda ilike '%' || p_tipo_banda || '%')) and
+    (p_guia is null or exists (select 1 from public.partidas p where p.factura_id = f.id and p.guia ilike '%' || p_guia || '%'))
+), counted as (
+  select count(*) as total_count from matched
+)
+select m.id, m.fecha, c.total_count
+from matched m
+cross join counted c
+order by m.fecha desc, m.id desc
+limit greatest(1, least(coalesce(p_limit, 25), 100))
+offset greatest(0, coalesce(p_offset, 0));
+$$;
+
 create or replace view public.v_facturacion_dashboard as
 select
   (select count(*) from public.facturas) as facturas_registradas,

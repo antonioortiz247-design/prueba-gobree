@@ -33,23 +33,86 @@ function cleanPartida(input) {
   };
 }
 
-function buildListPath(q) {
-  const page = Math.max(1, Number(q.page || 1));
-  const pageSize = Math.min(100, Math.max(10, Number(q.pageSize || 25)));
-  const offset = (page - 1) * pageSize;
-  const params = [];
-  const exact = ['folio', 'oc', 'codigo_interno', 'estatus'];
-  exact.forEach((field) => { if (cleanString(q[field], 160)) params.push(`${field}=ilike.${encodeURIComponent(`*${cleanString(q[field], 160)}*`)}`); });
+function appendCommonFilters(params, q) {
+  const textFilters = [
+    ['folio', q.folio],
+    ['oc', q.oc],
+    ['codigo_interno', q.codigo_interno],
+    ['estatus', q.estatus]
+  ];
+  textFilters.forEach(([field, value]) => {
+    const clean = cleanString(value, 160).replace(/[%*]/g, '');
+    if (clean) params.push(`${field}=ilike.${encodeURIComponent(`*${clean}*`)}`);
+  });
   if (cleanString(q.cliente_id, 80)) params.push(`cliente_id=eq.${encodeURIComponent(cleanString(q.cliente_id, 80))}`);
   if (toDate(q.fecha_inicial)) params.push(`fecha=gte.${toDate(q.fecha_inicial)}`);
   if (toDate(q.fecha_final)) params.push(`fecha=lte.${toDate(q.fecha_final)}`);
   if (toNumber(q.monto_minimo) !== null) params.push(`total=gte.${toNumber(q.monto_minimo)}`);
   if (toNumber(q.monto_maximo) !== null) params.push(`total=lte.${toNumber(q.monto_maximo)}`);
-  const search = cleanString(q.q, 180).replace(/[%*]/g, '');
+}
+
+function hasJoinedFilters(q) {
+  return ['q', 'cliente', 'rfc', 'ancho_mm', 'longitud_mm', 'medidas_internas', 'tipo_banda', 'guia', 'observaciones']
+    .some((field) => cleanString(q[field], 180));
+}
+
+function buildBaseListPath(q, page, pageSize) {
+  const offset = (page - 1) * pageSize;
+  const params = [];
+  appendCommonFilters(params, q);
   let path = `/rest/v1/facturas?select=*,clientes(id,nombre,rfc),partidas(id,descripcion,tipo_banda,ancho_mm,longitud_mm,medidas_internas,guia,tipo_union,cantidad,precio_unitario,importe)&order=fecha.desc&limit=${pageSize}&offset=${offset}`;
   if (params.length) path += `&${params.join('&')}`;
-  if (search) path += `&fts=plfts.${encodeURIComponent(search)}`;
-  return { path, page, pageSize };
+  return path;
+}
+
+function rpcSearchPayload(q, page, pageSize) {
+  return {
+    p_q: cleanString(q.q, 180) || null,
+    p_cliente: cleanString(q.cliente, 180) || null,
+    p_rfc: cleanString(q.rfc, 40) || null,
+    p_folio: cleanString(q.folio, 80) || null,
+    p_oc: cleanString(q.oc, 120) || null,
+    p_codigo_interno: cleanString(q.codigo_interno, 120) || null,
+    p_fecha_inicial: toDate(q.fecha_inicial),
+    p_fecha_final: toDate(q.fecha_final),
+    p_ancho_mm: toNumber(q.ancho_mm),
+    p_longitud_mm: toNumber(q.longitud_mm),
+    p_medidas_internas: cleanString(q.medidas_internas, 180) || null,
+    p_tipo_banda: cleanString(q.tipo_banda, 180) || null,
+    p_guia: cleanString(q.guia, 180) || null,
+    p_observaciones: cleanString(q.observaciones, 240) || null,
+    p_monto_minimo: toNumber(q.monto_minimo),
+    p_monto_maximo: toNumber(q.monto_maximo),
+    p_estatus: cleanString(q.estatus, 20) || null,
+    p_limit: pageSize,
+    p_offset: (page - 1) * pageSize
+  };
+}
+
+async function listFacturas(q) {
+  const page = Math.max(1, Number(q.page || 1));
+  const pageSize = Math.min(100, Math.max(10, Number(q.pageSize || 25)));
+  const offset = (page - 1) * pageSize;
+
+  if (!hasJoinedFilters(q)) {
+    const path = buildBaseListPath(q, page, pageSize);
+    const { data, headers } = await supabaseFetch(path, { headers: { Prefer: 'count=exact' } });
+    return { facturas: data || [], page, pageSize, contentRange: headers.get('content-range') };
+  }
+
+  const matches = await supabaseFetch('/rest/v1/rpc/buscar_facturas_ids', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(rpcSearchPayload(q, page, pageSize))
+  });
+  const rows = matches.data || [];
+  const ids = rows.map((row) => row.id).filter(Boolean);
+  const total = rows.length ? Number(rows[0].total_count || rows.length) : 0;
+  if (!ids.length) return { facturas: [], page, pageSize, contentRange: `0-0/${total}` };
+  const encodedIds = ids.map(encodeURIComponent).join(',');
+  const path = `/rest/v1/facturas?select=*,clientes(id,nombre,rfc),partidas(id,descripcion,tipo_banda,ancho_mm,longitud_mm,medidas_internas,guia,tipo_union,cantidad,precio_unitario,importe)&id=in.(${encodedIds})&order=fecha.desc`;
+  const { data } = await supabaseFetch(path);
+  return { facturas: data || [], page, pageSize, contentRange: `${offset + 1}-${offset + (data || []).length}/${total}` };
 }
 
 module.exports = async (req, res) => {
@@ -63,9 +126,8 @@ module.exports = async (req, res) => {
         const { data } = await supabaseFetch(`/rest/v1/facturas?select=*,clientes(*),partidas(*),documentos_factura(*)&id=eq.${encodeURIComponent(id)}&limit=1`);
         return json(res, 200, { ok: true, factura: data && data[0] });
       }
-      const { path, page, pageSize } = buildListPath(req.query || {});
-      const { data, headers } = await supabaseFetch(path, { headers: { Prefer: 'count=exact' } });
-      return json(res, 200, { ok: true, facturas: data || [], page, pageSize, contentRange: headers.get('content-range') });
+      const result = await listFacturas(req.query || {});
+      return json(res, 200, { ok: true, facturas: result.facturas, page: result.page, pageSize: result.pageSize, contentRange: result.contentRange });
     }
 
     const body = await readJson(req);

@@ -65,7 +65,7 @@ Devuelve métricas: facturas/clientes registrados, ventas y facturas del año/me
 - `DELETE` elimina cliente.
 
 ### `/api/facturas`
-- `GET` lista paginada con `page`, `pageSize`, `q`, `folio`, `oc`, `codigo_interno`, `fecha_inicial`, `fecha_final`, `monto_minimo`, `monto_maximo`, `estatus`.
+- `GET` lista paginada con `page`, `pageSize`, `q`, `cliente`, `rfc`, `folio`, `oc`, `codigo_interno`, `fecha_inicial`, `fecha_final`, `ancho_mm`, `longitud_mm`, `medidas_internas`, `tipo_banda`, `guia`, `observaciones`, `monto_minimo`, `monto_maximo`, `estatus`.
 - `GET ?id=` detalle completo con cliente, partidas y documentos.
 - `POST` crea factura y partidas.
 - `PATCH` actualiza factura y reemplaza partidas si se envían.
@@ -98,6 +98,10 @@ Lista los últimos 100 registros de auditoría. Requiere rol administrador.
 3. Iniciar sesión en `/admin`.
 4. Entrar a `/admin/facturas`.
 5. Validar creación de cliente, factura, carga PDF/XML y búsqueda.
+
+### Nota sobre el log de Vercel
+
+Si el despliegue muestra `Build Completed` y después `Deploying outputs...`, eso indica que la compilación ya terminó correctamente y Vercel está publicando los artefactos. No es un error de código. Un fallo real aparecería con estado `Error`, `Command failed` o una traza después de `vercel build`.
 
 ## Manual básico de uso
 

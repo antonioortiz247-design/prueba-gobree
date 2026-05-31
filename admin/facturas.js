@@ -48,7 +48,26 @@ async function loadClientes(q = '') {
   $('clientRows').innerHTML = state.clientes.map((c) => `<tr><td>${esc(c.nombre)}</td><td>${esc(c.rfc)}</td><td>${esc(c.contacto_principal)}</td><td>${esc(c.telefono)}</td><td>${esc(c.email)}</td><td class="actions"><button class="btn small btn-secondary" onclick="showClient('${c.id}')">Detalle</button>${can('edit') ? `<button class="btn small" onclick="editClient('${c.id}')">Editar</button>` : ''}</td></tr>`).join('');
 }
 async function loadFacturas() {
-  const params = new URLSearchParams({ page: state.page, pageSize: state.pageSize, q: $('globalSearch').value, folio: $('fFolio').value, oc: $('fOc').value, codigo_interno: $('fCodigo').value, fecha_inicial: $('fFechaIni').value, fecha_final: $('fFechaFin').value, monto_minimo: $('fMin').value, monto_maximo: $('fMax').value, estatus: $('fEstatus').value });
+  const params = new URLSearchParams({
+    page: state.page,
+    pageSize: state.pageSize,
+    q: $('globalSearch').value,
+    cliente: $('fCliente').value,
+    folio: $('fFolio').value,
+    oc: $('fOc').value,
+    codigo_interno: $('fCodigo').value,
+    fecha_inicial: $('fFechaIni').value,
+    fecha_final: $('fFechaFin').value,
+    ancho_mm: $('fAncho').value,
+    longitud_mm: $('fLongitud').value,
+    medidas_internas: $('fMedidas').value,
+    tipo_banda: $('fBanda').value,
+    guia: $('fGuia').value,
+    observaciones: $('fObs').value,
+    monto_minimo: $('fMin').value,
+    monto_maximo: $('fMax').value,
+    estatus: $('fEstatus').value
+  });
   const data = await api(`/api/facturas?${params}`);
   state.facturas = data.facturas || [];
   $('resultCount').textContent = data.contentRange || `${state.facturas.length} resultados`;
