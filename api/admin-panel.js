@@ -30,10 +30,9 @@ module.exports = async (req, res) => {
       const sig = signTs(ts, adminSecret);
       const token = `${ts}.${sig}`;
       
-      // Cookie: Path=/ para que sea accesible en todo el dominio
-      // Usamos SameSite=Lax y Secure para máxima compatibilidad en Vercel (HTTPS)
-      // Extendemos a 30 días para evitar cierres de sesión frecuentes
-      res.setHeader('Set-Cookie', [`gobree_admin=${token}; Path=/; Max-Age=2592000; HttpOnly; Secure; SameSite=Lax`]);
+      // Cookie simplificada para máxima compatibilidad
+      // Quitamos Secure temporalmente por si hay problemas con el SSL del dominio
+      res.setHeader('Set-Cookie', [`gobree_admin=${token}; Path=/; Max-Age=2592000; HttpOnly; SameSite=Lax`]);
       return sendJSON(res, { ok: true });
     } catch (e) {
       return sendJSON(res, { ok: false, error: e.message }, 400);
@@ -49,9 +48,11 @@ module.exports = async (req, res) => {
   // --- CHECK ---
   if (type === 'check') {
     const ok = isAdmin(req);
+    const cookieHeader = req.headers.cookie || '';
     return sendJSON(res, { 
       ok, 
-      has_cookie: !!(req.headers.cookie && req.headers.cookie.includes('gobree_admin'))
+      has_cookie: cookieHeader.includes('gobree_admin'),
+      cookie_preview: cookieHeader ? (cookieHeader.substring(0, 15) + '...') : 'none'
     }, ok ? 200 : 401);
   }
 

@@ -37,7 +37,7 @@ async function getRedisClient() {
       const host = process.env.REDIS_HOST;
       const port = Number(process.env.REDIS_PORT || 6379);
       const username = process.env.REDIS_USERNAME || process.env.REDIS_USER;
-      const password = process.env.REDIS_PASSWORD || process.env.REDIS_PASS;
+      const password = process.env.REDIS_PASSWORD || process.env.REDIS_PASSWORD || process.env.REDIS_PASS;
 
       if (!redisUrl && !host) return null;
 
@@ -189,7 +189,8 @@ async function getBody(req) {
 // --- AUTH ---
 function parseCookies(header) {
   const out = {};
-  (header || '').split(';').forEach(p => {
+  if (!header) return out;
+  header.split(';').forEach(p => {
     const parts = p.split('=');
     if (parts.length >= 2) {
       const k = parts[0].trim();
@@ -209,7 +210,7 @@ function base64url(buf) {
 }
 
 function signTs(ts, secret) {
-  return base64url(crypto.createHmac('sha256', secret).update(ts).digest());
+  return base64url(crypto.createHmac('sha256', String(secret)).update(String(ts)).digest());
 }
 
 function isAdmin(req) {
