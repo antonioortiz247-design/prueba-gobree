@@ -1,36 +1,49 @@
-const { storageKeys, isAdmin } = require('./_db');
+const { storageKeys, isAdmin, storageGet } = require('./_db');
+
+const KEYS = {
+  HERO: 'hero_images_v2',
+  PRODUCTS: 'products_v1',
+  PROJECTS: 'projects_v2',
+  MEDIA: 'media_v1'
+};
 
 module.exports = async (req, res) => {
-  // Intentar isAdmin pero permitir acceso si hay un query param secreto para debug
   const isAuthorized = isAdmin(req) || req.query.secret === 'gobree_debug_2026';
   
   if (!isAuthorized) {
     res.statusCode = 401;
     res.setHeader('Content-Type', 'application/json');
-    return res.end(JSON.stringify({ 
-      error: 'unauthorized', 
-      message: 'Debes iniciar sesión en /admin o usar el secreto de debug' 
-    }));
+    return res.end(JSON.stringify({ error: 'unauthorized' }));
   }
 
   try {
-    const keys = await storageKeys('*');
-    const envs = {
-      has_redis_url: !!process.env.REDIS_URL,
-      has_redis_host: !!process.env.REDIS_HOST,
-      has_kv_url: !!process.env.KV_REST_API_URL,
-      has_supabase: !!process.env.SUPABASE_URL,
-      node_env: process.env.NODE_ENV,
-      vercel_env: process.env.VERCEL_ENV
-    };
+    const allKeys = await storageKeys('*');
+    
+    // Obtener valores de las llaves principales para ver qué tienen
+    const values = {};
+    for (const [name, key] of Object.entries(KEYS)) {
+      const val = await storageGet(key);
+      values[name] = {
+        key: key,
+        exists: val !== null,
+        length: val ? val.length : 0,
+        preview: val ? (val.substring(0, 100) + '...') : null
+      };
+    }
+
+    // Buscar llaves similares por si acaso cambiaron de nombre
+    const suggestions = allKeys.filter(k => 
+      k.includes('hero') || k.includes('product') || k.includes('project') || k.includes('media')
+    );
 
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
     res.end(JSON.stringify({
       ok: true,
-      envs,
-      keys_found: keys.length,
-      keys: keys.sort()
+      total_keys: allKeys.length,
+      main_keys_status: values,
+      suggested_keys: suggestions,
+      all_keys: allKeys.sort()
     }, null, 2));
   } catch (e) {
     res.statusCode = 500;
