@@ -13,6 +13,56 @@ module.exports = async (req, res) => {
   const { type } = req.query;
 
   try {
+    // --- DEBUG ---
+    if (type === 'debug_facturas') {
+      const { count: totalFacturas, error: countError } = await supabase
+        .from('facturas')
+        .select('*', { count: 'exact', head: true });
+      if (countError) throw countError;
+
+      const { data: latestFacturas, error: latestError } = await supabase
+        .from('facturas')
+        .select('id, folio, fecha, cliente_id, total, estatus, created_at')
+        .order('created_at', { ascending: false })
+        .limit(10);
+      if (latestError) throw latestError;
+
+      let rpcSample = null;
+      try {
+        const { data: rpcData, error: rpcError } = await supabase.rpc('buscar_facturas_ids', {
+          p_q: null,
+          p_cliente: null,
+          p_rfc: null,
+          p_folio: null,
+          p_oc: null,
+          p_codigo_interno: null,
+          p_fecha_inicial: null,
+          p_fecha_final: null,
+          p_ancho_mm: null,
+          p_longitud_mm: null,
+          p_medidas_internas: null,
+          p_tipo_banda: null,
+          p_guia: null,
+          p_observaciones: null,
+          p_monto_minimo: null,
+          p_monto_maximo: null,
+          p_estatus: null,
+          p_limit: 10,
+          p_offset: 0
+        });
+        rpcSample = rpcError ? { ok: false, error: rpcError.message } : { ok: true, rows: rpcData };
+      } catch (e) {
+        rpcSample = { ok: false, error: e.message };
+      }
+
+      return sendJSON(res, {
+        ok: true,
+        totalFacturas: totalFacturas || 0,
+        latestFacturas: latestFacturas || [],
+        rpcSample
+      });
+    }
+
     // --- DASHBOARD ---
     if (type === 'dashboard') {
       const now = new Date();
@@ -26,7 +76,7 @@ module.exports = async (req, res) => {
         supabase.from('facturas').select('*', { count: 'exact', head: true }),
         supabase.from('clientes').select('*', { count: 'exact', head: true }),
         supabase.from('facturas').select('total').gte('fecha', startOfMonth),
-        supabase.from('facturas').select('*', { count: 'exact', head: true }).eq('estatus', 'pendiente')
+        supabase.from('facturas').select('*', { count: 'exact', head: true }).ilike('estatus', 'pendiente')
       ]);
       const sumVentasMes = (ventasMes || []).reduce((acc, f) => acc + (f.total || 0), 0);
       
@@ -93,37 +143,62 @@ module.exports = async (req, res) => {
         const from = (page - 1) * limit;
         
         // Usamos el RPC para una búsqueda mucho más potente y sensible (Full Text Search + ILIKE)
-        const { data: searchResults, error: rpcError } = await supabase.rpc('buscar_facturas_ids', {
-          p_q: search || null,
-          p_cliente: cliente || null,
-          p_folio: folio || null,
-          p_oc: oc || null,
-          p_codigo_interno: codigo_interno || null,
-          p_fecha_inicial: fecha_inicial || null,
-          p_fecha_final: fecha_final || null,
-          p_ancho_mm: ancho ? parseFloat(ancho) : null,
-          p_longitud_mm: longitud ? parseFloat(longitud) : null,
-          p_medidas_internas: medidas || null,
-          p_tipo_banda: banda || null,
-          p_guia: guia || null,
-          p_observaciones: obs || null,
-          p_monto_minimo: min ? parseFloat(min) : null,
-          p_monto_maximo: max ? parseFloat(max) : null,
-          p_estatus: estatus || null,
-          p_limit: parseInt(limit),
-          p_offset: from
-        });
+        let searchResults = null;
+        let rpcError = null;
+        try {
+          const rpc = await supabase.rpc('buscar_facturas_ids', {
+            p_q: search || null,
+            p_cliente: cliente || null,
+            p_folio: folio || null,
+            p_oc: oc || null,
+            p_codigo_interno: codigo_interno || null,
+            p_fecha_inicial: fecha_inicial || null,
+            p_fecha_final: fecha_final || null,
+            p_ancho_mm: ancho ? parseFloat(ancho) : null,
+            p_longitud_mm: longitud ? parseFloat(longitud) : null,
+            p_medidas_internas: medidas || null,
+            p_tipo_banda: banda || null,
+            p_guia: guia || null,
+            p_observaciones: obs || null,
+            p_monto_minimo: min ? parseFloat(min) : null,
+            p_monto_maximo: max ? parseFloat(max) : null,
+            p_estatus: estatus || null,
+            p_limit: parseInt(limit),
+            p_offset: from
+          });
+          searchResults = rpc.data;
+          rpcError = rpc.error;
+        } catch (e) {
+          rpcError = e;
+        }
 
-        if (rpcError) throw rpcError;
+        const hasNoFilters =
+          !search && !cliente && !folio && !oc && !codigo_interno &&
+          !fecha_inicial && !fecha_final && !estatus &&
+          !ancho && !longitud && !medidas && !banda && !guia && !obs && !min && !max;
+
+        // Fallback: si el RPC falla o devuelve vacío pero hay facturas, listamos sin RPC
+        if (rpcError) {
+          if (!hasNoFilters) throw rpcError;
+        }
 
         if (!searchResults || searchResults.length === 0) {
+          if (hasNoFilters) {
+            const to = from + Number(limit) - 1;
+            const { data, count, error } = await supabase
+              .from('facturas')
+              .select('*, clientes(nombre, rfc), partidas(*)', { count: 'exact' })
+              .order('fecha', { ascending: false })
+              .range(from, to);
+            if (error) throw error;
+            return sendJSON(res, { ok: true, data: data || [], count: count || 0 });
+          }
           return sendJSON(res, { ok: true, data: [], count: 0 });
         }
 
         const ids = searchResults.map(r => r.id);
         const totalCount = searchResults[0].total_count;
 
-        // Ahora obtenemos el detalle completo de esas facturas
         const { data: fullData, error: fetchError } = await supabase
           .from('facturas')
           .select('*, clientes(nombre, rfc), partidas(*)')
@@ -132,7 +207,7 @@ module.exports = async (req, res) => {
 
         if (fetchError) throw fetchError;
 
-        return sendJSON(res, { ok: true, data: fullData, count: totalCount });
+        return sendJSON(res, { ok: true, data: fullData || [], count: totalCount || 0 });
       }
       if (req.method === 'POST') {
         const body = await getBody(req);

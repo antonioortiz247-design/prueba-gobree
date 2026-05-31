@@ -165,6 +165,7 @@ async function loadFacturas() {
     const params = new URLSearchParams({
       type: 'facturas',
       page: state.page,
+      limit: String(state.pageSize),
       search: $('globalSearch').value,
       cliente: $('fCliente').value,
       folio: $('fFolio').value,
