@@ -316,4 +316,70 @@ document.querySelectorAll('[data-export]').forEach((b) => b.onclick = () => {
   location.href = `/api/reportes-facturacion?tipo=${$('reportType').value}&format=${b.dataset.export}`; 
 });
 
+// --- XML IMPORT ---
+$('importXmlBtn').onclick = () => $('xmlImportFile').click();
+
+$('xmlImportFile').onchange = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = async (event) => {
+    try {
+      const xmlContent = event.target.result;
+      const res = await fetch('/api/parse-xml', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ xml: xmlContent }),
+        credentials: 'include'
+      });
+      
+      const result = await res.json();
+      if (!result.ok) throw new Error(result.error);
+
+      const data = result.data;
+      
+      // 1. Abrir formulario de nueva factura
+      $('newInvoiceBtn').click();
+      
+      // 2. Llenar datos generales
+      $('folio').value = data.folio || '';
+      $('fecha').value = data.fecha || '';
+      $('subtotal').value = data.subtotal || '';
+      $('iva').value = data.iva || '';
+      $('total').value = data.total || '';
+      
+      // 3. Intentar seleccionar el cliente por RFC
+      if (data.cliente && data.cliente.rfc) {
+        const cliente = state.clientes.find(c => c.rfc === data.cliente.rfc);
+        if (cliente) {
+          $('clienteSelect').value = cliente.id;
+        } else {
+          alert(`Cliente no encontrado: ${data.cliente.nombre} (${data.cliente.rfc}). Por favor regístralo primero o selecciónalo manualmente.`);
+        }
+      }
+
+      // 4. Llenar primera partida si existe
+      if (data.partidas && data.partidas.length > 0) {
+        const p = data.partidas[0];
+        $('descripcion').value = p.descripcion || '';
+        $('cantidad').value = p.cantidad || 1;
+        $('precio').value = p.precio_unitario || 0;
+        $('importe').value = p.importe || 0;
+        
+        // Cambiar a modo completo para ver los detalles
+        $('captureMode').value = 'completa';
+        $('captureMode').onchange();
+      }
+
+      alert('Datos del XML cargados correctamente en el formulario.');
+    } catch (err) {
+      alert('Error al leer el XML: ' + err.message);
+    } finally {
+      e.target.value = ''; // Resetear input
+    }
+  };
+  reader.readAsText(file);
+};
+
 init();
