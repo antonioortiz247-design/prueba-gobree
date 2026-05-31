@@ -1,5 +1,6 @@
 const { createClient: createSupabase } = require('@supabase/supabase-js');
 const { createClient: createRedis } = require('redis');
+const crypto = require('crypto');
 
 // --- SUPABASE ---
 const supabaseUrl = process.env.SUPABASE_URL;
@@ -95,7 +96,7 @@ function isAdmin(req) {
   if (!ts || !sig) return false;
   const age = Date.now() - Number(ts);
   if (age < 0 || age > 7 * 24 * 60 * 60 * 1000) return false;
-  const expected = require('crypto').createHmac('sha256', secret).update(ts).digest('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+  const expected = crypto.createHmac('sha256', secret).update(ts).digest('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
   return sig === expected;
 }
 

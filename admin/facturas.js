@@ -45,22 +45,30 @@ async function loadFacturas() {
   const params = new URLSearchParams({
     type: 'facturas',
     page: state.page,
-    search: $('globalSearch').value
+    search: $('globalSearch').value,
+    cliente: $('fCliente').value,
+    folio: $('fFolio').value,
+    oc: $('fOc').value,
+    codigo_interno: $('fCodigo').value,
+    fecha_inicial: $('fFechaIni').value,
+    fecha_final: $('fFechaFin').value,
+    estatus: $('fEstatus').value
   });
   const data = await api(`/api/billing?${params}`);
   state.facturas = data.data || [];
   $('resultCount').textContent = `${data.count || 0} resultados`;
   $('pageInfo').textContent = `Página ${state.page}`;
   $('invoiceRows').innerHTML = state.facturas.map((f) => { 
+    const p = (f.partidas || [])[0] || {};
     return `<tr>
       <td>${esc(f.fecha)}</td>
       <td>${esc(f.folio)}</td>
       <td>${esc(f.clientes?.nombre || '')}</td>
       <td>${esc(f.codigo_interno)}</td>
       <td>${esc(f.oc)}</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
+      <td>${esc(p.ancho_mm || '-')}</td>
+      <td>${esc(p.longitud_mm || '-')}</td>
+      <td>${esc(p.medidas_internas || '-')}</td>
       <td>${money(f.total)}</td>
       <td><span class="status ${esc(f.estatus)}">${esc(f.estatus)}</span></td>
       <td class="actions">

@@ -66,12 +66,33 @@ module.exports = async (req, res) => {
         res.setHeader('Content-Type', 'application/json');
         return res.end(JSON.stringify({ ok: true, data }));
       }
+      if (req.method === 'PATCH') {
+        const body = await getBody(req);
+        const { id, ...updateData } = body;
+        const { data, error } = await supabase.from('clientes').update(updateData).eq('id', id).select();
+        if (error) throw error;
+        res.statusCode = 200;
+        res.setHeader('Content-Type', 'application/json');
+        return res.end(JSON.stringify({ ok: true, data }));
+      }
     }
 
     // --- FACTURAS ---
     if (type === 'facturas') {
       if (req.method === 'GET') {
-        const { page = 1, limit = 20, search = '' } = req.query;
+        const { id, page = 1, limit = 20, search = '', cliente, folio, oc, codigo_interno, fecha_inicial, fecha_final, estatus } = req.query;
+        
+        if (id) {
+          const { data, error } = await supabase
+            .from('facturas')
+            .select('*, clientes(*), partidas(*)')
+            .eq('id', id);
+          if (error) throw error;
+          res.statusCode = 200;
+          res.setHeader('Content-Type', 'application/json');
+          return res.end(JSON.stringify({ ok: true, data }));
+        }
+
         const from = (page - 1) * limit;
         const to = from + limit - 1;
         let query = supabase
@@ -80,6 +101,13 @@ module.exports = async (req, res) => {
           .order('fecha', { ascending: false })
           .range(from, to);
         if (search) query = query.textSearch('fts', search, { config: 'spanish', type: 'websearch' });
+        if (cliente) query = query.eq('cliente_id', cliente);
+        if (folio) query = query.ilike('folio', `%${folio}%`);
+        if (oc) query = query.ilike('oc', `%${oc}%`);
+        if (codigo_interno) query = query.ilike('codigo_interno', `%${codigo_interno}%`);
+        if (fecha_inicial) query = query.gte('fecha', fecha_inicial);
+        if (fecha_final) query = query.lte('fecha', fecha_final);
+        if (estatus) query = query.eq('estatus', estatus);
         const { data, count, error } = await query;
         if (error) throw error;
         res.statusCode = 200;
@@ -111,6 +139,35 @@ module.exports = async (req, res) => {
         res.setHeader('Content-Type', 'application/json');
         return res.end(JSON.stringify({ ok: true, data: factura }));
       }
+      if (req.method === 'PATCH') {
+        const body = await getBody(req);
+        const { id, partidas, ...facturaData } = body;
+        const { data: factura, error: fError } = await supabase
+          .from('facturas')
+          .update(facturaData)
+          .eq('id', id)
+          .select()
+          .single();
+        if (fError) throw fError;
+        if (partidas && Array.isArray(partidas)) {
+          await supabase.from('partidas').delete().eq('factura_id', id);
+          if (partidas.length > 0) {
+            const partidasConId = partidas.map(p => ({ ...p, factura_id: id }));
+            const { error: pError } = await supabase.from('partidas').insert(partidasConId);
+            if (pError) throw pError;
+          }
+        }
+        await supabase.from('audit_logs').insert([{
+          usuario_email: 'admin',
+          accion: 'UPDATE',
+          tabla_afectada: 'facturas',
+          registro_id: id,
+          cambios_json: { factura, partidas }
+        }]);
+        res.statusCode = 200;
+        res.setHeader('Content-Type', 'application/json');
+        return res.end(JSON.stringify({ ok: true, data: factura }));
+      }
     }
 
     // --- AUDITORIA ---
@@ -135,6 +192,18 @@ module.exports = async (req, res) => {
     return res.end(JSON.stringify({ ok: false, error: e.message }));
   }
 };
+
+// Helper for res.json
+if (!module.exports.json) {
+  Object.defineProperty(Object.prototype, 'json', {
+    value: function(data) {
+      this.setHeader('Content-Type', 'application/json');
+      this.end(JSON.stringify(data));
+    },
+    configurable: true,
+    writable: true
+  });
+}
 
 async function getBody(req) {
   return new Promise((resolve, reject) => {
