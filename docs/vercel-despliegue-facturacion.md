@@ -22,6 +22,11 @@ La línea importante es `Build Completed`. Si Vercel hubiera fallado, verías un
 4. **Faltan variables de entorno.** La página carga, pero las APIs de facturación requieren Supabase y las credenciales administrativas documentadas.
 5. **Falta la migración en Supabase.** Crear, buscar o reportar facturas requiere ejecutar `migrations/20260531_facturacion.sql`.
 
+
+## Si Codex pregunta “Aplicar los cambios”
+
+Ese aviso significa que los cambios generados por Codex todavía deben aplicarse a tu rama local/PR. Vercel no despliega cambios que sólo están en una sesión de Codex; despliega commits de GitHub. Consulta `docs/codex-aplicar-cambios.md` para el checklist completo.
+
 ## Checklist mínimo después de desplegar
 
 - [ ] Abrir `/api/deployment-info` y comparar `branch`/`commit` con el commit que contiene el módulo de facturación.

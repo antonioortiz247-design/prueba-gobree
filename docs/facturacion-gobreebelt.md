@@ -121,6 +121,7 @@ Si después de ese log no ves `/admin/facturas`, revisa primero estos puntos:
 3. **Sesión:** entra primero a `/admin` e inicia sesión; el módulo reutiliza la cookie administrativa existente.
 4. **Variables:** para usar datos reales, configura `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, buckets de Storage, `ADMIN_PASSWORD` y `ADMIN_SECRET`.
 5. **Base de datos:** ejecuta `migrations/20260531_facturacion.sql` en Supabase antes de probar creación, búsquedas o reportes.
+6. **Cambios de Codex:** si Codex muestra “Aplicar los cambios y continuar de manera local”, acepta/aplica esos cambios y asegúrate de subir/fusionar el commit antes de esperar que Vercel lo despliegue.
 
 ## Manual básico de uso
 
