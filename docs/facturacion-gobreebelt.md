@@ -94,14 +94,33 @@ Lista los últimos 100 registros de auditoría. Requiere rol administrador.
 ## Despliegue en Vercel
 
 1. Configurar las variables de entorno anteriores en Project Settings → Environment Variables.
-2. Desplegar la rama actual.
-3. Iniciar sesión en `/admin`.
-4. Entrar a `/admin/facturas`.
-5. Validar creación de cliente, factura, carga PDF/XML y búsqueda.
+2. Verificar que el despliegue apunte a la rama/commit que contiene este módulo. Si el log dice `Branch: main`, Vercel está desplegando `main`; el módulo sólo aparecerá ahí después de fusionar el PR o de seleccionar esa rama como Preview Deployment.
+3. Desplegar la rama actual.
+4. Iniciar sesión en `/admin`.
+5. Entrar a `/admin/facturas`.
+6. Validar creación de cliente, factura, carga PDF/XML y búsqueda.
 
-### Nota sobre el log de Vercel
+### Cómo interpretar el log de Vercel
 
-Si el despliegue muestra `Build Completed` y después `Deploying outputs...`, eso indica que la compilación ya terminó correctamente y Vercel está publicando los artefactos. No es un error de código. Un fallo real aparecería con estado `Error`, `Command failed` o una traza después de `vercel build`.
+El log siguiente es de un despliegue exitoso hasta la fase de publicación:
+
+```text
+Running "vercel build"
+Installing dependencies...
+up to date
+Build Completed in /vercel/output
+Deploying outputs...
+```
+
+`Build Completed` significa que el código compiló correctamente. `Deploying outputs...` significa que Vercel está subiendo/publicando los archivos generados; no es un error. Un fallo real normalmente aparece como `Error`, `Command failed`, `Build failed`, una traza de JavaScript/Node, o termina con estado `Failed` en el panel de Vercel.
+
+Si después de ese log no ves `/admin/facturas`, revisa primero estos puntos:
+
+1. **Rama/commit desplegado:** el log debe mostrar el commit que contiene este módulo. Si muestra `Branch: main` y el cambio aún está en un PR, debes fusionar el PR o abrir el Preview Deployment del PR.
+2. **Ruta correcta:** con `cleanUrls` activo, usa `/admin/facturas`; si tu navegador cachea una ruta anterior, prueba `/admin/facturas.html`.
+3. **Sesión:** entra primero a `/admin` e inicia sesión; el módulo reutiliza la cookie administrativa existente.
+4. **Variables:** para usar datos reales, configura `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, buckets de Storage, `ADMIN_PASSWORD` y `ADMIN_SECRET`.
+5. **Base de datos:** ejecuta `migrations/20260531_facturacion.sql` en Supabase antes de probar creación, búsquedas o reportes.
 
 ## Manual básico de uso
 
