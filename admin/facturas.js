@@ -161,43 +161,55 @@ window.editClient = (id) => {
 
 // --- FACTURAS ---
 async function loadFacturas() {
-  const params = new URLSearchParams({
-    type: 'facturas',
-    page: state.page,
-    search: $('globalSearch').value,
-    cliente: $('fCliente').value,
-    folio: $('fFolio').value,
-    oc: $('fOc').value,
-    codigo_interno: $('fCodigo').value,
-    fecha_inicial: $('fFechaIni').value,
-    fecha_final: $('fFechaFin').value,
-    estatus: $('fEstatus').value
-  });
-  const data = await api(`/api/billing?${params}`);
-  state.facturas = data.data || [];
-  $('resultCount').textContent = `${data.count || 0} resultados`;
-  $('pageInfo').textContent = `Página ${state.page}`;
-  $('invoiceRows').innerHTML = state.facturas.map((f) => { 
-    const p = (f.partidas || [])[0] || {};
-    return `<tr>
-      <td>${esc(f.fecha)}</td>
-      <td>${esc(f.folio)}</td>
-      <td>${esc(f.clientes?.nombre || '')}</td>
-      <td>${esc(f.codigo_interno)}</td>
-      <td>${esc(f.oc)}</td>
-      <td>${esc(p.ancho_mm || '-')}</td>
-      <td>${esc(p.longitud_mm || '-')}</td>
-      <td>${esc(p.medidas_internas || '-')}</td>
-      <td>${money(f.total)}</td>
-      <td><span class="status ${esc(f.estatus)}">${esc(f.estatus)}</span></td>
-      <td class="actions">
-        <button class="btn small btn-secondary" onclick="showInvoice('${f.id}')">Detalle</button>
-        <button class="btn small" onclick="editInvoice('${f.id}')">Editar</button>
-        ${f.pdf_url ? `<a class="btn small btn-secondary" href="${esc(f.pdf_url)}" target="_blank">PDF</a>` : ''}
-        ${f.xml_url ? `<a class="btn small btn-secondary" href="${esc(f.xml_url)}" target="_blank">XML</a>` : ''}
-      </td>
-    </tr>`; 
-  }).join('') || '<tr><td colspan="11">Sin resultados.</td></tr>';
+  try {
+    const params = new URLSearchParams({
+      type: 'facturas',
+      page: state.page,
+      search: $('globalSearch').value,
+      cliente: $('fCliente').value,
+      folio: $('fFolio').value,
+      oc: $('fOc').value,
+      codigo_interno: $('fCodigo').value,
+      fecha_inicial: $('fFechaIni').value,
+      fecha_final: $('fFechaFin').value,
+      estatus: $('fEstatus').value,
+      ancho: $('fAncho').value,
+      longitud: $('fLongitud').value,
+      medidas: $('fMedidas').value,
+      banda: $('fBanda').value,
+      guia: $('fGuia').value,
+      obs: $('fObs').value,
+      min: $('fMin').value,
+      max: $('fMax').value
+    });
+    const data = await api(`/api/billing?${params}`);
+    state.facturas = data.data || [];
+    $('resultCount').textContent = `${data.count || 0} resultados`;
+    $('pageInfo').textContent = `Página ${state.page}`;
+    $('invoiceRows').innerHTML = state.facturas.map((f) => { 
+      const p = (f.partidas || [])[0] || {};
+      return `<tr>
+        <td>${esc(f.fecha)}</td>
+        <td>${esc(f.folio)}</td>
+        <td>${esc(f.clientes?.nombre || '')}</td>
+        <td>${esc(f.codigo_interno)}</td>
+        <td>${esc(f.oc)}</td>
+        <td>${esc(p.ancho_mm || '-')}</td>
+        <td>${esc(p.longitud_mm || '-')}</td>
+        <td>${esc(p.medidas_internas || '-')}</td>
+        <td>${money(f.total)}</td>
+        <td><span class="status ${esc(f.estatus)}">${esc(f.estatus)}</span></td>
+        <td class="actions">
+          <button class="btn small btn-secondary" onclick="showInvoice('${f.id}')">Detalle</button>
+          <button class="btn small" onclick="editInvoice('${f.id}')">Editar</button>
+          ${f.pdf_url ? `<a class="btn small btn-secondary" href="${esc(f.pdf_url)}" target="_blank">PDF</a>` : ''}
+          ${f.xml_url ? `<a class="btn small btn-secondary" href="${esc(f.xml_url)}" target="_blank">XML</a>` : ''}
+        </td>
+      </tr>`; 
+    }).join('') || '<tr><td colspan="11">Sin resultados.</td></tr>';
+  } catch (e) {
+    console.error('Error cargando facturas:', e);
+  }
 }
 
 $('searchBtn').onclick = () => { state.page = 1; loadFacturas().catch(alert); };

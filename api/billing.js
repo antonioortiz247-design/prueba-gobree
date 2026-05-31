@@ -46,7 +46,10 @@ module.exports = async (req, res) => {
       if (req.method === 'GET') {
         const { search = '' } = req.query;
         let query = supabase.from('clientes').select('*').order('nombre');
-        if (search) query = query.ilike('nombre', `%${search}%`);
+        if (search) {
+          // Búsqueda más sensible en nombre o RFC
+          query = query.or(`nombre.ilike.%${search}%,rfc.ilike.%${search}%`);
+        }
         const { data, error } = await query;
         if (error) throw error;
         return sendJSON(res, { ok: true, data });
@@ -71,7 +74,12 @@ module.exports = async (req, res) => {
     // --- FACTURAS ---
     if (type === 'facturas') {
       if (req.method === 'GET') {
-        const { id, page = 1, limit = 20, search = '', cliente, folio, oc, codigo_interno, fecha_inicial, fecha_final, estatus } = req.query;
+        const { 
+          id, page = 1, limit = 20, search = '', 
+          cliente, folio, oc, codigo_interno, 
+          fecha_inicial, fecha_final, estatus,
+          ancho, longitud, medidas, banda, guia, obs, min, max
+        } = req.query;
         
         if (id) {
           const { data, error } = await supabase
@@ -83,23 +91,48 @@ module.exports = async (req, res) => {
         }
 
         const from = (page - 1) * limit;
-        const to = from + limit - 1;
-        let query = supabase
+        
+        // Usamos el RPC para una búsqueda mucho más potente y sensible (Full Text Search + ILIKE)
+        const { data: searchResults, error: rpcError } = await supabase.rpc('buscar_facturas_ids', {
+          p_q: search || null,
+          p_cliente: cliente || null,
+          p_folio: folio || null,
+          p_oc: oc || null,
+          p_codigo_interno: codigo_interno || null,
+          p_fecha_inicial: fecha_inicial || null,
+          p_fecha_final: fecha_final || null,
+          p_ancho_mm: ancho ? parseFloat(ancho) : null,
+          p_longitud_mm: longitud ? parseFloat(longitud) : null,
+          p_medidas_internas: medidas || null,
+          p_tipo_banda: banda || null,
+          p_guia: guia || null,
+          p_observaciones: obs || null,
+          p_monto_minimo: min ? parseFloat(min) : null,
+          p_monto_maximo: max ? parseFloat(max) : null,
+          p_estatus: estatus || null,
+          p_limit: parseInt(limit),
+          p_offset: from
+        });
+
+        if (rpcError) throw rpcError;
+
+        if (!searchResults || searchResults.length === 0) {
+          return sendJSON(res, { ok: true, data: [], count: 0 });
+        }
+
+        const ids = searchResults.map(r => r.id);
+        const totalCount = searchResults[0].total_count;
+
+        // Ahora obtenemos el detalle completo de esas facturas
+        const { data: fullData, error: fetchError } = await supabase
           .from('facturas')
-          .select('*, clientes(nombre, rfc)', { count: 'exact' })
-          .order('fecha', { ascending: false })
-          .range(from, to);
-        if (search) query = query.textSearch('fts', search, { config: 'spanish', type: 'websearch' });
-        if (cliente) query = query.eq('cliente_id', cliente);
-        if (folio) query = query.ilike('folio', `%${folio}%`);
-        if (oc) query = query.ilike('oc', `%${oc}%`);
-        if (codigo_interno) query = query.ilike('codigo_interno', `%${codigo_interno}%`);
-        if (fecha_inicial) query = query.gte('fecha', fecha_inicial);
-        if (fecha_final) query = query.lte('fecha', fecha_final);
-        if (estatus) query = query.eq('estatus', estatus);
-        const { data, count, error } = await query;
-        if (error) throw error;
-        return sendJSON(res, { ok: true, data, count });
+          .select('*, clientes(nombre, rfc), partidas(*)')
+          .in('id', ids)
+          .order('fecha', { ascending: false });
+
+        if (fetchError) throw fetchError;
+
+        return sendJSON(res, { ok: true, data: fullData, count: totalCount });
       }
       if (req.method === 'POST') {
         const body = await getBody(req);
