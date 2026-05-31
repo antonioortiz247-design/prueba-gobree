@@ -24,6 +24,7 @@ La línea importante es `Build Completed`. Si Vercel hubiera fallado, verías un
 
 ## Checklist mínimo después de desplegar
 
+- [ ] Abrir `/api/deployment-info` y comparar `branch`/`commit` con el commit que contiene el módulo de facturación.
 - [ ] Confirmar en el log de Vercel que el commit desplegado contiene el módulo de facturación.
 - [ ] Abrir `/admin` e iniciar sesión.
 - [ ] Abrir `/admin/facturas`.

@@ -116,7 +116,7 @@ Deploying outputs...
 
 Si después de ese log no ves `/admin/facturas`, revisa primero estos puntos:
 
-1. **Rama/commit desplegado:** el log debe mostrar el commit que contiene este módulo. Si muestra `Branch: main` y el cambio aún está en un PR, debes fusionar el PR o abrir el Preview Deployment del PR.
+1. **Rama/commit desplegado:** el log debe mostrar el commit que contiene este módulo. Si muestra `Branch: main` y el cambio aún está en un PR, debes fusionar el PR o abrir el Preview Deployment del PR. También puedes abrir `/api/deployment-info` para ver el branch y commit realmente publicados.
 2. **Ruta correcta:** con `cleanUrls` activo, usa `/admin/facturas`; si tu navegador cachea una ruta anterior, prueba `/admin/facturas.html`.
 3. **Sesión:** entra primero a `/admin` e inicia sesión; el módulo reutiliza la cookie administrativa existente.
 4. **Variables:** para usar datos reales, configura `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, buckets de Storage, `ADMIN_PASSWORD` y `ADMIN_SECRET`.
