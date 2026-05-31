@@ -3,7 +3,10 @@ const money = (n) => Number(n || 0).toLocaleString('es-MX', { style: 'currency',
 const esc = (v) => String(v ?? '').replace(/[&<>"]/g, (c) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]));
 let state = { page: 1, pageSize: 25, clientes: [], facturas: [], session: null };
 async function api(url, options = {}) {
-  const res = await fetch(url, Object.assign({ headers: { 'Content-Type': 'application/json' } }, options));
+  const res = await fetch(url, Object.assign({ 
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'same-origin'
+  }, options));
   const data = await res.json().catch(() => ({}));
   if (!res.ok || data.ok === false) throw new Error(data.error || 'request_failed');
   return data;
@@ -106,7 +109,11 @@ $('invoiceForm').onsubmit = async (e) => {
       fd.append('file', input.files[0]);
       fd.append('bucket', bucket);
       fd.append('folder', new Date().getFullYear().toString());
-      await fetch(`/api/uploads?type=factura`, { method: 'POST', body: fd });
+      await fetch(`/api/uploads?type=factura`, { 
+        method: 'POST', 
+        body: fd,
+        credentials: 'same-origin'
+      });
     }
   }
   
