@@ -86,6 +86,14 @@ function parseCookies(header) {
   return out;
 }
 
+function base64url(buf) {
+  return Buffer.from(buf).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+}
+
+function signTs(ts, secret) {
+  return base64url(crypto.createHmac('sha256', secret).update(ts).digest());
+}
+
 function isAdmin(req) {
   const pass = process.env.ADMIN_PASSWORD;
   const secret = process.env.ADMIN_SECRET || pass;
@@ -96,7 +104,7 @@ function isAdmin(req) {
   if (!ts || !sig) return false;
   const age = Date.now() - Number(ts);
   if (age < 0 || age > 7 * 24 * 60 * 60 * 1000) return false;
-  const expected = crypto.createHmac('sha256', secret).update(ts).digest('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+  const expected = signTs(ts, secret);
   return sig === expected;
 }
 
@@ -108,4 +116,4 @@ async function getBody(req) {
   });
 }
 
-module.exports = { supabase, isAdmin, storageGet, storageSet, storageKeys, storageDel, getBody };
+module.exports = { supabase, isAdmin, signTs, storageGet, storageSet, storageKeys, storageDel, getBody };

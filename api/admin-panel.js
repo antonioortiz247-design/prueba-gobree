@@ -1,19 +1,11 @@
-const { isAdmin } = require('./_db');
+const { isAdmin, signTs } = require('./_db');
 const crypto = require('crypto');
-
-function base64url(buf) {
-  return Buffer.from(buf).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
-}
 
 function safeEqual(a, b) {
   const aBuf = Buffer.from(a);
   const bBuf = Buffer.from(b);
   if (aBuf.length !== bBuf.length) return false;
   return crypto.timingSafeEqual(aBuf, bBuf);
-}
-
-function signTs(ts, secret) {
-  return base64url(crypto.createHmac('sha256', secret).update(ts).digest());
 }
 
 module.exports = async (req, res) => {
@@ -41,7 +33,9 @@ module.exports = async (req, res) => {
         const ts = String(Date.now());
         const sig = signTs(ts, adminSecret);
         const token = `${ts}.${sig}`;
-        res.setHeader('Set-Cookie', [`gobree_admin=${token}; Path=/; Max-Age=604800; HttpOnly; Secure; SameSite=Lax`]);
+        // Cookie: Path=/ para que sea accesible en /admin y /admin/facturas
+        // Quitamos Secure temporalmente por si el usuario prueba en HTTP local
+        res.setHeader('Set-Cookie', [`gobree_admin=${token}; Path=/; Max-Age=604800; HttpOnly; SameSite=Lax`]);
         res.statusCode = 200;
         return res.end(JSON.stringify({ ok: true }));
       } catch (e) {
@@ -54,7 +48,7 @@ module.exports = async (req, res) => {
 
   // --- LOGOUT ---
   if (type === 'logout') {
-    res.setHeader('Set-Cookie', ['gobree_admin=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Lax']);
+    res.setHeader('Set-Cookie', ['gobree_admin=; Path=/; Max-Age=0; HttpOnly; SameSite=Lax']);
     res.statusCode = 200;
     return res.end(JSON.stringify({ ok: true }));
   }
