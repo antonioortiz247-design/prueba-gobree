@@ -15,9 +15,13 @@ function can(permission) { return state.session?.role === 'administrador' || sta
 function setMessage(el, text) { el.innerHTML = `<p class="muted">${esc(text)}</p>`; }
 async function init() {
   try {
-    const { ok } = await api('/api/admin-panel?type=check');
-    if (!ok) throw new Error('unauthorized');
-    state.session = { role: 'administrador' }; // Simplificado para el panel actual
+    // Primero verificamos con admin-panel que es el endpoint consolidado
+    const r = await fetch('/api/admin-panel?type=check', { cache: 'no-store', credentials: 'same-origin' });
+    if (!r.ok) throw new Error('unauthorized');
+    const data = await r.json();
+    if (!data.ok) throw new Error('unauthorized');
+
+    state.session = { role: 'administrador' };
     $('rolePill').textContent = 'Admin';
     await Promise.all([loadDashboard(), loadClientes(), loadFacturas()]);
   } catch (e) {

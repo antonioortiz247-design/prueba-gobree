@@ -34,8 +34,8 @@ module.exports = async (req, res) => {
         const sig = signTs(ts, adminSecret);
         const token = `${ts}.${sig}`;
         // Cookie: Path=/ para que sea accesible en /admin y /admin/facturas
-        // Quitamos Secure temporalmente por si el usuario prueba en HTTP local
-        res.setHeader('Set-Cookie', [`gobree_admin=${token}; Path=/; Max-Age=604800; HttpOnly; SameSite=Lax`]);
+        // Forzamos Secure y SameSite=None para Vercel (HTTPS obligatorio)
+        res.setHeader('Set-Cookie', [`gobree_admin=${token}; Path=/; Max-Age=604800; HttpOnly; Secure; SameSite=None`]);
         res.statusCode = 200;
         return res.end(JSON.stringify({ ok: true }));
       } catch (e) {
