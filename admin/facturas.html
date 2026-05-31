@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Facturación | GobreeBelt</title>
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    body { background: linear-gradient(180deg, #f8fafc 0%, #eef6ff 52%, #f8fafc 100%); color: var(--text); }
+    .billing-shell { max-width: 1280px; margin: 2rem auto; padding: 0 1rem 3rem; }
+    .billing-hero { display: grid; grid-template-columns: 1fr auto; gap: 1rem; align-items: center; padding: 1.5rem; border: 1px solid rgba(148,163,184,.28); border-radius: 1.25rem; background: rgba(255,255,255,.92); box-shadow: var(--shadow-md); }
+    .billing-hero h1 { margin: 0; font-size: clamp(1.8rem, 4vw, 2.8rem); letter-spacing: -.04em; }
+    .billing-hero p { margin: .35rem 0 0; color: var(--muted); }
+    .role-pill { display: inline-flex; padding: .55rem .8rem; border-radius: 999px; background: #082f49; color: #fff; font-weight: 800; text-transform: capitalize; }
+    .tabs { display: flex; gap: .5rem; flex-wrap: wrap; margin: 1rem 0; }
+    .tab { border: 1px solid rgba(37,99,235,.25); background: #fff; color: #1e3a8a; border-radius: 999px; padding: .7rem 1rem; font-weight: 800; cursor: pointer; }
+    .tab.active { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: #fff; }
+    .panel { display: none; } .panel.active { display: block; }
+    .card { background: rgba(255,255,255,.95); border: 1px solid rgba(148,163,184,.28); border-radius: 1.1rem; padding: 1rem; box-shadow: var(--shadow-sm); margin-bottom: 1rem; }
+    .grid { display: grid; gap: 1rem; } .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); } .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); } .grid.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .metric { padding: 1rem; border-radius: 1rem; background: linear-gradient(180deg, #fff, #f8fafc); border: 1px solid rgba(148,163,184,.28); }
+    .metric span { color: var(--muted); font-weight: 700; font-size: .9rem; } .metric strong { display: block; font-size: 1.55rem; margin-top: .35rem; }
+    label { display: grid; gap: .35rem; color: #334155; font-weight: 700; }
+    input, select, textarea { width: 100%; padding: .75rem .85rem; border-radius: .75rem; border: 1px solid rgba(148,163,184,.48); font: inherit; background: #fff; }
+    textarea { min-height: 94px; resize: vertical; }
+    .actions { display: flex; gap: .65rem; align-items: center; flex-wrap: wrap; }
+    .btn.small { padding: .45rem .65rem; font-size: .86rem; }
+    .btn.danger { background: #dc2626; }
+    .table-wrap { overflow: auto; border: 1px solid rgba(148,163,184,.28); border-radius: 1rem; background: #fff; }
+    table { width: 100%; border-collapse: collapse; min-width: 960px; } th, td { padding: .75rem; border-bottom: 1px solid rgba(148,163,184,.22); text-align: left; vertical-align: top; } th { background: #f1f5f9; color: #334155; font-size: .88rem; }
+    .status { display: inline-flex; border-radius: 999px; padding: .25rem .55rem; font-weight: 800; font-size: .8rem; background: #fef3c7; color: #92400e; } .status.Validada { background: #dcfce7; color: #166534; } .status.Archivada { background: #e2e8f0; color: #334155; }
+    .hidden { display: none !important; } .muted { color: var(--muted); } .section-title { display:flex; justify-content:space-between; gap:1rem; align-items:center; margin-bottom:.8rem; }
+    .detail { white-space: pre-wrap; background: #f8fafc; border-radius: .8rem; padding: .8rem; border: 1px solid rgba(148,163,184,.25); }
+    @media (max-width: 850px) { .billing-hero, .grid.two, .grid.three, .grid.four { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <main class="billing-shell">
+    <header class="billing-hero">
+      <div>
+        <h1>Sistema de Consulta Histórica y Gestión de Facturación</h1>
+        <p>GobreeBelt Conveyor Belts Solutions · Consulta documental, técnica y comercial.</p>
+      </div>
+      <div class="actions"><span id="rolePill" class="role-pill">Validando...</span><a class="btn btn-secondary" href="/admin">Panel</a></div>
+    </header>
+
+    <nav class="tabs" aria-label="Secciones de facturación">
+      <button class="tab active" data-tab="dashboard">Dashboard</button>
+      <button class="tab" data-tab="facturas">Facturas</button>
+      <button class="tab" data-tab="clientes">Clientes</button>
+      <button class="tab" data-tab="reportes">Reportes</button>
+      <button class="tab" data-tab="auditoria">Auditoría</button>
+    </nav>
+
+    <section id="dashboard" class="panel active">
+      <div class="grid four" id="metrics"></div>
+      <div class="grid two">
+        <article class="card"><h2>Clientes más frecuentes</h2><div id="topClientes"></div></article>
+        <article class="card"><h2>Medidas más vendidas</h2><div id="topMedidas"></div></article>
+        <article class="card"><h2>Bandas más vendidas</h2><div id="topBandas"></div></article>
+        <article class="card"><h2>Facturas pendientes de validación</h2><div id="pendientes"></div></article>
+      </div>
+    </section>
+
+    <section id="facturas" class="panel">
+      <article class="card">
+        <div class="section-title"><h2>Búsqueda global</h2><button class="btn" id="newInvoiceBtn">Nueva Factura</button></div>
+        <label>Buscar cualquier dato...<input id="globalSearch" placeholder="Cliente, RFC, folio, OC, código, descripción, observaciones, ancho, longitud, banda o guía"></label>
+      </article>
+      <article class="card">
+        <h2>Filtros avanzados</h2>
+        <div class="grid four">
+          <label>Cliente/RFC<input id="fCliente" placeholder="Nombre o RFC"></label><label>Folio<input id="fFolio"></label><label>OC<input id="fOc"></label><label>Código Interno<input id="fCodigo"></label>
+          <label>Fecha Inicial<input id="fFechaIni" type="date"></label><label>Fecha Final<input id="fFechaFin" type="date"></label><label>Ancho<input id="fAncho" type="number"></label><label>Longitud<input id="fLongitud" type="number"></label>
+          <label>Medidas Internas<input id="fMedidas"></label><label>Tipo Banda<input id="fBanda"></label><label>Guía<input id="fGuia"></label><label>Observaciones<input id="fObs"></label>
+          <label>Monto Mínimo<input id="fMin" type="number"></label><label>Monto Máximo<input id="fMax" type="number"></label><label>Estatus<select id="fEstatus"><option value="">Todos</option><option>Pendiente</option><option>Validada</option><option>Archivada</option></select></label>
+        </div>
+        <div class="actions" style="margin-top:1rem"><button class="btn" id="searchBtn">Buscar</button><button class="btn btn-secondary" id="clearBtn">Limpiar</button><button class="btn btn-secondary" id="importXmlBtn">Importar XML</button><input id="xmlImportFile" type="file" accept=".xml,text/xml" class="hidden"></div>
+      </article>
+      <article class="card hidden" id="invoiceFormCard">
+        <h2 id="invoiceFormTitle">Nueva Factura</h2>
+        <form id="invoiceForm" class="grid two">
+          <input type="hidden" id="facturaId"><label>Modo<select id="captureMode"><option value="rapida">Captura Rápida</option><option value="completa">Completa</option></select></label><label>Cliente<select id="clienteSelect" required></select></label>
+          <label>Fecha<input id="fecha" type="date" required></label><label>Folio<input id="folio" required></label><label>OC<input id="oc"></label><label>Código Interno<input id="codigoInterno"></label>
+          <label>Subtotal<input id="subtotal" type="number" step="0.01"></label><label>IVA<input id="iva" type="number" step="0.01"></label><label>Total<input id="total" type="number" step="0.01" required></label><label>Estatus<select id="estatus"><option>Pendiente</option><option>Validada</option><option>Archivada</option></select></label>
+          <label class="complete-field">Descripción<textarea id="descripcion"></textarea></label><label>Tipo Banda<input id="tipoBanda"></label><label>Ancho mm<input id="ancho" type="number" step="0.01"></label><label>Longitud mm<input id="longitud" type="number" step="0.01"></label><label>Medidas Internas<input id="medidas"></label><label>Guía<input id="guia"></label><label class="complete-field">Tipo Unión<input id="tipoUnion"></label><label class="complete-field">Cantidad<input id="cantidad" type="number" step="0.01" value="1"></label><label class="complete-field">Precio Unitario<input id="precio" type="number" step="0.01"></label><label class="complete-field">Importe<input id="importe" type="number" step="0.01"></label>
+          <label class="complete-field" style="grid-column:1/-1">Observaciones<textarea id="observaciones"></textarea></label>
+          <label>PDF<input id="pdfFile" type="file" accept="application/pdf"></label><label>XML<input id="xmlFile" type="file" accept=".xml,text/xml"></label>
+          <div class="actions" style="grid-column:1/-1"><button class="btn" type="submit">Guardar</button><button class="btn btn-secondary" type="button" id="cancelInvoiceBtn">Cancelar</button></div>
+        </form>
+      </article>
+      <article class="card"><div class="section-title"><h2>Resultados</h2><span class="muted" id="resultCount"></span></div><div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Folio</th><th>Cliente</th><th>Código Interno</th><th>OC</th><th>Ancho</th><th>Longitud</th><th>Medidas Internas</th><th>Total</th><th>Estatus</th><th>Acciones</th></tr></thead><tbody id="invoiceRows"></tbody></table></div><div class="actions" style="margin-top:1rem"><button class="btn btn-secondary" id="prevPage">Anterior</button><span id="pageInfo"></span><button class="btn btn-secondary" id="nextPage">Siguiente</button></div></article>
+      <article class="card hidden" id="invoiceDetail"></article>
+    </section>
+
+    <section id="clientes" class="panel">
+      <article class="card"><div class="section-title"><h2>Clientes</h2><button class="btn" id="newClientBtn">Nuevo Cliente</button></div><div class="grid two hidden" id="clientForm"><input type="hidden" id="clientId"><label>Nombre<input id="clientNombre"></label><label>RFC<input id="clientRfc"></label><label>Dirección<input id="clientDireccion"></label><label>Teléfono<input id="clientTelefono"></label><label>Email<input id="clientEmail" type="email"></label><label>Contacto Principal<input id="clientContacto"></label><label style="grid-column:1/-1">Notas<textarea id="clientNotas"></textarea></label><div class="actions"><button class="btn" id="saveClientBtn">Guardar Cliente</button><button class="btn btn-secondary" id="cancelClientBtn">Cancelar</button></div></div></article>
+      <article class="card"><label>Buscar cliente<input id="clientSearch" placeholder="Nombre o RFC"></label><div class="table-wrap" style="margin-top:1rem"><table><thead><tr><th>Nombre</th><th>RFC</th><th>Contacto</th><th>Teléfono</th><th>Email</th><th>Acciones</th></tr></thead><tbody id="clientRows"></tbody></table></div></article>
+      <article class="card hidden" id="clientDetail"></article>
+    </section>
+
+    <section id="reportes" class="panel"><article class="card"><h2>Reportes básicos</h2><div class="actions"><select id="reportType"><option value="ventas_anio">Ventas por Año</option><option value="ventas_mes">Ventas por Mes</option><option value="ventas_cliente">Ventas por Cliente</option><option value="facturas_cliente">Facturas por Cliente</option><option value="medidas">Medidas Más Vendidas</option><option value="bandas">Bandas Más Vendidas</option><option value="clientes_frecuentes">Clientes Más Frecuentes</option><option value="capturadas_usuario">Facturas Capturadas por Usuario</option></select><button class="btn" id="loadReportBtn">Generar</button><button class="btn btn-secondary" data-export="csv">CSV</button><button class="btn btn-secondary" data-export="excel">Excel</button><button class="btn btn-secondary" data-export="pdf">PDF</button></div><div id="reportOutput" class="detail" style="margin-top:1rem"></div></article></section>
+    <section id="auditoria" class="panel"><article class="card"><div class="section-title"><h2>Auditoría de cambios</h2><button class="btn btn-secondary" id="loadAuditBtn">Actualizar</button></div><p class="muted">Registra altas, ediciones, eliminaciones, documentos e importaciones XML.</p><div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Usuario</th><th>Rol</th><th>Acción</th><th>Tabla</th><th>Registro</th></tr></thead><tbody id="auditRows"></tbody></table></div></article></section>
+  </main>
+<script src="/admin/facturas.js"></script>
+</body>
+</html>
