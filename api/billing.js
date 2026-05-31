@@ -53,7 +53,9 @@ module.exports = async (req, res) => {
       }
       if (req.method === 'POST') {
         const body = await getBody(req);
-        const { data, error } = await supabase.from('clientes').insert([body]).select();
+        // Aseguramos que el id sea removido si viene vacío para que Supabase genere uno nuevo
+        const { id, ...newClient } = body;
+        const { data, error } = await supabase.from('clientes').insert([newClient]).select();
         if (error) throw error;
         return sendJSON(res, { ok: true, data }, 201);
       }

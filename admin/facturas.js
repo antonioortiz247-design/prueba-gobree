@@ -82,10 +82,20 @@ async function loadDashboard() {
 
 // --- CLIENTES ---
 async function loadClientes(q = '') {
-  const data = await api(`/api/billing?type=clientes&search=${encodeURIComponent(q)}`);
-  state.clientes = data.data || [];
-  $('clienteSelect').innerHTML = '<option value="">Seleccionar cliente</option>' + state.clientes.map((c) => `<option value="${c.id}">${esc(c.nombre)}${c.rfc ? ` · ${esc(c.rfc)}` : ''}</option>`).join('');
-  $('clientRows').innerHTML = state.clientes.map((c) => `<tr><td>${esc(c.nombre)}</td><td>${esc(c.rfc)}</td><td>${esc(c.contacto_principal || '-')}</td><td>${esc(c.telefono || '-')}</td><td>${esc(c.email || '-')}</td><td class="actions"><button class="btn small btn-secondary" onclick="editClient('${c.id}')">Editar</button></td></tr>`).join('');
+  try {
+    const data = await api(`/api/billing?type=clientes&search=${encodeURIComponent(q)}`);
+    state.clientes = data.data || [];
+    const clienteSelect = $('clienteSelect');
+    if (clienteSelect) {
+      clienteSelect.innerHTML = '<option value="">Seleccionar cliente</option>' + state.clientes.map((c) => `<option value="${c.id}">${esc(c.nombre)}${c.rfc ? ` · ${esc(c.rfc)}` : ''}</option>`).join('');
+    }
+    const clientRows = $('clientRows');
+    if (clientRows) {
+      clientRows.innerHTML = state.clientes.map((c) => `<tr><td>${esc(c.nombre)}</td><td>${esc(c.rfc)}</td><td>${esc(c.contacto_principal || '-')}</td><td>${esc(c.telefono || '-')}</td><td>${esc(c.email || '-')}</td><td class="actions"><button class="btn small btn-secondary" onclick="editClient('${c.id}')">Editar</button></td></tr>`).join('');
+    }
+  } catch (e) {
+    console.error('Error cargando clientes:', e);
+  }
 }
 
 $('newClientBtn').onclick = () => {
@@ -103,19 +113,33 @@ $('newClientBtn').onclick = () => {
 $('cancelClientBtn').onclick = () => $('clientForm').classList.add('hidden');
 
 $('saveClientBtn').onclick = async () => { 
-  const payload = { 
-    id: $('clientId').value, 
-    nombre: $('clientNombre').value, 
-    rfc: $('clientRfc').value, 
-    direccion: $('clientDireccion').value, 
-    telefono: $('clientTelefono').value, 
-    email: $('clientEmail').value, 
-    contacto_principal: $('clientContacto').value, 
-    notas: $('clientNotas').value 
-  }; 
-  await api('/api/billing?type=clientes', { method: payload.id ? 'PATCH' : 'POST', body: JSON.stringify(payload) }); 
-  $('clientForm').classList.add('hidden'); 
-  await loadClientes(); 
+  try {
+    const payload = { 
+      id: $('clientId').value, 
+      nombre: $('clientNombre').value, 
+      rfc: $('clientRfc').value, 
+      direccion: $('clientDireccion').value, 
+      telefono: $('clientTelefono').value, 
+      email: $('clientEmail').value, 
+      contacto_principal: $('clientContacto').value, 
+      notas: $('clientNotas').value 
+    }; 
+    
+    // Si el ID está vacío, lo removemos del payload para que sea una creación limpia
+    if (!payload.id) delete payload.id;
+    
+    await api('/api/billing?type=clientes', { 
+      method: payload.id ? 'PATCH' : 'POST', 
+      body: JSON.stringify(payload) 
+    }); 
+    
+    $('clientForm').classList.add('hidden'); 
+    await loadClientes(); 
+    alert('Cliente guardado con éxito');
+  } catch (e) {
+    console.error('Error al guardar cliente:', e);
+    alert('Error al guardar cliente: ' + e.message);
+  }
 };
 
 $('clientSearch').oninput = (e) => loadClientes(e.target.value).catch(console.error);
