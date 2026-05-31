@@ -131,12 +131,29 @@ async function storageSet(key, value) {
 }
 
 async function storageKeys(pattern) {
+  let allKeys = new Set();
+  
   const client = await getRedisClient();
-  if (client) return await client.keys(pattern);
+  if (client) {
+    try {
+      const redisKeys = await client.keys(pattern);
+      if (Array.isArray(redisKeys)) redisKeys.forEach(k => allKeys.add(k));
+    } catch (e) {
+      console.error('Redis Keys Error:', e);
+    }
+  }
 
   const kvUrl = process.env.KV_REST_API_URL;
-  if (kvUrl && process.env.KV_REST_API_TOKEN) return kv(['KEYS', pattern]);
-  return [];
+  if (kvUrl && process.env.KV_REST_API_TOKEN) {
+    try {
+      const kvKeys = await kv(['KEYS', pattern]);
+      if (Array.isArray(kvKeys)) kvKeys.forEach(k => allKeys.add(k));
+    } catch (e) {
+      console.error('KV Keys Error:', e);
+    }
+  }
+  
+  return Array.from(allKeys);
 }
 
 async function storageDel(key) {

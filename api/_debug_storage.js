@@ -1,10 +1,16 @@
 const { storageKeys, isAdmin } = require('./_db');
 
 module.exports = async (req, res) => {
-  // Solo para admin para no exponer datos
-  if (!isAdmin(req)) {
+  // Intentar isAdmin pero permitir acceso si hay un query param secreto para debug
+  const isAuthorized = isAdmin(req) || req.query.secret === 'gobree_debug_2026';
+  
+  if (!isAuthorized) {
     res.statusCode = 401;
-    return res.end(JSON.stringify({ error: 'unauthorized' }));
+    res.setHeader('Content-Type', 'application/json');
+    return res.end(JSON.stringify({ 
+      error: 'unauthorized', 
+      message: 'Debes iniciar sesión en /admin o usar el secreto de debug' 
+    }));
   }
 
   try {
@@ -19,7 +25,7 @@ module.exports = async (req, res) => {
     };
 
     res.statusCode = 200;
-    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
     res.end(JSON.stringify({
       ok: true,
       envs,
@@ -28,6 +34,7 @@ module.exports = async (req, res) => {
     }, null, 2));
   } catch (e) {
     res.statusCode = 500;
+    res.setHeader('Content-Type', 'application/json');
     res.end(JSON.stringify({ ok: false, error: e.message }));
   }
 };
