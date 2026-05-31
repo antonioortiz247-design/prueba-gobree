@@ -2,40 +2,62 @@ const $ = (id) => document.getElementById(id);
 const money = (n) => Number(n || 0).toLocaleString('es-MX', { style: 'currency', currency: 'MXN' });
 const esc = (v) => String(v ?? '').replace(/[&<>"]/g, (c) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]));
 let state = { page: 1, pageSize: 25, clientes: [], facturas: [], session: null };
+
 async function api(url, options = {}) {
   const res = await fetch(url, Object.assign({ 
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include'
   }, options));
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok || data.ok === false) throw new Error(data.error || 'request_failed');
+  
+  let data = {};
+  try {
+    data = await res.json();
+  } catch (e) {
+    throw new Error('Error de respuesta del servidor (JSON inválido)');
+  }
+
+  if (!res.ok || data.ok === false) {
+    throw new Error(data.error || `Error ${res.status}: Solicitud fallida`);
+  }
   return data;
 }
+
 function can(permission) { return state.session?.role === 'administrador' || state.session?.permissions?.includes(permission); }
 function setMessage(el, text) { el.innerHTML = `<p class="muted">${esc(text)}</p>`; }
+
 async function init() {
   try {
-    // Primero verificamos la sesión de administrador
-    const r = await fetch('/api/admin-panel?type=check', { 
+    // 1. Verificamos la sesión de administrador de forma aislada
+    console.log('Verificando sesión...');
+    const authRes = await fetch('/api/admin-panel?type=check', { 
       cache: 'no-store', 
       credentials: 'include' 
     });
     
-    const data = await r.json().catch(() => ({ ok: false }));
+    const authData = await authRes.json().catch(() => ({ ok: false }));
     
-    if (!r.ok || !data.ok) {
-      console.error('Session check failed:', r.status, data);
-      throw new Error('unauthorized');
+    if (!authRes.ok || !authData.ok) {
+      console.error('Error de autenticación:', authRes.status, authData);
+      alert('Sesión no válida o expirada. Por favor, inicia sesión nuevamente en el Panel de Administración.');
+      location.href = '/admin';
+      return;
     }
 
     state.session = { role: 'administrador' };
     $('rolePill').textContent = 'Admin';
-    await Promise.all([loadDashboard(), loadClientes(), loadFacturas()]);
+
+    // 2. Intentamos cargar los datos. Si esto falla, el error será de base de datos, no de sesión.
+    console.log('Cargando datos de facturación...');
+    try {
+      await Promise.all([loadDashboard(), loadClientes(), loadFacturas()]);
+    } catch (dataError) {
+      console.error('Error cargando datos:', dataError);
+      alert('Sesión válida, pero hubo un error al conectar con la base de datos de facturación: ' + dataError.message);
+    }
+
   } catch (e) {
-    console.error('Init error:', e);
-    $('rolePill').textContent = 'Sin sesión';
-    alert('Sesión no válida o expirada. Por favor, inicia sesión nuevamente en el Panel de Administración.');
-    location.href = '/admin';
+    console.error('Error crítico en init:', e);
+    alert('Ocurrió un error inesperado al iniciar el panel: ' + e.message);
   }
 }
 
@@ -123,7 +145,7 @@ $('invoiceForm').onsubmit = async (e) => {
       fd.append('folder', new Date().getFullYear().toString());
       await fetch(`/api/uploads?type=factura`, { 
         method: 'POST', 
-        body: fd,
+        body: fd, 
         credentials: 'include'
       });
     }
