@@ -1,4 +1,4 @@
-const { supabase, isAdmin } = require('./_supabase');
+const { supabase, isAdmin } = require('./_db');
 
 module.exports = async (req, res) => {
   // Solo administradores pueden acceder a las funciones de facturación

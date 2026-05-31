@@ -1,4 +1,4 @@
-const { isAdmin } = require('./_supabase');
+const { isAdmin } = require('./_db');
 const crypto = require('crypto');
 
 function base64url(buf) {
